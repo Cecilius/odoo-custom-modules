@@ -43,6 +43,11 @@
             <attribute name="class" remove="ms-1" separator=" "/>
         </xpath>
 
+        <!-- 7) Replace VAT with IVA in a tax subtotal -->
+        <xpath expr="//span[@t-esc='tax_group.group_name']" position="replace">
+            <span t-esc="'IVA' + tax_group.group_name.split('VAT')[1] if 'VAT' in tax_group.group_name else tax_group.group_name"/>
+        </xpath>
+
     </t>
 
     <!-- B) Extend ReceiptHeader: add “Simplified invoice” but keep everything else -->
