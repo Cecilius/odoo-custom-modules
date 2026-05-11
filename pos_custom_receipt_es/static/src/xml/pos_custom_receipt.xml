@@ -42,7 +42,7 @@
         <xpath expr="//div[@t-if='order.company.point_of_sale_use_ticket_qr_code and order.finalized']/div[hasclass('w-100')]" position="attributes">
             <attribute name="class" remove="ms-1" separator=" "/>
         </xpath>
-        
+
     </t>
 
     <!-- B) Extend ReceiptHeader: add “Simplified invoice” but keep everything else -->
@@ -50,9 +50,14 @@
        t-inherit="point_of_sale.ReceiptHeader"
        t-inherit-mode="extension">
 
-        <!-- Insert label inside the top centered header block -->
+        <!-- 1) Insert label inside the top centered header block -->
         <xpath expr="//div[hasclass('text-center')][@style and contains(@style, 'font-size: 75%')]/*[1]" position="before">
             <div class="simplified-invoice" style="font-size: 150%; font-weight: bold; text-align: center;">Simplified invoice</div>
+        </xpath>
+
+        <!-- 2) Delete prefix of the simplified invoice "VAT Ticket" -->
+        <xpath expr="//span[hasclass('ticket-name-prefix')" position="replace">
+            <!-- empty: removes the node -->
         </xpath>
 
     </t>
