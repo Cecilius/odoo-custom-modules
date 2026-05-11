@@ -45,9 +45,7 @@
 
         <!-- 7) Replace VAT with IVA in a tax subtotal -->
         <xpath expr="//span[@t-esc='tax_group.group_name']" position="replace">
-            <span t-esc="receipt_lang && receipt_lang.startsWith('es') && tax_group.group_name && tax_group.group_name.includes('VAT')
-                ? tax_group.group_name.replace('VAT', 'IVA')
-                : tax_group.group_name"/>
+            <span t-esc="tax_group.group_name && tax_group.group_name.includes('VAT') ? tax_group.group_name.replace('VAT', 'IVA') : tax_group.group_name"/>
         </xpath>
 
     </t>
