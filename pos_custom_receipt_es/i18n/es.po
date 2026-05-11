@@ -1,0 +1,36 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pos_custom_receipt_es
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-11 14:24+0000\n"
+"PO-Revision-Date: 2026-05-11 16:33+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.9\n"
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "Simplified invoice"
+msgstr "Factura simplificada"
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "Thank you for your visit!"
+msgstr "¡Gracias por su visita!"
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "This simplified invoice does not replace the full invoice when required."
+msgstr "Esta factura simplificada no sustituye a la factura completa cuando sea necesario."

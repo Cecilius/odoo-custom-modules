@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="pos_custom_receipt_templates" xml:space="preserve">
+
+    <!-- A) Extend OrderReceipt (footers, labels, etc.) -->
+    <t t-name="pos_custom_receipt.OrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension">
+
+        <!-- 1) REMOVE the 'Powered by Odoo' line -->
+        <xpath expr="//div[hasclass('pos-receipt-order-data') and hasclass('text-center')]" position="replace">
+            <!-- empty: removes the node -->
+        </xpath>
+
+        <!-- 2) APPEND extra content before the '.before-footer' hook -->
+        <xpath expr="//div[hasclass('before-footer')]" position="before">
+            <div class="pos-receipt-order-data text-start pt-2" style="font-size: 75%;">
+                <span>This simplified invoice does not replace the full invoice when required.</span>
+            </div>
+        </xpath>
+
+        <!-- 3) insert company name -->
+        <xpath expr="//div[@class='pos-config-name']" position="after">
+            <div class="company-name" t-out="company.name"/>
+        </xpath>
+
+        <!-- 4) insert NIF -->
+        <xpath expr="//div[@class='w-50 text-break text-start' and contains(@style, 'font-size: 75%')]" position="inside">
+            <div class="company-company-registry" t-out="'NIF: ' + company.company_registry"/>
+        </xpath>
+
+        <!-- 5) Append something at the very end of the receipt -->
+        <xpath expr="//div[hasclass('pos-receipt')]" position="inside">
+            <div class="pos-receipt-order-data text-center pt-2" style="font-size: 70%;">
+                <span>Thank you for your visit!</span>
+            </div>
+        </xpath>
+
+    </t>
+
+    <!-- B) Extend ReceiptHeader: add “Simplified invoice” but keep everything else -->
+    <t t-name="pos_custom_receipt.ReceiptHeader"
+       t-inherit="point_of_sale.ReceiptHeader"
+       t-inherit-mode="extension">
+
+        <!-- Insert label inside the top centered header block -->
+        <xpath expr="//div[hasclass('text-center')][@style and contains(@style, 'font-size: 75%')]/*[1]" position="before">
+            <div class="simplified-invoice" style="font-size: 125%; font-weight: bold; text-align: center;">Simplified invoice</div>
+        </xpath>
+
+    </t>
+
+</templates>
