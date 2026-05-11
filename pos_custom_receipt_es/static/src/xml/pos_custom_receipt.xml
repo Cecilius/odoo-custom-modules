@@ -56,7 +56,7 @@
         </xpath>
 
         <!-- 2) Delete prefix of the simplified invoice "VAT Ticket" -->
-        <xpath expr="//span[hasclass('ticket-name-prefix')" position="replace">
+        <xpath expr="//span[contains(concat(' ', normalize-space(@class), ' '), ' ticket-name-prefix ')]" position="replace">
             <!-- empty: removes the node -->
         </xpath>
 
