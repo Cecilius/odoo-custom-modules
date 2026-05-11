@@ -18,12 +18,12 @@
             </div>
         </xpath>
 
-        <!-- 3) insert company name -->
+        <!-- 3) Insert company name -->
         <xpath expr="//div[@class='pos-config-name']" position="after">
             <div class="company-name" t-out="company.name"/>
         </xpath>
 
-        <!-- 4) insert NIF -->
+        <!-- 4) Insert NIF -->
         <xpath expr="//div[@class='w-50 text-break text-start' and contains(@style, 'font-size: 75%')]" position="inside">
             <div class="company-company-registry" t-out="'NIF: ' + company.company_registry"/>
         </xpath>
@@ -35,6 +35,14 @@
             </div>
         </xpath>
 
+        <!-- 6) put link under the QR code instead of next to it -->
+        <xpath expr="//div[@t-if='order.company.point_of_sale_use_ticket_qr_code and order.finalized']" position="attributes">
+            <attribute name="class" remove="flex-row" add="flex-column align-items-center text-center" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@t-if='order.company.point_of_sale_use_ticket_qr_code and order.finalized']/div[hasclass('w-100')]" position="attributes">
+            <attribute name="class" remove="ms-1" separator=" "/>
+        </xpath>
+        
     </t>
 
     <!-- B) Extend ReceiptHeader: add “Simplified invoice” but keep everything else -->
@@ -44,7 +52,7 @@
 
         <!-- Insert label inside the top centered header block -->
         <xpath expr="//div[hasclass('text-center')][@style and contains(@style, 'font-size: 75%')]/*[1]" position="before">
-            <div class="simplified-invoice" style="font-size: 125%; font-weight: bold; text-align: center;">Simplified invoice</div>
+            <div class="simplified-invoice" style="font-size: 150%; font-weight: bold; text-align: center;">Simplified invoice</div>
         </xpath>
 
     </t>
