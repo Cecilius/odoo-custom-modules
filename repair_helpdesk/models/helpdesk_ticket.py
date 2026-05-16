@@ -27,8 +27,14 @@ class HelpdeskTicket(models.Model):
             raise UserError(_('Please set a customer on the ticket before creating a quotation.'))
 
         shipping_product = self.env.ref('repair_helpdesk.product_return_shipping', raise_if_not_found=False)
+
+        sales_team = self.env['crm.team'].search([('active', '=', True)], limit=1)
+        if not sales_team:
+            raise UserError(_('Please configure at least one active Sales Team before creating a quotation.'))
+            
         order_vals = {
             'partner_id': self.partner_id.id,
+            'team_id': sales_team.id,
             'origin': self.name,
             'client_order_ref': self.ticket_ref or self.name,
             'note': _('Return shipping is included in this estimate and will only be charged if the device is returned by courier/post. It will be removed in case of in-person pickup.'),
