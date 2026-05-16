@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
         <field name="arch" type="xml">
             <field name="description" position="after">
-                <field name="x_repair_workflow_team"/>
+                <field name="x_repair_workflow_team"/> Repair workflow and automations 
             </field>
         </field>
     </record>
