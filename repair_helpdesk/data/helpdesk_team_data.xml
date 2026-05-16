@@ -1,6 +1,9 @@
 <odoo noupdate="1">
     <record id="team_repairs" model="helpdesk.team">
         <field name="name">Reparero</field>
+        <field name="description">
+            Request your repair quote, check the status of the diagnosis and repair, and manage the return or collection of your device.
+        </field>
         <field name="use_alias">True</field>
         <field name="alias_name">reparacion</field>
         <field name="use_website_helpdesk_form">True</field>

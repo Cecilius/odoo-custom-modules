@@ -4,13 +4,13 @@
         <field name="model">helpdesk.team</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
         <field name="arch" type="xml">
-            <field name="description" position="after">
+            <xpath expr="(//field[@name='company_id'])[2]" position="after">
                 <div class="row mt16 o_settings_container" id="repair_workflows">
                     <setting help="Use workflows and automations for a repair business">
-                        <field name="x_repair_workflow_team" string="Repair workflow and automations "/>
+                        <field name="x_repair_workflow_team" string="Repair workflow and automations"/>
                     </setting>
                 </div>
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>
