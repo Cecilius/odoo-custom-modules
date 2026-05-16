@@ -5,7 +5,11 @@
         <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
         <field name="arch" type="xml">
             <field name="description" position="after">
-                <field name="x_repair_workflow_team"/> Repair workflow and automations 
+                <div class="row mt16 o_settings_container" id="repair_workflows">
+                    <setting help="Use workflows and automations for a repair business">
+                        <field name="x_repair_workflow_team" string="Repair workflow and automations "/>
+                    </setting>
+                </div>
             </field>
         </field>
     </record>
