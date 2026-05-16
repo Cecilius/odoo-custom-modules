@@ -5,12 +5,14 @@
     'category': 'Services/Helpdesk',
     'author': 'Reparero',
     'license': 'LGPL-3',
-    'depends': ['helpdesk', 'sale_management', 'product'],
+    'depends': ['helpdesk', 'sale_management', 'product', 'repair'],
     'data': [
+        'security/ir.model.access.csv',
         'data/helpdesk_stage_data.xml',
         'data/helpdesk_team_data.xml',
         'data/product_data.xml',
-        'views/helpdesk_team_views.xml'
+        'views/helpdesk_team_views.xml',
+        'views/helpdesk_ticket_views.xml'
     ],
     'installable': True,
     'application': False,
