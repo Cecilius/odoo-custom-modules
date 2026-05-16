@@ -7,7 +7,6 @@
     'license': 'LGPL-3',
     'depends': ['helpdesk', 'sale_management', 'product'],
     'data': [
-        'security/ir.model.access.csv',
         'data/helpdesk_stage_data.xml',
         'data/helpdesk_team_data.xml',
         'data/product_data.xml',
