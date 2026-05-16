@@ -1,0 +1,26 @@
+<odoo noupdate="1">
+    <record id="team_repairs" model="helpdesk.team">
+        <field name="name">Reparero</field>
+        <field name="use_alias">True</field>
+        <field name="alias_name">reparacion</field>
+        <field name="use_website_helpdesk_form">True</field>
+        <field name="use_website_helpdesk_forum">False</field>
+        <field name="use_website_helpdesk_livechat">False</field>
+        <field name="use_helpdesk_timesheet">False</field>
+        <field name="x_repair_workflow_team">True</field>
+        <field name="stage_ids" eval="[(6, 0, [
+            ref('repair_helpdesk_setup.stage_repair_new'),
+            ref('repair_helpdesk_setup.stage_repair_quote_approval'),
+            ref('repair_helpdesk_setup.stage_repair_awaiting_item'),
+            ref('repair_helpdesk_setup.stage_repair_initial_inspection'),
+            ref('repair_helpdesk_setup.stage_repair_diagnostics'),
+            ref('repair_helpdesk_setup.stage_repair_revised_approval'),
+            ref('repair_helpdesk_setup.stage_repair_under_repair'),
+            ref('repair_helpdesk_setup.stage_repair_waiting_parts'),
+            ref('repair_helpdesk_setup.stage_repair_qc'),
+            ref('repair_helpdesk_setup.stage_repair_payment'),
+            ref('repair_helpdesk_setup.stage_repair_ready_return'),
+            ref('repair_helpdesk_setup.stage_repair_closed')
+        ])]"/>
+    </record>
+</odoo>

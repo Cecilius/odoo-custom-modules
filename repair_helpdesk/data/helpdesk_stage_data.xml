@@ -1,0 +1,51 @@
+<odoo noupdate="1">
+    <record id="stage_repair_new" model="helpdesk.stage">
+        <field name="name">New / Quotation requested</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="stage_repair_quote_approval" model="helpdesk.stage">
+        <field name="name">Waiting for quotation approval</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="stage_repair_awaiting_item" model="helpdesk.stage">
+        <field name="name">Awaiting item</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="stage_repair_initial_inspection" model="helpdesk.stage">
+        <field name="name">Received / Initial inspection</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="stage_repair_diagnostics" model="helpdesk.stage">
+        <field name="name">Diagnostics in progress</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="stage_repair_revised_approval" model="helpdesk.stage">
+        <field name="name">Waiting for revised approval</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="stage_repair_under_repair" model="helpdesk.stage">
+        <field name="name">Under repair</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="stage_repair_waiting_parts" model="helpdesk.stage">
+        <field name="name">Waiting for parts</field>
+        <field name="sequence">80</field>
+    </record>
+    <record id="stage_repair_qc" model="helpdesk.stage">
+        <field name="name">Quality control</field>
+        <field name="sequence">90</field>
+    </record>
+    <record id="stage_repair_payment" model="helpdesk.stage">
+        <field name="name">Waiting for payment</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="stage_repair_ready_return" model="helpdesk.stage">
+        <field name="name">Ready for shipment / pickup</field>
+        <field name="sequence">110</field>
+    </record>
+    <record id="stage_repair_closed" model="helpdesk.stage">
+        <field name="name">Closed</field>
+        <field name="sequence">120</field>
+        <field name="fold">True</field>
+    </record>
+</odoo>

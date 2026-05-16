@@ -1,0 +1,31 @@
+<odoo noupdate="1">
+    <record id="product_bench_fee" model="product.product">
+        <field name="name">Bench fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_diagnostic_fee" model="product.product">
+        <field name="name">Diagnostic fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_intake_fee" model="product.product">
+        <field name="name">Intake / inspection fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_return_shipping" model="product.product">
+        <field name="name">Return shipping</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.0</field>
+        <field name="description_sale">Included on quotations by default. Removed if the customer picks up the item in person.</field>
+    </record>
+</odoo>

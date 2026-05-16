@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_helpdesk_team_form_repair_workflow" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.repair.workflow</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <field name="x_repair_workflow_team"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
