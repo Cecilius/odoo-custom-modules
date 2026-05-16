@@ -9,18 +9,18 @@
         <field name="use_helpdesk_timesheet">False</field>
         <field name="x_repair_workflow_team">True</field>
         <field name="stage_ids" eval="[(6, 0, [
-            ref('repair_helpdesk_setup.stage_repair_new'),
-            ref('repair_helpdesk_setup.stage_repair_quote_approval'),
-            ref('repair_helpdesk_setup.stage_repair_awaiting_item'),
-            ref('repair_helpdesk_setup.stage_repair_initial_inspection'),
-            ref('repair_helpdesk_setup.stage_repair_diagnostics'),
-            ref('repair_helpdesk_setup.stage_repair_revised_approval'),
-            ref('repair_helpdesk_setup.stage_repair_under_repair'),
-            ref('repair_helpdesk_setup.stage_repair_waiting_parts'),
-            ref('repair_helpdesk_setup.stage_repair_qc'),
-            ref('repair_helpdesk_setup.stage_repair_payment'),
-            ref('repair_helpdesk_setup.stage_repair_ready_return'),
-            ref('repair_helpdesk_setup.stage_repair_closed')
+            ref('repair_helpdesk.stage_repair_new'),
+            ref('repair_helpdesk.stage_repair_quote_approval'),
+            ref('repair_helpdesk.stage_repair_awaiting_item'),
+            ref('repair_helpdesk.stage_repair_initial_inspection'),
+            ref('repair_helpdesk.stage_repair_diagnostics'),
+            ref('repair_helpdesk.stage_repair_revised_approval'),
+            ref('repair_helpdesk.stage_repair_under_repair'),
+            ref('repair_helpdesk.stage_repair_waiting_parts'),
+            ref('repair_helpdesk.stage_repair_qc'),
+            ref('repair_helpdesk.stage_repair_payment'),
+            ref('repair_helpdesk.stage_repair_ready_return'),
+            ref('repair_helpdesk.stage_repair_closed')
         ])]"/>
     </record>
 </odoo>
