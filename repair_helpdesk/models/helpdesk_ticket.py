@@ -126,7 +126,7 @@ class HelpdeskTicket(models.Model):
             'helpdesk_ticket_id': self.id,
             'origin': self.ticket_ref or self.name,
             'client_order_ref': self.ticket_ref or self.name,
-            'note': 'This quotation was based on information provided to ticket:" + self.ticket_ref + "\nReturn shipping is included in this estimate and will only be charged if the device is returned by courier/post. It will be removed in case of in-person pickup.',
+            'note': 'This quotation was based on information provided to ticket:' + self.ticket_ref + '\nReturn shipping is included in this estimate and will only be charged if the device is returned by courier/post. It will be removed in case of in-person pickup.',
             'order_line': order_lines,
         })
         self.message_post(body=_('Quotation %s created.') % quotation.name)
