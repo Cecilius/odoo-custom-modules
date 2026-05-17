@@ -166,7 +166,7 @@ class HelpdeskTicket(models.Model):
                 'view_mode': 'form',
                 'res_id': self.sale_order_ids[:1].id,
                 'target': 'current',
-            }ß
+            }
         return {
             'type': 'ir.actions.act_window',
             'name': _('Quotations / Sales Orders'),
