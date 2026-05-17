@@ -158,34 +158,42 @@ class HelpdeskTicket(models.Model):
 
     def action_view_sale_orders(self):
         self.ensure_one()
-        action = self.env.ref('sale.action_quotations').read()[0]
         if self.sale_order_count == 1:
-            action.update({
-                'res_id': self.sale_order_ids[:1].id,
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Quotation'),
+                'res_model': 'sale.order',
                 'view_mode': 'form',
-                'views': [(False, 'form')],
-                'domain': [('id', '=', self.sale_order_ids[:1].id)],
-            })
-        else:
-            action.update({
-                'domain': [('helpdesk_ticket_id', '=', self.id)],
-                'context': {'default_helpdesk_ticket_id': self.id},
-            })
-        return action
+                'res_id': self.sale_order_ids[:1].id,
+                'target': 'current',
+            }ß
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Quotations / Sales Orders'),
+            'res_model': 'sale.order',
+            'view_mode': 'list,form',
+            'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'context': {'default_helpdesk_ticket_id': self.id},
+            'target': 'current',
+        }
 
     def action_view_repair_orders(self):
         self.ensure_one()
-        action = self.env.ref('repair.action_repair_order').read()[0]
         if self.repair_order_count == 1:
-            action.update({
-                'res_id': self.repair_order_ids[:1].id,
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Repair Order'),
+                'res_model': 'repair.order',
                 'view_mode': 'form',
-                'views': [(False, 'form')],
-                'domain': [('id', '=', self.repair_order_ids[:1].id)],
-            })
-        else:
-            action.update({
-                'domain': [('helpdesk_ticket_id', '=', self.id)],
-                'context': {'default_helpdesk_ticket_id': self.id},
-            })
-        return action
+                'res_id': self.repair_order_ids[:1].id,
+                'target': 'current',
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Repair Orders'),
+            'res_model': 'repair.order',
+            'view_mode': 'list,form',
+            'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'context': {'default_helpdesk_ticket_id': self.id},
+            'target': 'current',
+        }
