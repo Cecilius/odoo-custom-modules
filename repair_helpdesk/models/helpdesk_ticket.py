@@ -5,8 +5,16 @@ from odoo.exceptions import UserError
 class HelpdeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
 
-    sale_order_id = fields.Many2one('sale.order', string='Quotation / Sales Order', copy=False)
-    repair_order_id = fields.Many2one('repair.order', string='Repair Order', copy=False)
+    # link sale order and helpdesk ticket so we can use smart buttons and everythink will stay properly linked
+    sale_order_ids = fields.One2many(
+        'sale.order', 'helpdesk_ticket_id', string='Quotations / Sales Orders'
+    )
+    # link sale order and helpdesk ticket so we can use smart buttons and everythink will stay properly linked
+    repair_order_ids = fields.One2many(
+        'repair.order', 'helpdesk_ticket_id', string='Repair Orders'
+    )
+    sale_order_count = fields.Integer(compute='_compute_related_counts')
+    repair_order_count = fields.Integer(compute='_compute_related_counts')
     x_device_description = fields.Char(string='Device / Model')
     x_serial_number = fields.Char(string='Serial Number')
     x_reported_issue = fields.Text(string='Reported Issue')
@@ -19,20 +27,18 @@ class HelpdeskTicket(models.Model):
         compute='_compute_repair_workflow_flags',
         store=False,
     )
-    x_can_open_quotation = fields.Boolean(
-        compute='_compute_repair_workflow_flags',
-        store=False,
-    )
     x_can_create_repair_order = fields.Boolean(
         compute='_compute_repair_workflow_flags',
         store=False,
     )
-    x_can_open_repair_order = fields.Boolean(
-        compute='_compute_repair_workflow_flags',
-        store=False,
-    )
 
-    @api.depends('team_id', 'team_id.x_repair_workflow_team', 'stage_id', 'sale_order_id', 'repair_order_id')
+    @api.depends('sale_order_ids', 'repair_order_ids')
+    def _compute_related_counts(self):
+        for ticket in self:
+            ticket.sale_order_count = len(ticket.sale_order_ids)
+            ticket.repair_order_count = len(ticket.repair_order_ids)
+
+    @api.depends('team_id', 'team_id.x_repair_workflow_team', 'stage_id', 'sale_order_ids', 'repair_order_ids')
     def _compute_repair_workflow_flags(self):
         quotation_stage_xmlids = {
             'repair_helpdesk.stage_repair_new',
@@ -56,10 +62,8 @@ class HelpdeskTicket(models.Model):
             is_repair = bool(ticket.team_id and ticket.team_id.x_repair_workflow_team)
             stage_id = ticket.stage_id.id if ticket.stage_id else False
             ticket.x_is_repair_ticket = is_repair
-            ticket.x_can_create_quotation = bool(is_repair and not ticket.sale_order_id and stage_id in quotation_stage_ids)
-            ticket.x_can_open_quotation = bool(is_repair and ticket.sale_order_id)
-            ticket.x_can_create_repair_order = bool(is_repair and not ticket.repair_order_id and stage_id in repair_stage_ids)
-            ticket.x_can_open_repair_order = bool(is_repair and ticket.repair_order_id)
+            ticket.x_can_create_quotation = bool(is_repair and not ticket.sale_order_ids and stage_id in quotation_stage_ids)
+            ticket.x_can_create_repair_order = bool(is_repair and not ticket.repair_order_ids and stage_id in repair_stage_ids)
 
     def _stage_ids_from_xmlids(self, xmlids):
         ids = set()
@@ -116,32 +120,18 @@ class HelpdeskTicket(models.Model):
                 'price_unit': shipping_product.list_price,
             }))
 
-        order_vals = {
+        quotation = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'team_id': sales_team.id,
+            'helpdesk_ticket_id': self.id,
             'origin': self.ticket_ref or self.name,
             'client_order_ref': self.ticket_ref or self.name,
             'note': self.description or _('Created from Helpdesk repair ticket.'),
             'order_line': order_lines,
-        }
-        quotation = self.env['sale.order'].create(order_vals)
-        self.sale_order_id = quotation.id
+        })
         self.message_post(body=_('Quotation %s created.') % quotation.name)
         self._set_stage('repair_helpdesk.stage_repair_quote_approval')
-        return self.action_open_quotation()
-
-    def action_open_quotation(self):
-        self.ensure_one()
-        if not self.sale_order_id:
-            raise UserError(_('No quotation linked to this ticket.'))
-        action = self.env.ref('sale.action_quotations').read()[0]
-        action.update({
-            'res_id': self.sale_order_id.id,
-            'view_mode': 'form',
-            'views': [(False, 'form')],
-            'target': 'current',
-        })
-        return action
+        return self.action_view_sale_orders()
 
     def action_create_repair_order(self):
         self.ensure_one()
@@ -154,6 +144,7 @@ class HelpdeskTicket(models.Model):
             'partner_id': self.partner_id.id,
             'product_qty': 1.0,
             'name': self.ticket_ref or self.name,
+            'helpdesk_ticket_id': self.id,
             'under_warranty': False,
         }
         if 'lot_name' in self.env['repair.order']._fields and self.x_serial_number:
@@ -161,20 +152,40 @@ class HelpdeskTicket(models.Model):
         if 'description' in self.env['repair.order']._fields:
             vals['description'] = self.x_reported_issue or self.description
         repair_order = self.env['repair.order'].create(vals)
-        self.repair_order_id = repair_order.id
         self.message_post(body=_('Repair order %s created.') % (getattr(repair_order, 'name', _('(draft)'))))
         self._set_stage('repair_helpdesk.stage_repair_initial_inspection')
-        return self.action_open_repair_order()
+        return self.action_view_repair_orders()
 
-    def action_open_repair_order(self):
+    def action_view_sale_orders(self):
         self.ensure_one()
-        if not self.repair_order_id:
-            raise UserError(_('No repair order linked to this ticket.'))
+        action = self.env.ref('sale.action_quotations').read()[0]
+        if self.sale_order_count == 1:
+            action.update({
+                'res_id': self.sale_order_ids[:1].id,
+                'view_mode': 'form',
+                'views': [(False, 'form')],
+                'domain': [('id', '=', self.sale_order_ids[:1].id)],
+            })
+        else:
+            action.update({
+                'domain': [('helpdesk_ticket_id', '=', self.id)],
+                'context': {'default_helpdesk_ticket_id': self.id},
+            })
+        return action
+
+    def action_view_repair_orders(self):
+        self.ensure_one()
         action = self.env.ref('repair.action_repair_order').read()[0]
-        action.update({
-            'res_id': self.repair_order_id.id,
-            'view_mode': 'form',
-            'views': [(False, 'form')],
-            'target': 'current',
-        })
+        if self.repair_order_count == 1:
+            action.update({
+                'res_id': self.repair_order_ids[:1].id,
+                'view_mode': 'form',
+                'views': [(False, 'form')],
+                'domain': [('id', '=', self.repair_order_ids[:1].id)],
+            })
+        else:
+            action.update({
+                'domain': [('helpdesk_ticket_id', '=', self.id)],
+                'context': {'default_helpdesk_ticket_id': self.id},
+            })
         return action

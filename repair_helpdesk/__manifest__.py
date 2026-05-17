@@ -12,7 +12,9 @@
         'data/helpdesk_team_data.xml',
         'data/product_data.xml',
         'views/helpdesk_team_views.xml',
-        'views/helpdesk_ticket_views.xml'
+        'views/helpdesk_ticket_views.xml',
+        'views/sale_order_views.xml',
+        'views/repair_order_views.xml'
     ],
     'installable': True,
     'application': False,
