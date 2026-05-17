@@ -4,6 +4,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Show the originating helpdesk ticket on the sales document. -->
             <xpath expr="//sheet//group" position="inside">
                 <field name="helpdesk_ticket_id" readonly="1"/>
             </xpath>

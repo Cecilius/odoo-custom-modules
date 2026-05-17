@@ -4,6 +4,9 @@
         <field name="model">helpdesk.ticket</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
         <field name="arch" type="xml">
+
+            <!-- Smart buttons in the native button box.
+                 They appear only for repair tickets and only when linked records exist. -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_sale_orders"
                         type="object"
@@ -20,6 +23,8 @@
                     <field name="repair_order_count" string="Repair Orders" widget="statinfo"/>
                 </button>
             </xpath>
+
+            <!-- Header buttons used only to create the next business document. -->
             <xpath expr="//header" position="inside">
                 <button name="action_create_quotation"
                         type="object"
@@ -31,9 +36,12 @@
                         string="Create Repair Order"
                         invisible="not x_can_create_repair_order"/>
             </xpath>
+
+            <!-- Extra ticket fields used by the repair workflow. -->
             <xpath expr="//sheet" position="inside">
                 <group string="Repair Details" invisible="not x_is_repair_ticket">
                     <group>
+                        <!-- Hidden counters kept on the form so client logic can read them if needed. -->
                         <field name="sale_order_count" invisible="1"/>
                         <field name="repair_order_count" invisible="1"/>
                     </group>
