@@ -3,8 +3,7 @@
     'version': '19.0.1.0.0',
     'summary': 'Auto-route simplified vs full invoices and require tax ID when needed',
     'category': 'Accounting/Accounting',
-    'author': 'Reparero',
-    'website': "https://reparero.es",
+    'author': 'Perplexity',
     'license': 'LGPL-3',
     'depends': ['account', 'sale', 'website_sale'],
     'data': [

@@ -25,3 +25,7 @@
 - This is a strict business policy for operational simplicity.
 - You should still test website/controller hooks and inherited form views on your exact Odoo 19 build.
 - For robust linkage between invoices and sales orders, replacing the `invoice_origin` lookup with a direct relational approach would be better in production.
+
+## Spanish checkout VAT override
+- The module now overrides the Spanish localization checkout behavior that otherwise forces VAT/NIF for all Spanish billing addresses.
+- VAT remains optional for Spain B2C orders up to 400 EUR, and mandatory for Spain B2C above 400 EUR or B2B scenarios.
