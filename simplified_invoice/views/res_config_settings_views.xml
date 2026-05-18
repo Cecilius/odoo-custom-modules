@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_simplified_invoice" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.simplified.invoice</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Spanish Simplified Invoice Rules">
+                    <setting string="Simplified invoice threshold">
+                        <field name="simplified_invoice_threshold"/>
+                    </setting>
+                    <setting string="Simplified sales journal">
+                        <field name="simplified_sales_journal_id"/>
+                    </setting>
+                    <setting string="Require tax ID on full invoice">
+                        <field name="require_tax_id_for_full_invoice"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
