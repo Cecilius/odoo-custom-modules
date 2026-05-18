@@ -19,13 +19,6 @@ class WebsiteSaleExtended(WebsiteSale):
             return True
         return False
 
-    def _get_mandatory_billing_fields(self):
-        fields = super()._get_mandatory_billing_fields()
-        order = request.website.sale_get_order()
-        if order and order.amount_total > 400.0 and order.partner_id.country_id.code == 'ES' and 'vat' not in fields:
-            fields.append('vat')
-        return fields
-
     def _checkout_form_validate(self, mode, all_form_values, data):
         error, error_message = super()._checkout_form_validate(mode, all_form_values, data)
         order = request.website.sale_get_order()
