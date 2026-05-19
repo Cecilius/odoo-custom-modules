@@ -6,7 +6,6 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="invoice_mode"/>
                 <field name="requires_full_invoice" readonly="1"/>
                 <field name="invoice_review_state" readonly="1"/>
                 <field name="tax_id_missing_warning" invisible="1"/>
