@@ -1,35 +1,31 @@
 from odoo import _
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.account.controllers.portal import PortalAccount
 from odoo.http import request
 
 
-class WebsiteSaleExtended(WebsiteSale):
-    def _website_order_requires_tax_id(self, order, values):
-        partner = order.partner_id.commercial_partner_id
-        country_code = values.get('country_code') or partner.country_id.code
-        vat = values.get('vat') or partner.vat
-        company_name = values.get('company_name') or values.get('company')
-        is_spain = country_code == 'ES'
-        is_b2b = bool(vat) or bool(company_name) or partner.company_type == 'company' or partner.invoice_identification_type == 'full'
-        if is_spain and not is_b2b and order.amount_total <= 400.0:
-            return False
-        if is_spain and order.amount_total > 400.0:
-            return True
-        if is_b2b:
-            return True
-        return False
+class SimplifiedInvoicePortalAccount(PortalAccount):
+    def _get_mandatory_billing_address_fields(self, country_sudo):
+        field_names = super()._get_mandatory_billing_address_fields(country_sudo)
 
-    def _get_mandatory_billing_fields(self):
-        fields = super()._get_mandatory_billing_fields()
-        order = request.website.sale_get_order()
-        if order and order.amount_total > 400.0 and order.partner_id.country_id.code == 'ES' and 'vat' not in fields:
-            fields.append('vat')
-        return fields
+        if request.env.company.country_code == country_sudo.code == 'ES':
+            order_id = request.session.get('sale_order_id')
+            order = request.env['sale.order'].sudo().browse(order_id) if order_id else request.env['sale.order']
+            amount_total = order.amount_total if order and order.exists() else 0.0
+            limit = request.env.company.l10n_es_simplified_invoice_limit or 400.0
+            if amount_total <= limit:
+                field_names.discard('vat')
 
-    def _checkout_form_validate(self, mode, all_form_values, data):
-        error, error_message = super()._checkout_form_validate(mode, all_form_values, data)
-        order = request.website.sale_get_order()
-        if order and self._website_order_requires_tax_id(order, all_form_values) and not all_form_values.get('vat'):
-            error['vat'] = 'missing'
-            error_message.append(_('Tax ID (NIF/NIE/VAT) is required for this invoice.'))
-        return error, error_message
+        return field_names
+
+    def _validate_address_values(self, address_values, *args, **kwargs):
+        invalid_fields, missing_fields, error_messages = super()._validate_address_values(address_values, *args, **kwargs)
+        country_id = address_values.get('country_id')
+        country = request.env['res.country'].browse(int(country_id)) if country_id else request.env['res.country']
+        order_id = request.session.get('sale_order_id')
+        order = request.env['sale.order'].sudo().browse(order_id) if order_id else request.env['sale.order']
+        amount_total = order.amount_total if order and order.exists() else 0.0
+        limit = request.env.company.l10n_es_simplified_invoice_limit or 400.0
+        if request.env.company.country_code == 'ES' and country and country.code == 'ES' and amount_total > limit and not address_values.get('vat'):
+            missing_fields.add('vat')
+            error_messages.append(_('Tax ID (NIF/NIE/VAT) is required for this invoice.'))
+        return invalid_fields, missing_fields, error_messages

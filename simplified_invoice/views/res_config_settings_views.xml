@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="res_config_settings_view_form_simplified_invoice" model="ir.ui.view">
-        <field name="name">res.config.settings.view.form.simplified.invoice</field>
+    <record id="res_config_settings_view_form_simplified_invoice_workflow" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.simplified.invoice.workflow</field>
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='account']" position="inside">
-                <block title="Spanish Simplified Invoice Rules">
-                    <setting string="Simplified invoice threshold">
-                        <field name="simplified_invoice_threshold"/>
-                    </setting>
-                    <setting string="Simplified sales journal">
-                        <field name="simplified_sales_journal_id"/>
-                    </setting>
-                    <setting string="Require tax ID on full invoice">
-                        <field name="require_tax_id_for_full_invoice"/>
+            <xpath expr="//block[@name='spain_localization']" position="attributes">
+                <attribute name="invisible">country_code != 'ES'</attribute>
+            </xpath>
+            <xpath expr="//app[@name='account']/block[last()]" position="after">
+                <block title="Simplified Invoice Workflow" name="simplified_invoice_workflow" invisible="country_code != 'ES'">
+                    <setting string="Spanish localization limit in use">
+                        <div class="text-muted">
+                            This workflow reuses the existing Spanish localization simplified invoice limit and l10n_es_is_simplified logic.
+                        </div>
                     </setting>
                 </block>
             </xpath>
