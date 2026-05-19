@@ -5,14 +5,17 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//block[@name='spain_localization']" position="attributes">
-                <attribute name="invisible">country_code != 'ES'</attribute>
-            </xpath>
             <xpath expr="//app[@name='account']/block[last()]" position="after">
                 <block title="Simplified Invoice Workflow" name="simplified_invoice_workflow" invisible="country_code != 'ES'">
-                    <setting string="Spanish localization limit in use">
+                    <setting string="Simplified Sales Journal">
+                        <field name="simplified_sales_journal_id"/>
+                    </setting>
+                    <setting string="Full Sales Journal">
+                        <field name="full_sales_journal_id"/>
+                    </setting>
+                    <setting string="Localization limit source">
                         <div class="text-muted">
-                            This workflow reuses the existing Spanish localization simplified invoice limit and l10n_es_is_simplified logic.
+                            Uses company.l10n_es_simplified_invoice_limit from the Spanish localization instead of a hard-coded limit.
                         </div>
                     </setting>
                 </block>

@@ -8,10 +8,6 @@
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="invoice_review_state" readonly="1"/>
             </xpath>
-            <xpath expr="//header" position="inside">
-                <button name="action_mark_invoice_review_approved" type="object" string="Approve Invoice Review" class="btn-primary" invisible="invoice_review_state == 'approved'"/>
-                <button name="action_mark_invoice_review_pending" type="object" string="Set Review Pending" invisible="invoice_review_state == 'pending'"/>
-            </xpath>
         </field>
     </record>
 </odoo>

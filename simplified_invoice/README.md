@@ -1,21 +1,20 @@
 # Odoo 19 module structure: reuse Spanish localization simplified invoice logic
 
 ## Purpose
-This module no longer reimplements the Spanish simplified invoice threshold logic. Instead, it reuses the existing Spanish localization field `l10n_es_is_simplified` and the existing company setting `l10n_es_simplified_invoice_limit`.
+This module reuses the Spanish localization fields `l10n_es_is_simplified` and `l10n_es_simplified_invoice_limit`, and adds workflow controls around them.
 
 ## What this module adds
 - Manual invoice review state on `sale.order`.
-- Blocking invoice posting until review is approved.
-- Reuse of `l10n_es_is_simplified` to decide whether simplified journal routing should happen.
-- Exposure of the Spain localization settings block when the company country is Spain.
-- Checkout VAT requirement aligned with the localization limit for Spanish orders.
+- Company settings for a simplified sales journal and a full sales journal.
+- Automatic journal assignment based on `l10n_es_is_simplified`.
+- Warning messages when the invoice type and configured journal do not match.
 
-## Core behavior
-- If Spanish localization marks the invoice as simplified, the module can route it to the simplified sales journal.
-- If the invoice is not simplified and the Spanish workflow requires tax ID, posting is blocked when VAT/NIF is missing.
-- The company setting `l10n_es_simplified_invoice_limit` is reused instead of a duplicate custom threshold.
+## Notes on comments
+Comments are only used where the code is intentionally non-obvious:
+- to explain why the localization logic is reused rather than duplicated,
+- to explain why journal mismatch only warns instead of blocking,
+- to mark this as a warning-first implementation that may be tightened later.
 
-## Notes
-- This keeps the business workflow customization smaller and more compatible with Odoo 19 Spain localization.
-- The module still adds manual review before posting/shipping, which is outside the base localization logic.
-- Production use should still include tests on your exact enterprise build.
+## External references
+- Stack Overflow comment guidance: https://stackoverflow.blog/2021/12/23/best-practices-for-writing-code-comments/
+- Odoo Spain localization docs: https://www.odoo.com/documentation/19.0/applications/finance/fiscal_localizations/spain.html

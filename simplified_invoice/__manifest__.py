@@ -1,6 +1,6 @@
 {
     'name': 'Spain Simplified Invoice Workflow',
-    'version': '19.0.2.0.0',
+    'version': '19.0.3.0.0',
     'summary': 'Manual review workflow reusing Spanish localization simplified invoice logic',
     'category': 'Accounting/Accounting',
     'author': 'Perplexity',
