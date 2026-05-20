@@ -8,12 +8,8 @@ class SimplifiedInvoicePortalAccount(PortalAccount):
 
         # Reuse the Spanish localization limit from the current company to keep checkout logic aligned with invoices.
         if request.env.company.country_code == country_sudo.code == "ES":
-            order_id = request.session.get("sale_order_id")
-            order = request.env["sale.order"].sudo().browse(order_id) if order_id else request.env["sale.order"]
-            amount_total = order.amount_total if order and order.exists() else 0.0
-            limit = request.env.company.l10n_es_simplified_invoice_limit or 0.0
-            if amount_total <= limit:
-                field_names.discard("vat")
+
+            field_names.discard("vat")
 
         return field_names
 
@@ -22,11 +18,7 @@ class SimplifiedInvoicePortalAccount(PortalAccount):
 
         # Reuse the Spanish localization limit from the current company to keep checkout logic aligned with invoices.
         if request.env.company.country_code == country_sudo.code == "ES":
-            order_id = request.session.get("sale_order_id")
-            order = request.env["sale.order"].sudo().browse(order_id) if order_id else request.env["sale.order"]
-            amount_total = order.amount_total if order and order.exists() else 0.0
-            limit = request.env.company.l10n_es_simplified_invoice_limit or 0.0
-            if amount_total <= limit:
-                field_names.discard("vat")
+
+            field_names.discard("vat")
 
         return field_names
