@@ -7,12 +7,12 @@ This module reuses the Spanish localization fields `l10n_es_is_simplified` and `
 - Manual invoice review state on `sale.order`.
 - Company settings for a simplified sales journal and a full sales journal.
 - Automatic journal assignment based on `l10n_es_is_simplified`.
-- Warning messages when the invoice type and configured journal do not match.
+- Soft blocking on journal mismatch or missing VAT for non-simplified Spanish invoices.
 
 ## Notes on comments
 Comments are only used where the code is intentionally non-obvious:
-- to explain why the localization logic is reused rather than duplicated,
-- to explain why journal mismatch only warns instead of blocking,
+- to explain why localization logic is reused rather than duplicated,
+- to explain why mismatch checks soft-block instead of only logging,
 - to mark this as a warning-first implementation that may be tightened later.
 
 ## External references
