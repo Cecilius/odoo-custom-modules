@@ -1,20 +1,22 @@
-# Odoo 19 module structure: reuse Spanish localization simplified invoice logic
+# Spain Simplified Invoice Workflow
 
-## Purpose
-This module reuses the Spanish localization fields `l10n_es_is_simplified` and `l10n_es_simplified_invoice_limit`, and adds workflow controls around them.
+This module reuses the Spanish localization simplified invoice logic and adds review controls around invoice posting.
 
-## What this module adds
-- Manual invoice review state on `sale.order`.
-- Company settings for a simplified sales journal and a full sales journal.
-- Automatic journal assignment based on `l10n_es_is_simplified`.
-- A TransientModel wizard for soft-blocking invoice posting when the journal or VAT data needs confirmation.
+## Features
+- Automatic journal assignment from company settings.
+- Invoice review state on sales orders.
+- Wizard-based confirmation for journal mismatches and over-limit Spanish invoices without VAT/NIF.
+- Checkout VAT handling aligned with the same company limit.
 
-## Notes on comments
-Comments are only used where the code is intentionally non-obvious:
-- to explain why localization logic is reused rather than duplicated,
-- to explain why mismatch checks open a wizard instead of raising a hard error,
-- to mark this as a warning-first implementation that may be tightened later.
+## Posting rules
+- Simplified invoice + simplified journal: post normally.
+- Full invoice + full journal: post normally.
+- Journal mismatch: open the confirmation wizard.
+- Over-limit Spanish invoice without VAT/NIF: open the confirmation wizard.
 
-## External references
-- Stack Overflow comment guidance: https://stackoverflow.blog/2021/12/23/best-practices-for-writing-code-comments/
-- Odoo Spain localization docs: https://www.odoo.com/documentation/19.0/applications/finance/fiscal_localizations/spain.html
+## Tests
+- One test covers the over-limit confirmation path.
+- One test covers the journal mismatch confirmation path.
+
+## Notes
+Comments are intentionally sparse and only explain the non-obvious business-rule branches.

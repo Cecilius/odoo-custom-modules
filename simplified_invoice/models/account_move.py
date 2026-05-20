@@ -21,18 +21,15 @@ class AccountMove(models.Model):
 
     def _needs_confirmation_wizard(self):
         self.ensure_one()
-        currency_id = self.currency_id or self.company_id.currency_id
-        is_over_limit = currency_id.compare_amounts(
-            abs(self.amount_total_signed),
-            self.company_id.l10n_es_simplified_invoice_limit,
-        ) > 0
         if self.move_type != "out_invoice":
             return False, ""
+        currency = self.currency_id or self.company_id.currency_id
+        over_limit = currency.compare_amounts(abs(self.amount_total_signed), self.company_id.l10n_es_simplified_invoice_limit) > 0
         if self.l10n_es_is_simplified and self.company_id.simplified_sales_journal_id and self.journal_id != self.company_id.simplified_sales_journal_id:
             return True, self._journal_mismatch_message(True)
         if not self.l10n_es_is_simplified and self.company_id.full_sales_journal_id and self.journal_id != self.company_id.full_sales_journal_id:
             return True, self._journal_mismatch_message(False)
-        if is_over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
+        if over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
             return True, _("This invoice exceeds the Spanish simplified invoice limit, so the customer VAT/NIF is required before posting.")
         return False, ""
 

@@ -11,8 +11,10 @@
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
         'views/invoice_wizard_views.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
     ],
+    'demo': [],
+    'test': ['tests/test_account_move.py'],
     'installable': True,
     'application': False,
 }
