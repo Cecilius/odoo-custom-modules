@@ -5,6 +5,8 @@ from odoo.http import request
 class SimplifiedInvoicePortalAccount(PortalAccount):
     def _get_mandatory_billing_address_fields(self, country_sudo):
 
+        field_names = super()._get_mandatory_billing_address_fields(country_sudo)
+        
         # Reuse the Spanish localization limit from the current company to keep checkout logic aligned with invoices.
         if request.env.company.country_code == country_sudo.code == "ES":
             order_id = request.session.get("sale_order_id")
