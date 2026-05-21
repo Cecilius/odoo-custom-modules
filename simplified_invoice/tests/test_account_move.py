@@ -3,7 +3,6 @@ from odoo.exceptions import UserError
 
 
 class TestSimplifiedInvoiceWorkflow(TransactionCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
