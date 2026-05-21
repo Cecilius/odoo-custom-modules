@@ -51,6 +51,9 @@ class AccountMove(models.Model):
         # 3) Over-limit Spanish customers must have VAT/NIF.
         if over_limit and self.country_code == "ES" and self.commercial_partner_id.country_id.code == "ES" and not self.commercial_partner_id.vat:
             raise UserError(_("This invoice exceeds the Spanish simplified invoice limit and the customer is in Spain, so VAT/NIF is required before posting."))
+        # 4) Full invoice for Spanish customers must have VAT/NIF.
+        if not self.l10n_es_is_simplified and self.country_code == "ES" and self.commercial_partner_id.country_id.code == "ES" and not self.commercial_partner_id.vat:
+            raise UserError(_("Full invoices for Spanish customers require a VAT/NIF before posting."))
         needs_wizard, message = self._needs_confirmation_wizard()
         if needs_wizard:
             return {

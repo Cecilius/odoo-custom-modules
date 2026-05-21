@@ -102,6 +102,17 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         with self.assertRaises(UserError):
             move.action_post()
 
+    def test_full_invoice_for_spanish_customer_without_vat_raises_usererror(self):
+        move = self._make_invoice(
+            self.journal_full,
+            vat=False,
+            price_unit=10.0,
+            simplified=False,
+        )
+        # Partner is Spanish by default (base.es), and company is also Spanish.
+        with self.assertRaises(UserError):
+            move.action_post()
+
     def test_over_limit_invoice_without_vat_raises_usererror(self):
         move = self._make_invoice(
             self.journal_full,
