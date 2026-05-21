@@ -12,6 +12,7 @@ This module reuses the Spanish localization simplified invoice logic and adds re
   - any simplified invoice issued to a customer outside Spain.
 - Wizard-based confirmation when the simplified flag and the selected journal do not match.
 - Checkout VAT handling aligned with the company’s Spanish simplified invoice limit.
+- Adds `company_registry` to `base.document.layout`.
 
 ## Posting rules
 
