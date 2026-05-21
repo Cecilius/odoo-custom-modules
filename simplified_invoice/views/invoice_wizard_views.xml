@@ -3,7 +3,7 @@
         <field name="name">simplified.invoice.post.wizard.form</field>
         <field name="model">simplified.invoice.post.wizard</field>
         <field name="arch" type="xml">
-            <form string="Confirm Invoice Posting">
+            <form string="Invoice journal and type mismatch">
                 <group>
                     <field name="message" readonly="1" nolabel="1"/>
                     <field name="move_id" invisible="1"/>
