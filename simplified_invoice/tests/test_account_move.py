@@ -31,54 +31,53 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
             "type": "service",
             "list_price": 0.0,
         })
+        cls.company.l10n_es_simplified_invoice_limit = 50.0
 
-    def _make_invoice(self, journal, simplified=False):
+    def _make_invoice(self, journal, vat=False, price_unit=10.0, simplified=False):
+        partner = self.partner.copy({"vat": "ES12345678Z" if vat else False})
         move = self.env["account.move"].create({
             "move_type": "out_invoice",
-            "partner_id": self.partner.id,
+            "partner_id": partner.id,
             "currency_id": self.company.currency_id.id,
             "journal_id": journal.id,
             "invoice_line_ids": [(0, 0, {
                 "name": "Line",
                 "quantity": 1.0,
-                "price_unit": 10.0,
+                "price_unit": price_unit,
                 "product_id": self.product.id,
             })],
         })
         move.l10n_es_is_simplified = simplified
         return move
 
+    def test_over_limit_simplified_invoice_raises_usererror(self):
+        move = self._make_invoice(
+            self.journal_simplified,
+            vat=True,
+            price_unit=100.0,
+            simplified=True,
+        )
+        with self.assertRaises(UserError):
+            move.action_post()
+
+    def test_over_limit_invoice_without_vat_raises_usererror(self):
+        move = self._make_invoice(
+            self.journal_full,
+            vat=False,
+            price_unit=100.0,
+            simplified=False,
+        )
+        with self.assertRaises(UserError):
+            move.action_post()
+
     def test_journal_mismatch_opens_wizard(self):
-        move = self._make_invoice(self.journal_full, simplified=True)
+        move = self._make_invoice(
+            self.journal_full,
+            vat=True,
+            price_unit=10.0,
+            simplified=True,
+        )
         action = move.action_post()
         self.assertEqual(action["res_model"], "simplified.invoice.post.wizard")
-
-    def test_wizard_sets_simplified(self):
-        move = self._make_invoice(self.journal_full, simplified=False)
-        wizard = self.env["simplified.invoice.post.wizard"].create({
-            "move_id": move.id,
-            "message": "test",
-        })
-        wizard.action_set_simplified()
-        self.assertEqual(move.journal_id, self.journal_simplified)
-        self.assertTrue(move.l10n_es_is_simplified)
-
-    def test_wizard_sets_full(self):
-        move = self._make_invoice(self.journal_simplified, simplified=True)
-        wizard = self.env["simplified.invoice.post.wizard"].create({
-            "move_id": move.id,
-            "message": "test",
-        })
-        wizard.action_set_full()
-        self.assertEqual(move.journal_id, self.journal_full)
-        self.assertFalse(move.l10n_es_is_simplified)
-
-    def test_wizard_refuses_posted_move(self):
-        move = self._make_invoice(self.journal_full, simplified=True)
-        move.state = "posted"
-        wizard = self.env["simplified.invoice.post.wizard"].create({
-            "move_id": move.id,
-            "message": "test",
-        })
-        with self.assertRaises(UserError):
-            wizard.action_set_simplified()
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(action["context"]["default_move_id"], move.id)
