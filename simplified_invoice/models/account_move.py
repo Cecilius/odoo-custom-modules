@@ -42,6 +42,8 @@ class AccountMove(models.Model):
         #always check first if is over limit and if VAT is assigned.
         currency = self.currency_id or self.company_id.currency_id
         over_limit = currency.compare_amounts(abs(self.amount_total_signed), self.company_id.l10n_es_simplified_invoice_limit) > 0
+        if over_limit and self.country_code == "ES" and self.l10n_es_is_simplified:
+            raise UserError(_("This invoice exceeds the Spanish simplified invoice limit, but it is marked as simplified."))
         if over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
             raise UserError(_("This invoice exceeds the Spanish simplified invoice limit, so the customer VAT/NIF is required before posting."))
 
