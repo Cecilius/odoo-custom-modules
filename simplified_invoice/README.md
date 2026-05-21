@@ -20,6 +20,7 @@ This module reuses the Spanish localization simplified invoice logic and adds re
 - Over-limit invoice marked as simplified: blocked with an error.
 - Over-limit Spanish invoice without VAT/NIF: blocked with an error.
 - Simplified invoice for a non-Spanish customer: blocked with an error.
+- Simplified invoice for a company-type (B2B) customer: blocked with an error.
 - Full invoice for a Spanish customer (simplified flag is False) without VAT/NIF: blocked with an error.
 - Journal mismatch between simplified flag and journal: opens the confirmation wizard, allowing the user to switch to simplified/full before posting.
 
@@ -30,6 +31,7 @@ The automated tests cover:
 - Over‑limit simplified invoices raising an error.
 - Over‑limit Spanish invoices without VAT/NIF raising an error.
 - Blocking simplified invoices for non‑Spanish customers.
+- Blocking simplified invoices for company-type (B2B) customers.
 - Blocking full invoices for Spanish customers without VAT/NIF.
 - Ensuring the Spanish VAT rule does not block non‑Spanish customers.
 - Opening the confirmation wizard when the journal and simplified flag disagree.

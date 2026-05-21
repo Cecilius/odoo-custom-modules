@@ -92,6 +92,29 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         with self.assertRaises(UserError):
             move.action_post()
 
+    def test_simplified_invoice_for_company_customer_raises_usererror(self):
+        company_partner = self.env["res.partner"].create({
+            "name": "Spanish Company Customer",
+            "country_id": self.env.ref("base.es").id,
+            "company_type": "company",
+            "vat": "ESB12345678",
+        })
+        move = self.env["account.move"].create({
+            "move_type": "out_invoice",
+            "partner_id": company_partner.id,
+            "currency_id": self.company.currency_id.id,
+            "journal_id": self.journal_simplified.id,
+            "invoice_line_ids": [(0, 0, {
+                "name": "Line",
+                "quantity": 1.0,
+                "price_unit": 10.0,
+                "product_id": self.product.id,
+            })],
+        })
+        move.l10n_es_is_simplified = True
+        with self.assertRaises(UserError):
+            move.action_post()
+            
     def test_over_limit_simplified_invoice_raises_usererror(self):
         move = self._make_invoice(
             self.journal_simplified,
