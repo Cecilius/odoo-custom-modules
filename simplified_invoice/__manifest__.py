@@ -12,6 +12,7 @@
         'views/account_move_views.xml',
         'views/invoice_wizard_views.xml',
         'security/ir.model.access.csv',
+        'views/web_external_layout_standard.xml',
     ],
     'demo': [],
     'test': ['tests/test_account_move.py'],
