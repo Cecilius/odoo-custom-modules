@@ -1,5 +1,6 @@
 from odoo import _, api, models
 
+from odoo.exceptions import UserError
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -23,20 +24,27 @@ class AccountMove(models.Model):
         self.ensure_one()
         if self.move_type != "out_invoice":
             return False, ""
-        currency = self.currency_id or self.company_id.currency_id
-        over_limit = currency.compare_amounts(abs(self.amount_total_signed), self.company_id.l10n_es_simplified_invoice_limit) > 0
+#        currency = self.currency_id or self.company_id.currency_id
+#        over_limit = currency.compare_amounts(abs(self.amount_total_signed), self.company_id.l10n_es_simplified_invoice_limit) > 0
+#        if over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
+#            return True, _("This invoice exceeds the Spanish simplified invoice limit, so the customer VAT/NIF is required before posting.")
         if self.l10n_es_is_simplified and self.company_id.simplified_sales_journal_id and self.journal_id != self.company_id.simplified_sales_journal_id:
             return True, self._journal_mismatch_message(True)
         if not self.l10n_es_is_simplified and self.company_id.full_sales_journal_id and self.journal_id != self.company_id.full_sales_journal_id:
             return True, self._journal_mismatch_message(False)
-        if over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
-            return True, _("This invoice exceeds the Spanish simplified invoice limit, so the customer VAT/NIF is required before posting.")
         return False, ""
 
     def action_post(self):
         if self.env.context.get("allow_invoice_exception"):
             return super().action_post()
         self.ensure_one()
+
+        #always check first if is over limit and if VAT is assigned.
+        currency = self.currency_id or self.company_id.currency_id
+        over_limit = currency.compare_amounts(abs(self.amount_total_signed), self.company_id.l10n_es_simplified_invoice_limit) > 0
+        if over_limit and self.country_code == "ES" and not self.commercial_partner_id.vat:
+            raise UserError(_("This invoice exceeds the Spanish simplified invoice limit, so the customer VAT/NIF is required before posting."))
+
         needs_wizard, message = self._needs_confirmation_wizard()
         if needs_wizard:
             return {
