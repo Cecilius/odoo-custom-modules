@@ -11,10 +11,10 @@
             <xpath expr="//app[@name='account']/block[last()]" position="after">
                 <block title="Simplified Invoice Workflow" name="simplified_invoice_workflow" invisible="country_code != 'ES'">
                     <setting string="Simplified Sales Journal">
-                        <field name="simplified_sales_journal_id"/>
+                        <field name="simplified_sales_journal_id" domain="[('type', '=', 'sale')]"/>
                     </setting>
                     <setting string="Full Sales Journal">
-                        <field name="full_sales_journal_id"/>
+                        <field name="full_sales_journal_id" domain="[('type', '=', 'sale')]"/>
                     </setting>
                     <setting string="Localization limit source">
                         <div class="text-muted">Uses company.l10n_es_simplified_invoice_limit from the Spanish localization instead of a hard-coded limit.</div>
