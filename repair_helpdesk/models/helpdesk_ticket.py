@@ -278,8 +278,16 @@ class HelpdeskTicket(models.Model):
         """Open linked shipments for the current ticket."""
         self.ensure_one()
         pickings = self.picking_ids
+        tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
+        form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
+        views = []
+        if tree_view:
+            views.append((tree_view.id, 'tree'))
+        if form_view:
+            views.append((form_view.id, 'form'))
+
         if len(pickings) == 1:
-            return {
+            action = {
                 'type': 'ir.actions.act_window',
                 'name': _('Shipment'),
                 'res_model': 'stock.picking',
@@ -287,7 +295,11 @@ class HelpdeskTicket(models.Model):
                 'res_id': pickings.id,
                 'target': 'current',
             }
-        return {
+            if views:
+                action['views'] = [(views[-1][0], 'form')]
+            return action
+
+        action = {
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
             'res_model': 'stock.picking',
@@ -295,6 +307,9 @@ class HelpdeskTicket(models.Model):
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
         }
+        if views:
+            action['views'] = views
+        return action
 
     def _prepare_quotation_note(self):
         """Build the default internal / customer-facing note for the quotation."""

@@ -22,3 +22,14 @@ class StockPicking(models.Model):
                 elif picking.picking_type_code == 'outgoing':
                     ticket._set_stage('repair_helpdesk.stage_repair_closed')
         return res
+
+    def _action_done(self):
+        res = super()._action_done()
+        done_pickings = self.filtered(lambda p: p.state == 'done' and p.helpdesk_ticket_id)
+        for picking in done_pickings:
+            ticket = picking.helpdesk_ticket_id
+            if picking.picking_type_code == 'incoming':
+                ticket._set_stage('repair_helpdesk.stage_repair_initial_inspection')
+            elif picking.picking_type_code == 'outgoing':
+                ticket._set_stage('repair_helpdesk.stage_repair_closed')
+        return res
