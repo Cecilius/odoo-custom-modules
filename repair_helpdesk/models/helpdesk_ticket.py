@@ -211,20 +211,17 @@ class HelpdeskTicket(models.Model):
         """Return the default diagnostic service product used on the initial quotation."""
         return self.env.ref('repair_helpdesk.product_diagnostic_fee_others', raise_if_not_found=False)
 
-    def _get_incoming_picking_for_outgoing(self):
-        """Return the best incoming picking to use for outgoing shipment prefill."""
-        incoming = self.incoming_picking_ids.filtered(lambda p: p.state == 'done')
-        if not incoming:
-            incoming = self.incoming_picking_ids
-        return incoming and incoming[0] or False
+    def _get_incoming_pickings_for_outgoing(self):
+        """Return the incoming pickings used to prefill outgoing shipment products."""
+        return self.incoming_picking_ids.filtered(lambda p: p.state == 'done')
 
-    def _prepare_outgoing_moves(self, incoming_picking, picking_type):
-        """Build outgoing move values based on the incoming picking's products."""
+    def _prepare_outgoing_moves(self, incoming_pickings, picking_type):
+        """Build outgoing move values based on incoming shipment products."""
         moves = []
-        if not incoming_picking:
+        if not incoming_pickings:
             return moves
 
-        for move in incoming_picking.move_lines.filtered(lambda m: m.state != 'cancel'):
+        for move in incoming_pickings.mapped('move_ids').filtered(lambda m: m.state != 'cancel'):
             moves.append((0, 0, {
                 'name': move.name,
                 'product_id': move.product_id.id,
@@ -285,11 +282,11 @@ class HelpdeskTicket(models.Model):
             raise UserError(_('Please set a customer on the ticket before creating an outgoing shipment.'))
 
         picking_type = self._get_default_picking_type('outgoing')
-        incoming_picking = self._get_incoming_picking_for_outgoing()
-        if not incoming_picking:
+        incoming_pickings = self._get_incoming_pickings_for_outgoing()
+        if not incoming_pickings:
             raise UserError(_('Please create and validate an incoming shipment before creating an outgoing shipment.'))
 
-        move_lines = self._prepare_outgoing_moves(incoming_picking, picking_type)
+        move_lines = self._prepare_outgoing_moves(incoming_pickings, picking_type)
         picking_vals = {
             'picking_type_id': picking_type.id,
             'origin': self.ticket_ref or self.name,
