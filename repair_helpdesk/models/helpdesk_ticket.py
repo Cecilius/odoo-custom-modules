@@ -41,6 +41,10 @@ class HelpdeskTicket(models.Model):
         domain=[('picking_type_code', '=', 'outgoing')],
     )
 
+    picking_count = fields.Integer(
+        string='Shipment Count',
+        compute='_compute_related_counts',
+    )
     incoming_picking_count = fields.Integer(
         string='Incoming Shipment Count',
         compute='_compute_related_counts',
@@ -87,17 +91,36 @@ class HelpdeskTicket(models.Model):
         compute='_compute_repair_workflow_flags',
         store=False,
     )
+    x_can_create_incoming_picking = fields.Boolean(
+        string='Can Create Incoming Shipment',
+        compute='_compute_repair_workflow_flags',
+        store=False,
+    )
+    x_can_create_outgoing_picking = fields.Boolean(
+        string='Can Create Outgoing Shipment',
+        compute='_compute_repair_workflow_flags',
+        store=False,
+    )
 
-    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids')
+    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
         for ticket in self:
             ticket.sale_order_count = len(ticket.sale_order_ids)
             ticket.repair_order_count = len(ticket.repair_order_ids)
+            ticket.picking_count = len(ticket.picking_ids)
             ticket.incoming_picking_count = len(ticket.incoming_picking_ids)
             ticket.outgoing_picking_count = len(ticket.outgoing_picking_ids)
 
-    @api.depends('team_id', 'team_id.x_repair_workflow_team', 'stage_id', 'sale_order_ids', 'repair_order_ids')
+    @api.depends(
+        'team_id',
+        'team_id.x_repair_workflow_team',
+        'stage_id',
+        'sale_order_ids',
+        'repair_order_ids',
+        'incoming_picking_ids',
+        'outgoing_picking_ids',
+    )
     def _compute_repair_workflow_flags(self):
         """Control which workflow buttons are visible on the ticket.
 
@@ -121,8 +144,13 @@ class HelpdeskTicket(models.Model):
             'repair_helpdesk.stage_repair_payment',
             'repair_helpdesk.stage_repair_ready_return',
         }
+        incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
+        outgoing_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_ready_return'}
+
         quotation_stage_ids = self._stage_ids_from_xmlids(quotation_stage_xmlids)
         repair_stage_ids = self._stage_ids_from_xmlids(repair_stage_xmlids)
+        incoming_stage_ids = self._stage_ids_from_xmlids(incoming_shipment_stage_xmlids)
+        outgoing_stage_ids = self._stage_ids_from_xmlids(outgoing_shipment_stage_xmlids)
 
         for ticket in self:
             is_repair = bool(ticket.team_id and ticket.team_id.x_repair_workflow_team)
@@ -138,6 +166,16 @@ class HelpdeskTicket(models.Model):
                 is_repair
                 and not ticket.repair_order_ids
                 and current_stage_id in repair_stage_ids
+            )
+            ticket.x_can_create_incoming_picking = bool(
+                is_repair
+                and current_stage_id in incoming_stage_ids
+                and not ticket.incoming_picking_ids
+            )
+            ticket.x_can_create_outgoing_picking = bool(
+                is_repair
+                and current_stage_id in outgoing_stage_ids
+                and not ticket.outgoing_picking_ids
             )
 
     def _stage_ids_from_xmlids(self, xmlids):
@@ -172,6 +210,91 @@ class HelpdeskTicket(models.Model):
     def _get_default_diagnostic_product(self):
         """Return the default diagnostic service product used on the initial quotation."""
         return self.env.ref('repair_helpdesk.product_diagnostic_fee_others', raise_if_not_found=False)
+
+    def _get_default_picking_type(self, code):
+        """Return the default incoming or outgoing picking type for the current company."""
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', code),
+            ('active', '=', True),
+            ('company_id', '=', self.env.company.id),
+        ], limit=1)
+        if not picking_type:
+            picking_type = self.env['stock.picking.type'].search([
+                ('code', '=', code),
+                ('active', '=', True),
+            ], limit=1)
+        if not picking_type:
+            raise UserError(_(
+                'Please configure an active %s picking type before creating shipments.'
+            ) % code.capitalize())
+        return picking_type
+
+    def action_create_incoming_picking(self):
+        """Create an incoming shipment linked to the repair ticket."""
+        self.ensure_one()
+        if not self.x_can_create_incoming_picking:
+            raise UserError(_('Incoming shipment creation is not available in the current stage.'))
+        if not self.partner_id:
+            raise UserError(_('Please set a customer on the ticket before creating an incoming shipment.'))
+
+        picking_type = self._get_default_picking_type('incoming')
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': picking_type.id,
+            'origin': self.ticket_ref or self.name,
+            'partner_id': self.partner_id.id,
+            'helpdesk_ticket_id': self.id,
+            'location_id': picking_type.default_location_src_id.id,
+            'location_dest_id': picking_type.default_location_dest_id.id,
+            'note': _('Incoming shipment for repair ticket %s') % self.display_name,
+        })
+
+        self.message_post(body=_('Incoming shipment %s created.') % picking.name)
+        return self.action_view_shipments()
+
+    def action_create_outgoing_picking(self):
+        """Create an outgoing shipment linked to the repair ticket."""
+        self.ensure_one()
+        if not self.x_can_create_outgoing_picking:
+            raise UserError(_('Outgoing shipment creation is not available in the current stage.'))
+        if not self.partner_id:
+            raise UserError(_('Please set a customer on the ticket before creating an outgoing shipment.'))
+
+        picking_type = self._get_default_picking_type('outgoing')
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': picking_type.id,
+            'origin': self.ticket_ref or self.name,
+            'partner_id': self.partner_id.id,
+            'helpdesk_ticket_id': self.id,
+            'location_id': picking_type.default_location_src_id.id,
+            'location_dest_id': picking_type.default_location_dest_id.id,
+            'note': _('Outgoing shipment for repair ticket %s') % self.display_name,
+        })
+
+        self.message_post(body=_('Outgoing shipment %s created.') % picking.name)
+        self._set_stage('repair_helpdesk.stage_repair_ready_return')
+        return self.action_view_shipments()
+
+    def action_view_shipments(self):
+        """Open linked shipments for the current ticket."""
+        self.ensure_one()
+        pickings = self.picking_ids
+        if len(pickings) == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Shipment'),
+                'res_model': 'stock.picking',
+                'view_mode': 'form',
+                'res_id': pickings.id,
+                'target': 'current',
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Shipments'),
+            'res_model': 'stock.picking',
+            'view_mode': 'tree,form',
+            'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'context': {'default_helpdesk_ticket_id': self.id},
+        }
 
     def _prepare_quotation_note(self):
         """Build the default internal / customer-facing note for the quotation."""

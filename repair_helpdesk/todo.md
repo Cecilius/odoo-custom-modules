@@ -1,11 +1,11 @@
 # Repair Helpdesk Module TODO
 
 ## Sprint 1 — Core workflow stabilization
-- [ ] Update `__manifest__.py` to add `stock` and optionally `delivery` to `depends`
-- [ ] Add inbound/outbound shipment tracking fields to `helpdesk.ticket`
-- [ ] Add carrier, tracking number, and shipment status information to tickets
-- [ ] Confirm sales order stage automation for quotation sending and confirmation
-- [ ] Prepare repair order workflow sync hooks from `repair.order` to helpdesk ticket
+- [x] Update `__manifest__.py` to add `stock` and optionally `delivery` to `depends`
+- [x] Add inbound/outbound shipment tracking fields to `helpdesk.ticket`
+- [x] Add carrier, tracking number, and shipment status information to tickets
+- [x] Confirm sales order stage automation for quotation sending and confirmation
+- [x] Prepare repair order workflow sync hooks from `repair.order` to helpdesk ticket
 
 ## Sprint 2 — Logistics integration
 - [ ] Create incoming shipment from a helpdesk ticket

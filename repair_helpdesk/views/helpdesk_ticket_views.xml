@@ -22,6 +22,13 @@
                         invisible="not x_is_repair_ticket or repair_order_count == 0">
                     <field name="repair_order_count" string="Repair Orders" widget="statinfo"/>
                 </button>
+                <button name="action_view_shipments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="not x_is_repair_ticket or picking_count == 0">
+                    <field name="picking_count" string="Shipments" widget="statinfo"/>
+                </button>
             </xpath>
 
             <!-- Header buttons used only to create the next business document. -->
@@ -35,6 +42,14 @@
                         type="object"
                         string="Create Repair Order"
                         invisible="not x_can_create_repair_order"/>
+                <button name="action_create_incoming_picking"
+                        type="object"
+                        string="Create Incoming Shipment"
+                        invisible="not x_can_create_incoming_picking"/>
+                <button name="action_create_outgoing_picking"
+                        type="object"
+                        string="Create Outgoing Shipment"
+                        invisible="not x_can_create_outgoing_picking"/>
             </xpath>
 
             <!-- Extra ticket fields used by the repair workflow. -->
@@ -44,6 +59,7 @@
                         <!-- Hidden counters kept on the form so client logic can read them if needed. -->
                         <field name="sale_order_count" invisible="1"/>
                         <field name="repair_order_count" invisible="1"/>
+                        <field name="picking_count" invisible="1"/>
                         <field name="incoming_picking_count" invisible="1"/>
                         <field name="outgoing_picking_count" invisible="1"/>
                     </group>
