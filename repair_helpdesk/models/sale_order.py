@@ -23,15 +23,11 @@ class SaleOrder(models.Model):
             if stage:
                 ticket.stage_id = stage.id
 
-    def action_quotation_send(self):
-        """When the quotation sending flow is triggered, move the ticket to approval.
-
-        Note: in standard Odoo this method launches the send wizard. If you need the
-        stage to change only after the email is really sent, a deeper mail wizard hook
-        would be needed later.
-        """
-        res = super().action_quotation_send()
-        self._move_helpdesk_ticket_stage('repair_helpdesk.stage_repair_quote_approval')
+    def message_post(self, **kwargs):
+        res = super().message_post(**kwargs)
+        if self.env.context.get('mark_so_as_sent'):
+            sent_orders = self.filtered(lambda o: o.state == 'sent')
+            sent_orders._move_helpdesk_ticket_stage('repair_helpdesk.stage_repair_quote_approval')
         return res
 
     def action_confirm(self):
