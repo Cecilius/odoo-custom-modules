@@ -44,11 +44,15 @@
                         <!-- Hidden counters kept on the form so client logic can read them if needed. -->
                         <field name="sale_order_count" invisible="1"/>
                         <field name="repair_order_count" invisible="1"/>
+                        <field name="incoming_picking_count" invisible="1"/>
+                        <field name="outgoing_picking_count" invisible="1"/>
                     </group>
                     <group>
                         <field name="x_device_description"/>
                         <field name="x_serial_number"/>
                         <field name="x_reported_issue"/>
+                        <field name="x_carrier_name"/>
+                        <field name="x_tracking_reference"/>
                     </group>
                 </group>
             </xpath>

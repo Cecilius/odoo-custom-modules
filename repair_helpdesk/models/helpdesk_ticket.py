@@ -22,6 +22,37 @@ class HelpdeskTicket(models.Model):
         string='Repair Orders',
     )
 
+    # Shipment / logistics links.
+    picking_ids = fields.One2many(
+        'stock.picking',
+        'helpdesk_ticket_id',
+        string='Shipments',
+    )
+    incoming_picking_ids = fields.One2many(
+        'stock.picking',
+        'helpdesk_ticket_id',
+        string='Incoming Shipments',
+        domain=[('picking_type_code', '=', 'incoming')],
+    )
+    outgoing_picking_ids = fields.One2many(
+        'stock.picking',
+        'helpdesk_ticket_id',
+        string='Outgoing Shipments',
+        domain=[('picking_type_code', '=', 'outgoing')],
+    )
+
+    incoming_picking_count = fields.Integer(
+        string='Incoming Shipment Count',
+        compute='_compute_related_counts',
+    )
+    outgoing_picking_count = fields.Integer(
+        string='Outgoing Shipment Count',
+        compute='_compute_related_counts',
+    )
+
+    x_carrier_name = fields.Char(string='Carrier')
+    x_tracking_reference = fields.Char(string='Tracking Reference')
+
     # Counts displayed in smart buttons.
     sale_order_count = fields.Integer(
         string='Quotation Count',
@@ -57,12 +88,14 @@ class HelpdeskTicket(models.Model):
         store=False,
     )
 
-    @api.depends('sale_order_ids', 'repair_order_ids')
+    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
         for ticket in self:
             ticket.sale_order_count = len(ticket.sale_order_ids)
             ticket.repair_order_count = len(ticket.repair_order_ids)
+            ticket.incoming_picking_count = len(ticket.incoming_picking_ids)
+            ticket.outgoing_picking_count = len(ticket.outgoing_picking_ids)
 
     @api.depends('team_id', 'team_id.x_repair_workflow_team', 'stage_id', 'sale_order_ids', 'repair_order_ids')
     def _compute_repair_workflow_flags(self):
