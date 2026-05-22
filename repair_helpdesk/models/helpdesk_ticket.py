@@ -211,6 +211,31 @@ class HelpdeskTicket(models.Model):
         """Return the default diagnostic service product used on the initial quotation."""
         return self.env.ref('repair_helpdesk.product_diagnostic_fee_others', raise_if_not_found=False)
 
+    def _get_incoming_picking_for_outgoing(self):
+        """Return the best incoming picking to use for outgoing shipment prefill."""
+        incoming = self.incoming_picking_ids.filtered(lambda p: p.state == 'done')
+        if not incoming:
+            incoming = self.incoming_picking_ids
+        return incoming and incoming[0] or False
+
+    def _prepare_outgoing_moves(self, incoming_picking, picking_type):
+        """Build outgoing move values based on the incoming picking's products."""
+        moves = []
+        if not incoming_picking:
+            return moves
+
+        for move in incoming_picking.move_lines.filtered(lambda m: m.state != 'cancel'):
+            moves.append((0, 0, {
+                'name': move.name,
+                'product_id': move.product_id.id,
+                'product_uom_qty': move.product_uom_qty,
+                'product_uom': move.product_uom.id,
+                'location_id': picking_type.default_location_src_id.id,
+                'location_dest_id': picking_type.default_location_dest_id.id,
+                'company_id': self.env.company.id,
+            }))
+        return moves
+
     def _get_default_picking_type(self, code):
         """Return the default incoming or outgoing picking type for the current company."""
         picking_type = self.env['stock.picking.type'].search([
@@ -260,7 +285,12 @@ class HelpdeskTicket(models.Model):
             raise UserError(_('Please set a customer on the ticket before creating an outgoing shipment.'))
 
         picking_type = self._get_default_picking_type('outgoing')
-        picking = self.env['stock.picking'].create({
+        incoming_picking = self._get_incoming_picking_for_outgoing()
+        if not incoming_picking:
+            raise UserError(_('Please create and validate an incoming shipment before creating an outgoing shipment.'))
+
+        move_lines = self._prepare_outgoing_moves(incoming_picking, picking_type)
+        picking_vals = {
             'picking_type_id': picking_type.id,
             'origin': self.ticket_ref or self.name,
             'partner_id': self.partner_id.id,
@@ -268,7 +298,11 @@ class HelpdeskTicket(models.Model):
             'location_id': picking_type.default_location_src_id.id,
             'location_dest_id': picking_type.default_location_dest_id.id,
             'note': _('Outgoing shipment for repair ticket %s') % self.display_name,
-        })
+        }
+        if move_lines:
+            picking_vals['move_lines'] = move_lines
+
+        picking = self.env['stock.picking'].create(picking_vals)
 
         self.message_post(body=_('Outgoing shipment %s created.') % picking.name)
         self._set_stage('repair_helpdesk.stage_repair_ready_return')
@@ -277,7 +311,6 @@ class HelpdeskTicket(models.Model):
     def action_view_shipments(self):
         """Open linked shipments for the current ticket."""
         self.ensure_one()
-        pickings = self.picking_ids
         tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
         form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
         views = []
@@ -285,19 +318,6 @@ class HelpdeskTicket(models.Model):
             views.append((tree_view.id, 'tree'))
         if form_view:
             views.append((form_view.id, 'form'))
-
-        if len(pickings) == 1:
-            action = {
-                'type': 'ir.actions.act_window',
-                'name': _('Shipment'),
-                'res_model': 'stock.picking',
-                'view_mode': 'form',
-                'res_id': pickings.id,
-                'target': 'current',
-            }
-            if views:
-                action['views'] = [(views[-1][0], 'form')]
-            return action
 
         action = {
             'type': 'ir.actions.act_window',
