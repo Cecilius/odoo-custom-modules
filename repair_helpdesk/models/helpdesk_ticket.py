@@ -325,7 +325,12 @@ class HelpdeskTicket(models.Model):
             'context': {'default_helpdesk_ticket_id': self.id},
         }
         if views:
+            # Ensure tree view is first so Odoo opens the list (not a new form) even when empty
             action['views'] = views
+            # Set the view_id to the tree view to force list rendering
+            action['view_id'] = views[0][0]
+        # Ensure the action opens in the current window
+        action['target'] = 'current'
         return action
 
     def _prepare_quotation_note(self):
