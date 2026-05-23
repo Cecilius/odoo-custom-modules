@@ -308,7 +308,9 @@ class HelpdeskTicket(models.Model):
     def action_view_shipments(self):
         """Open linked shipments for the current ticket."""
         self.ensure_one()
-        tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
+        tree_view = self.env.ref('stock.vpicktree', raise_if_not_found=False)
+        if not tree_view:
+            tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
         form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
         views = []
         if tree_view:
