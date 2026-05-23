@@ -314,28 +314,27 @@ class HelpdeskTicket(models.Model):
         form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
 
         views = []
-        view_mode = []
         if tree_view:
             views.append((tree_view.id, 'tree'))
-            view_mode.append('tree')
         if form_view:
             views.append((form_view.id, 'form'))
-            view_mode.append('form')
 
         action = {
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
             'res_model': 'stock.picking',
-            'view_mode': ','.join(view_mode) if view_mode else 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
         }
 
+        # Only set views and view_mode if we actually found views
         if views:
-            # Ensure the first available view is used explicitly.
             action['views'] = views
             action['view_id'] = views[0][0]
+            # Build view_mode from actual views found
+            view_mode = [v[1] for v in views]
+            action['view_mode'] = ','.join(view_mode)
 
         return action
 
