@@ -312,27 +312,31 @@ class HelpdeskTicket(models.Model):
         if not tree_view:
             tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
         form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
+
         views = []
+        view_mode = []
         if tree_view:
             views.append((tree_view.id, 'tree'))
+            view_mode.append('tree')
         if form_view:
             views.append((form_view.id, 'form'))
+            view_mode.append('form')
 
         action = {
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
             'res_model': 'stock.picking',
-            'view_mode': 'tree,form',
+            'view_mode': ','.join(view_mode) if view_mode else 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
+            'target': 'current',
         }
+
         if views:
-            # Ensure tree view is first so Odoo opens the list (not a new form) even when empty
+            # Ensure the first available view is used explicitly.
             action['views'] = views
-            # Set the view_id to the tree view to force list rendering
             action['view_id'] = views[0][0]
-        # Ensure the action opens in the current window
-        action['target'] = 'current'
+
         return action
 
     def _prepare_quotation_note(self):
