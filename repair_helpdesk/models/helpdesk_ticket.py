@@ -308,35 +308,15 @@ class HelpdeskTicket(models.Model):
     def action_view_shipments(self):
         """Open linked shipments for the current ticket."""
         self.ensure_one()
-        tree_view = self.env.ref('stock.vpicktree', raise_if_not_found=False)
-        if not tree_view:
-            tree_view = self.env.ref('stock.view_picking_tree', raise_if_not_found=False)
-        form_view = self.env.ref('stock.view_picking_form', raise_if_not_found=False)
-
-        views = []
-        if tree_view:
-            views.append((tree_view.id, 'tree'))
-        if form_view:
-            views.append((form_view.id, 'form'))
-
-        action = {
+        return {
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
             'res_model': 'stock.picking',
+            'view_mode': 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
         }
-
-        # Only set views and view_mode if we actually found views
-        if views:
-            action['views'] = views
-            action['view_id'] = views[0][0]
-            # Build view_mode from actual views found
-            view_mode = [v[1] for v in views]
-            action['view_mode'] = ','.join(view_mode)
-
-        return action
 
     def _prepare_quotation_note(self):
         """Build the default internal / customer-facing note for the quotation."""
