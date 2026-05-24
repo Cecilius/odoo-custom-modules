@@ -223,7 +223,7 @@ class HelpdeskTicket(models.Model):
 
         for move in incoming_pickings.mapped('move_ids').filtered(lambda m: m.state != 'cancel'):
             moves.append((0, 0, {
-                'name': move.name,
+                'description_picking': move.description_picking or move.product_id.name,
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'product_uom': move.product_uom.id,
