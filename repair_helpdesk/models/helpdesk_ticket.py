@@ -306,8 +306,23 @@ class HelpdeskTicket(models.Model):
         return self.action_view_shipments()
 
     def action_view_shipments(self):
-        """Open linked shipments for the current ticket."""
+        """Open linked shipments.
+
+        - If only one document exists, open it directly in form view.
+        - If several exist, open a filtered list view.
+        """
         self.ensure_one()
+
+        if self.picking_count == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Shipment'),
+                'res_model': 'stock.picking',
+                'view_mode': 'form',
+                'res_id': self.picking_ids[:1].id,
+                'target': 'current',
+            }
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
