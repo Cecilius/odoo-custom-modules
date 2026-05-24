@@ -11,7 +11,6 @@
         'data/helpdesk_stage_data.xml',
         'data/helpdesk_team_data.xml',
         'data/product_data.xml',
-        'data/quality_inspection_points.xml',
         'data/repair_locations.xml',
         'data/incoming_inspection_data.xml',
         'views/helpdesk_team_views.xml',

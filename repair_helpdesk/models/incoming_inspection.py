@@ -1,4 +1,5 @@
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class RepairHelpdeskIncomingInspection(models.Model):
@@ -35,19 +36,75 @@ class RepairHelpdeskIncomingInspection(models.Model):
 
     def _create_default_lines(self):
         default_items = [
-            'Device condition / cosmetics',
+            'Drop damage',
             'Water damage or corrosion',
-            'Contamination / dirt / debris',
-            'Accessories and documentation present',
-            'Visible damage, scratches, dents, cracks',
+            'Excessive contamination',
         ]
-        lines = [(0, 0, {'name': name, 'result': 'pass'}) for name in default_items]
+        lines = [(0, 0, {'name': item, 'sequence': i + 1}) for i, item in enumerate(default_items)]
         self.write({'line_ids': lines})
+
+    def action_done(self):
+        self.ensure_one()
+        if self.status == 'done':
+            return
+        if not self.line_ids:
+            raise UserError(_('Please fill in the checklist items before completing the inspection.'))
+        unset_lines = self.line_ids.filtered(lambda l: not l.result)
+        if unset_lines:
+            raise UserError(_('All checklist items must have a result before completing the inspection.'))
+        self.status = 'done'
+        ticket = self.helpdesk_ticket_id
+        failed_lines = self.line_ids.filtered(lambda l: l.result == 'fail')
+        if failed_lines:
+            self._handle_inspection_failed(ticket, failed_lines)
+        else:
+            self._handle_inspection_passed(ticket)
+
+    def _handle_inspection_passed(self, ticket):
+        ticket._set_stage('repair_helpdesk.stage_repair_diagnostics')
+        ticket.message_post(
+            body=_('Incoming inspection %s completed. All checks passed. Ticket moved to Diagnostics.') % self.name
+        )
+
+    def _handle_inspection_failed(self, ticket, failed_lines):
+        failed_names = ', '.join(failed_lines.mapped('name'))
+        failed_details = '\n'.join(
+            '%s: %s' % (line.name, line.comment)
+            for line in failed_lines
+        )
+        self.env['quality.alert'].create({
+            'name': _('Incoming inspection failure: %s') % self.name,
+            'team_id': ticket.team_id.id,
+            'company_id': self.env.company.id,
+            'description': _(
+                'The following checks failed during incoming inspection %(inspection)s for ticket %(ticket)s:\n'
+                '%(items)s\n\n'
+                'Comments:\n'
+                '%(details)s\n\n'
+                'Customer should be contacted to decide whether to proceed with repair or return the device. '
+                'Fees may apply in case of rejection.'
+            ) % {
+                'inspection': self.name,
+                'ticket': ticket.display_name,
+                'items': failed_names,
+                'details': failed_details,
+            },
+        })
+        ticket.message_post(
+            body=_(
+                'Incoming inspection %(inspection)s completed with failures: %(items)s. '
+                'Quality alert created. Customer should be contacted before proceeding.'
+            ) % {
+                'inspection': self.name,
+                'items': failed_names,
+            }
+        )
 
 
 class RepairHelpdeskIncomingInspectionLine(models.Model):
     _name = 'repair_helpdesk.incoming_inspection.line'
     _description = 'Repair Helpdesk Incoming Inspection Checklist Item'
+    _order = 'sequence, id'
 
     inspection_id = fields.Many2one(
         'repair_helpdesk.incoming_inspection',
@@ -55,11 +112,20 @@ class RepairHelpdeskIncomingInspectionLine(models.Model):
         required=True,
         ondelete='cascade',
     )
+    sequence = fields.Integer(string='Sequence', default=10)
     name = fields.Char(string='Checklist Item', required=True)
     result = fields.Selection(
         [('pass', 'Pass'), ('fail', 'Fail'), ('na', 'N/A')],
         string='Result',
-        default='pass',
-        required=True,
     )
     comment = fields.Text(string='Comment')
+    image = fields.Binary(string='Picture', attachment=True)
+
+    @api.constrains('result', 'comment', 'image')
+    def _check_fail_requirements(self):
+        for line in self:
+            if line.result == 'fail':
+                if not line.comment:
+                    raise UserError(_('A comment is required when "%s" is marked as failed.') % line.name)
+                if not line.image:
+                    raise UserError(_('A picture is required when "%s" is marked as failed.') % line.name)

@@ -4,22 +4,47 @@
         <field name="model">repair_helpdesk.incoming_inspection</field>
         <field name="arch" type="xml">
             <form string="Incoming Inspection">
+                <header>
+                    <button name="action_done" type="object" string="Complete Inspection"
+                            class="btn-primary" invisible="status == 'done'"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
                         <group>
-                            <field name="name" readonly="1"/>
                             <field name="ticket_ref" readonly="1"/>
                             <field name="partner_id" readonly="1"/>
                         </group>
                         <group>
                             <field name="serial_number" readonly="1"/>
                             <field name="device_description" readonly="1"/>
-                            <field name="inspection_note" widget="text"/>
-                            <field name="status"/>
                         </group>
                     </group>
-                    <group>
-                        <field name="line_ids"/>
+                    <group string="Notes">
+                        <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."/>
+                    </group>
+                    <group string="Inspection Checklist">
+                        <field name="line_ids" mode="tree,form">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="name"/>
+                                <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-info="result == 'na'"/>
+                                <field name="comment" optional="show"/>
+                            </tree>
+                            <form string="Checklist Item">
+                                <group>
+                                    <field name="name" readonly="1"/>
+                                    <field name="result"/>
+                                    <field name="comment" widget="text" placeholder="Required if failed — describe findings..."/>
+                                    <field name="image" widget="image" string="Picture" options="{'preview_image': 'image'}" nolabel="1"/>
+                                </group>
+                            </form>
+                        </field>
                     </group>
                 </sheet>
             </form>

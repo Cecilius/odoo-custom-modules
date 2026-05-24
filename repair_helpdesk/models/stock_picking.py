@@ -11,45 +11,17 @@ class StockPicking(models.Model):
         index=True,
     )
 
-    def _create_quality_check_for_incoming(self):
+    def _create_incoming_inspection(self):
         self.ensure_one()
         if self.picking_type_code != 'incoming' or not self.helpdesk_ticket_id:
             return
-
-        quality_point_model = self.env['quality.point']
-        quality_check_model = self.env['quality.check']
-        quality_points = quality_point_model.search([
-            ('picking_type_ids', 'in', self.picking_type_id.id),
-            ('active', '=', True),
-        ])
-        if not quality_points:
+        if self.helpdesk_ticket_id.inspection_ids:
             return
-
-        existing_point_ids = quality_check_model.search([('picking_id', '=', self.id)]).mapped('point_id.id')
-        checks_to_create = []
-        for point in quality_points.filtered(lambda p: p.id not in existing_point_ids):
-            vals = {
-                'point_id': point.id,
-                'picking_id': self.id,
-            }
-            # Support different Odoo field names across versions/environments:
-            # - `move_line_ids` (stock.move.line)
-            # - `move_ids` (stock.move)
-            product = None
-            if hasattr(self, 'move_line_ids') and self.move_line_ids:
-                product = self.move_line_ids[0].product_id
-            elif hasattr(self, 'move_ids') and self.move_ids:
-                product = self.move_ids[0].product_id
-            if product and product.type == 'consu':
-                vals['product_id'] = product.id
-            checks_to_create.append(vals)
-
-        if not checks_to_create:
-            return
-
-        quality_check_model.create(checks_to_create)
+        inspection = self.env['repair_helpdesk.incoming_inspection'].create({
+            'helpdesk_ticket_id': self.helpdesk_ticket_id.id,
+        })
         self.helpdesk_ticket_id.message_post(
-            body=_('Quality inspection was added for incoming shipment %s.') % self.name
+            body=_('Incoming inspection %s created for shipment %s.') % (inspection.name, self.name)
         )
 
     def write(self, vals):
@@ -58,7 +30,7 @@ class StockPicking(models.Model):
             done_pickings = self.filtered(lambda p: p.state == 'done' and p.helpdesk_ticket_id)
             for picking in done_pickings:
                 if picking.picking_type_code == 'incoming':
-                    picking._create_quality_check_for_incoming()
+                    picking._create_incoming_inspection()
                     picking.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_initial_inspection')
                 elif picking.picking_type_code == 'outgoing':
                     picking.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_closed')
@@ -69,7 +41,7 @@ class StockPicking(models.Model):
         done_pickings = self.filtered(lambda p: p.state == 'done' and p.helpdesk_ticket_id)
         for picking in done_pickings:
             if picking.picking_type_code == 'incoming':
-                picking._create_quality_check_for_incoming()
+                picking._create_incoming_inspection()
                 picking.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_initial_inspection')
             elif picking.picking_type_code == 'outgoing':
                 picking.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_closed')
