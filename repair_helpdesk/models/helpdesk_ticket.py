@@ -271,7 +271,14 @@ class HelpdeskTicket(models.Model):
         })
 
         self.message_post(body=_('Incoming shipment %s created.') % picking.name)
-        return self.action_view_shipments()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Incoming Shipment'),
+            'res_model': 'stock.picking',
+            'view_mode': 'form',
+            'res_id': picking.id,
+            'target': 'current',
+        }
 
     def action_create_outgoing_picking(self):
         """Create an outgoing shipment linked to the repair ticket."""
@@ -303,7 +310,14 @@ class HelpdeskTicket(models.Model):
 
         self.message_post(body=_('Outgoing shipment %s created.') % picking.name)
         self._set_stage('repair_helpdesk.stage_repair_ready_return')
-        return self.action_view_shipments()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Outgoing Shipment'),
+            'res_model': 'stock.picking',
+            'view_mode': 'form',
+            'res_id': picking.id,
+            'target': 'current',
+        }
 
     def action_view_shipments(self):
         """Open linked shipments.
@@ -404,7 +418,14 @@ class HelpdeskTicket(models.Model):
 
         # Do NOT move to quotation approval here.
         # The quotation is still only a draft at this point.
-        return self.action_view_sale_orders()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Quotation'),
+            'res_model': 'sale.order',
+            'view_mode': 'form',
+            'res_id': quotation.id,
+            'target': 'current',
+        }
 
     def action_create_repair_order(self):
         """Create a repair order linked back to the ticket.
@@ -440,7 +461,14 @@ class HelpdeskTicket(models.Model):
 
         # After the repair order is created, the workshop can start intake / initial inspection.
         self._set_stage('repair_helpdesk.stage_repair_initial_inspection')
-        return self.action_view_repair_orders()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Repair Order'),
+            'res_model': 'repair.order',
+            'view_mode': 'form',
+            'res_id': repair_order.id,
+            'target': 'current',
+        }
 
     def action_view_sale_orders(self):
         """Open linked quotations / sales orders.
