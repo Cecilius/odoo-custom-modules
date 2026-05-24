@@ -12,6 +12,7 @@
 - [ ] Confirm device receipt and move ticket to `Awaiting item`
 - [ ] Create return shipment from a ticket when repair is complete
 - [ ] Automate stage transitions based on picking events (inbound/outbound)
+- [ ] Visualize connection between helpdesk ticket and a shipment (shipment scree -> Additional Info, just below Sales Order)
 
 ## Sprint 3 — Repair lifecycle automation
 - [ ] Sync repair order state changes to helpdesk ticket stages
