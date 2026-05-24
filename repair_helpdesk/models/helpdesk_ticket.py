@@ -297,7 +297,7 @@ class HelpdeskTicket(models.Model):
             'note': _('Outgoing shipment for repair ticket %s') % self.display_name,
         }
         if move_lines:
-            picking_vals['move_lines'] = move_lines
+            picking_vals['move_ids'] = move_lines
 
         picking = self.env['stock.picking'].create(picking_vals)
 
