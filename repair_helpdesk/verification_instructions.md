@@ -36,14 +36,10 @@ Note: an optional automation script (`verify_repair_helpdesk.py`) still exists i
 1. On the ticket, create the incoming picking.
 2. Confirm the created picking opens directly in form view.
 3. Validate the picking.
-4. Verify that quality inspection checks were created for the incoming shipment.
-   - Drop damage
-   - Water damage
-   - Contamination
-   - Accessories
-   - Visible damages
+4. Verify that a single incoming inspection `quality.check` record was created for the shipment.
+   - The check should cover drop damage, water damage, contamination, accessories, and visible cosmetic issues.
 
-> Note: the current implementation creates one `quality.check` record per inspection point. If you want a single incoming inspection record instead, we can simplify the setup to use one quality point that contains the full checklist.
+> Note: the current implementation creates one combined `quality.check` record for incoming inspection. This simplifies the workflow and keeps all inspection findings in one place.
 
 ### 3.3 Confirm inspection outcomes
 1. Open the created quality checks from the Picking or Quality app.
@@ -69,7 +65,8 @@ Note: an optional automation script (`verify_repair_helpdesk.py`) still exists i
 3. Open Inventory > Routes and confirm these routes exist:
    - Repair Incoming Inspection Flow
    - Repair Return Dispatch Flow
-locations and routes are not there - it's not enabled in odoo. can we make it enabe automatically by installing the module?
+
+> Note: these locations and routes are created automatically when `repair_helpdesk` is installed or upgraded, because `repair_locations.xml` is included in the module data. If you do not see them after installation, verify that the module is installed and that Inventory/Stock is active in the system.
 
 
 ### 3.5 Validate stock route structure
