@@ -460,15 +460,30 @@ class HelpdeskTicket(models.Model):
                 'target': 'current',
             }
 
-        return {
+        tree_view = self.env.ref('sale.view_order_tree', raise_if_not_found=False)
+        form_view = self.env.ref('sale.view_order_form', raise_if_not_found=False)
+        views = []
+        if tree_view:
+            views.append((tree_view.id, 'tree'))
+        if form_view:
+            views.append((form_view.id, 'form'))
+
+        action = {
             'type': 'ir.actions.act_window',
             'name': _('Quotations / Sales Orders'),
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
         }
+        if views:
+            action['views'] = views
+            action['view_id'] = views[0][0]
+            action['view_mode'] = ','.join([view_type for _, view_type in views])
+        else:
+            action['view_mode'] = 'tree,form'
+
+        return action
 
     def action_view_repair_orders(self):
         """Open linked repair orders.
