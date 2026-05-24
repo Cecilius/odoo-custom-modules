@@ -32,10 +32,16 @@ class StockPicking(models.Model):
                 'point_id': point.id,
                 'picking_id': self.id,
             }
-            if self.move_lines:
-                product = self.move_lines[0].product_id
-                if product and product.type == 'consu':
-                    vals['product_id'] = product.id
+            # Support different Odoo field names across versions/environments:
+            # - `move_line_ids` (stock.move.line)
+            # - `move_ids` (stock.move)
+            product = None
+            if hasattr(self, 'move_line_ids') and self.move_line_ids:
+                product = self.move_line_ids[0].product_id
+            elif hasattr(self, 'move_ids') and self.move_ids:
+                product = self.move_ids[0].product_id
+            if product and product.type == 'consu':
+                vals['product_id'] = product.id
             checks_to_create.append(vals)
 
         if not checks_to_create:
