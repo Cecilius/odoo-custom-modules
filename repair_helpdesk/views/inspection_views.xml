@@ -29,7 +29,7 @@
                         <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."/>
                     </group>
                     <group string="Inspection Checklist">
-                        <field name="line_ids" mode="tree,form">
+                        <field name="line_ids">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="name"/>
