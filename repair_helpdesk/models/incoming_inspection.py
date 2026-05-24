@@ -76,10 +76,11 @@ class RepairHelpdeskIncomingInspection(models.Model):
             '%s: %s' % (line.name, line.comment)
             for line in failed_lines
         )
+        alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
         self.env['quality.alert'].create({
             'name': _('Incoming inspection failure: %s') % self.name,
-            'team_id': ticket.team_id.id,
-            'company_id': self.env.company.id,
+            'team_id': alert_team.id,
+            'company_id': alert_team.company_id.id or self.env.company.id,
             'description': _(
                 'The following checks failed during incoming inspection %(inspection)s for ticket %(ticket)s:\n'
                 '%(items)s\n\n'
