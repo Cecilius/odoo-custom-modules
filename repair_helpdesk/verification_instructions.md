@@ -13,29 +13,17 @@ cd /Users/bambito/GIT/odoo-enterprise
 
 Replace `/path/to/odoo.conf` with your actual Odoo configuration file and `<your_db>` with the target database.
 
-## 2. Run the verification script
+## 2. Manual verification (preferred)
 
-From the repository root, execute:
+The verification can be performed entirely through the Odoo user interface. This is usually faster and avoids environment-specific setup required by the Python script. Follow the steps in section 3 below to exercise the full flow:
 
-```bash
-python3 odoo-custom-modules/repair_helpdesk/verify_repair_helpdesk.py -d <your_db> -c /path/to/odoo.conf
-```
+- Create a Helpdesk ticket and customer/device record
+- Create the associated incoming picking from the ticket and open it in form view
+- Validate the incoming picking and confirm `quality.check` records were created for each inspection point
+- Perform `pass`/`fail` on each quality check and observe ticket stage and alerts
+- Verify repair-only locations and routes exist under Inventory > Locations / Routes
 
-**For CloudPepper or non-standard Odoo installations**, specify the Odoo root path:
-
-```bash
-python3 odoo-custom-modules/repair_helpdesk/verify_repair_helpdesk.py -d <your_db> -c /path/to/odoo.conf --odoo-root /path/to/odoo/root
-```
-
-Replace `/path/to/odoo/root` with your actual Odoo installation directory (the directory containing the `odoo` folder and `odoo-bin` script).
-
-Expected output:
-- `repair_helpdesk installed: True`
-- `Found quality inspection points: 5`
-- `stock.picking.helpdesk_ticket_id field exists: True`
-- `quality.check.picking_id field exists: True`
-- `Found repair routes: 2`
-- all repair locations exist
+Note: an optional automation script (`verify_repair_helpdesk.py`) still exists in the repository for environments where running Odoo from the command line is convenient. The script requires a working Odoo Python environment and may need the `--odoo-root` parameter for non-standard installations (CloudPepper). If you prefer automated checks, the script can be used; otherwise, skip it and follow the manual steps above.
 
 ## 3. Manual verification steps
 
