@@ -53,6 +53,15 @@ class HelpdeskTicket(models.Model):
         string='Outgoing Shipment Count',
         compute='_compute_related_counts',
     )
+    inspection_ids = fields.One2many(
+        'repair_helpdesk.incoming_inspection',
+        'helpdesk_ticket_id',
+        string='Incoming Inspections',
+    )
+    inspection_count = fields.Integer(
+        string='Inspection Count',
+        compute='_compute_related_counts',
+    )
 
     x_carrier_name = fields.Char(string='Carrier')
     x_tracking_reference = fields.Char(string='Tracking Reference')
@@ -101,8 +110,13 @@ class HelpdeskTicket(models.Model):
         compute='_compute_repair_workflow_flags',
         store=False,
     )
+    x_can_create_incoming_inspection = fields.Boolean(
+        string='Can Create Incoming Inspection',
+        compute='_compute_repair_workflow_flags',
+        store=False,
+    )
 
-    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids')
+    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
         for ticket in self:
@@ -111,6 +125,7 @@ class HelpdeskTicket(models.Model):
             ticket.picking_count = len(ticket.picking_ids)
             ticket.incoming_picking_count = len(ticket.incoming_picking_ids)
             ticket.outgoing_picking_count = len(ticket.outgoing_picking_ids)
+            ticket.inspection_count = len(ticket.inspection_ids)
 
     @api.depends(
         'team_id',
@@ -176,6 +191,10 @@ class HelpdeskTicket(models.Model):
                 is_repair
                 and current_stage_id in outgoing_stage_ids
                 and not ticket.outgoing_picking_ids
+            )
+            ticket.x_can_create_incoming_inspection = bool(
+                is_repair
+                and not ticket.inspection_ids
             )
 
     def _stage_ids_from_xmlids(self, xmlids):
@@ -316,6 +335,44 @@ class HelpdeskTicket(models.Model):
             'res_model': 'stock.picking',
             'view_mode': 'form',
             'res_id': picking.id,
+            'target': 'current',
+        }
+
+    def action_create_incoming_inspection(self):
+        self.ensure_one()
+        if not self.x_can_create_incoming_inspection:
+            raise UserError(_('Incoming inspection creation is not available in the current stage or an inspection already exists.'))
+        inspection = self.env['repair_helpdesk.incoming_inspection'].create({
+            'helpdesk_ticket_id': self.id,
+        })
+        self.message_post(body=_('Incoming inspection %s created.') % inspection.name)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Incoming Inspection'),
+            'res_model': 'repair_helpdesk.incoming_inspection',
+            'view_mode': 'form',
+            'res_id': inspection.id,
+            'target': 'current',
+        }
+
+    def action_view_inspections(self):
+        self.ensure_one()
+        if self.inspection_count == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Incoming Inspection'),
+                'res_model': 'repair_helpdesk.incoming_inspection',
+                'view_mode': 'form',
+                'res_id': self.inspection_ids[:1].id,
+                'target': 'current',
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Incoming Inspections'),
+            'res_model': 'repair_helpdesk.incoming_inspection',
+            'view_mode': 'tree,form',
+            'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
         }
 

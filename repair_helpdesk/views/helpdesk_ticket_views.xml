@@ -29,6 +29,13 @@
                         invisible="not x_is_repair_ticket or picking_count == 0">
                     <field name="picking_count" string="Shipments" widget="statinfo"/>
                 </button>
+                <button name="action_view_inspections"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-list"
+                        invisible="not x_is_repair_ticket or inspection_count == 0">
+                    <field name="inspection_count" string="Inspections" widget="statinfo"/>
+                </button>
             </xpath>
 
             <!-- Header buttons used only to create the next business document. -->
@@ -46,6 +53,10 @@
                         type="object"
                         string="Create Incoming Shipment"
                         invisible="not x_can_create_incoming_picking"/>
+                <button name="action_create_incoming_inspection"
+                    type="object"
+                    string="Create Inspection Checklist"
+                    invisible="not x_can_create_incoming_inspection"/>
                 <button name="action_create_outgoing_picking"
                         type="object"
                         string="Create Outgoing Shipment"

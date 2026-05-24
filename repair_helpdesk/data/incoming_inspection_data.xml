@@ -1,0 +1,11 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_repair_helpdesk_incoming_inspection" model="ir.sequence">
+            <field name="name">Repair Helpdesk Incoming Inspection</field>
+            <field name="code">repair_helpdesk.incoming_inspection</field>
+            <field name="prefix">INSP/</field>
+            <field name="padding">4</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+    </data>
+</odoo>

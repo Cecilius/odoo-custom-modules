@@ -22,6 +22,11 @@ The verification can be performed entirely through the Odoo user interface. This
 - Validate the incoming picking and confirm `quality.check` records were created for each inspection point
 - Perform `pass`/`fail` on each quality check and observe ticket stage and alerts
 - Verify repair-only locations and routes exist under Inventory > Locations / Routes
+ - Create the associated incoming inspection checklist from the ticket and confirm customer information and ticket reference are pre-filled
+ - Create the associated incoming picking from the ticket and open it in form view
+ - Validate the incoming picking and confirm the inspection record was created for the shipment
+ - Perform pass/fail on the inspection checklist items and observe ticket stage and alerts
+ - Verify repair-only locations and routes exist under Inventory > Locations / Routes
 
 Note: an optional automation script (`verify_repair_helpdesk.py`) still exists in the repository for environments where running Odoo from the command line is convenient. The script requires a working Odoo Python environment and may need the `--odoo-root` parameter for non-standard installations (CloudPepper). If you prefer automated checks, the script can be used; otherwise, skip it and follow the manual steps above.
 

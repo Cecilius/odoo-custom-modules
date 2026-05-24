@@ -13,8 +13,10 @@
         'data/product_data.xml',
         'data/quality_inspection_points.xml',
         'data/repair_locations.xml',
+        'data/incoming_inspection_data.xml',
         'views/helpdesk_team_views.xml',
         'views/helpdesk_ticket_views.xml',
+        'views/inspection_views.xml',
         'views/sale_order_views.xml',
         'views/repair_order_views.xml'
     ],
