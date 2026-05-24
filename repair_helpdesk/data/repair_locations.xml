@@ -1,0 +1,81 @@
+<odoo>
+    <data noupdate="1">
+        <record id="repair_location_parent" model="stock.location">
+            <field name="name">Repair Workshop</field>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_location_incoming_inspection" model="stock.location">
+            <field name="name">Incoming Inspection Location</field>
+            <field name="location_id" ref="repair_helpdesk.repair_location_parent"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_location_awaiting_repair" model="stock.location">
+            <field name="name">Awaiting Repair Location</field>
+            <field name="location_id" ref="repair_helpdesk.repair_location_parent"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_location_in_progress" model="stock.location">
+            <field name="name">Repair In Progress Location</field>
+            <field name="location_id" ref="repair_helpdesk.repair_location_parent"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_location_quality_control" model="stock.location">
+            <field name="name">Quality Control / Awaiting Shipment</field>
+            <field name="location_id" ref="repair_helpdesk.repair_location_parent"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_location_return_dispatch" model="stock.location">
+            <field name="name">Repair Return Dispatch</field>
+            <field name="location_id" ref="repair_helpdesk.repair_location_parent"/>
+            <field name="usage">internal</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="repair_route_inspection_flow" model="stock.route">
+            <field name="name">Repair Incoming Inspection Flow</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="product_selectable">True</field>
+            <field name="active">True</field>
+            <field name="rule_ids" eval="[
+                (0, 0, {
+                    'name': 'Move from incoming inspection to awaiting repair',
+                    'action': 'pull_push',
+                    'location_src_id': ref('repair_helpdesk.repair_location_incoming_inspection'),
+                    'location_dest_id': ref('repair_helpdesk.repair_location_awaiting_repair'),
+                    'picking_type_id': ref('stock.picking_type_internal'),
+                    'procure_method': 'make_to_stock',
+                    'auto': 'manual',
+                }),
+            ]"/>
+        </record>
+
+        <record id="repair_route_return_dispatch" model="stock.route">
+            <field name="name">Repair Return Dispatch Flow</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="product_selectable">True</field>
+            <field name="active">True</field>
+            <field name="rule_ids" eval="[
+                (0, 0, {
+                    'name': 'Move from quality control to return dispatch',
+                    'action': 'pull_push',
+                    'location_src_id': ref('repair_helpdesk.repair_location_quality_control'),
+                    'location_dest_id': ref('repair_helpdesk.repair_location_return_dispatch'),
+                    'picking_type_id': ref('stock.picking_type_internal'),
+                    'procure_method': 'make_to_stock',
+                    'auto': 'manual',
+                }),
+            ]"/>
+        </record>
+    </data>
+</odoo>
