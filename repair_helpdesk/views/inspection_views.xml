@@ -4,7 +4,7 @@
         <field name="name">repair_helpdesk.incoming_inspection.line.tree</field>
         <field name="model">repair_helpdesk.incoming_inspection.line</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-info="result == 'na'"/>
