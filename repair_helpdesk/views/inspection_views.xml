@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-info="result == 'na'"/>
                 <field name="comment" optional="show"/>
-            </tree>
+            </list>
         </field>
     </record>
 
