@@ -1,35 +1,4 @@
 <odoo>
-    <!-- Tree view for inspection checklist lines -->
-    <record id="view_repair_helpdesk_incoming_inspection_line_tree" model="ir.ui.view">
-        <field name="name">repair_helpdesk.incoming_inspection.line.tree</field>
-        <field name="model">repair_helpdesk.incoming_inspection.line</field>
-        <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-info="result == 'na'"/>
-                <field name="comment" optional="show"/>
-            </list>
-        </field>
-    </record>
-
-    <!-- Form view for inspection checklist lines -->
-    <record id="view_repair_helpdesk_incoming_inspection_line_form" model="ir.ui.view">
-        <field name="name">repair_helpdesk.incoming_inspection.line.form</field>
-        <field name="model">repair_helpdesk.incoming_inspection.line</field>
-        <field name="arch" type="xml">
-            <form string="Checklist Item">
-                <group>
-                    <field name="name" readonly="1"/>
-                    <field name="result"/>
-                    <field name="comment" widget="text" placeholder="Required if failed — describe findings..."/>
-                    <field name="image" widget="image" string="Picture" nolabel="1"/>
-                </group>
-            </form>
-        </field>
-    </record>
-
-    <!-- Form view for incoming inspection -->
     <record id="view_repair_helpdesk_incoming_inspection_form" model="ir.ui.view">
         <field name="name">repair_helpdesk.incoming_inspection.form</field>
         <field name="model">repair_helpdesk.incoming_inspection</field>
@@ -60,16 +29,32 @@
                         <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."/>
                     </group>
                     <group string="Inspection Checklist">
-                        <field name="line_ids"
-                               context="{'tree_view_ref': 'repair_helpdesk.view_repair_helpdesk_incoming_inspection_line_tree',
-                                         'form_view_ref': 'repair_helpdesk.view_repair_helpdesk_incoming_inspection_line_form'}"/>
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="name"/>
+                                <field name="result" widget="badge"
+                                       decoration-success="result == 'pass'"
+                                       decoration-danger="result == 'fail'"
+                                       decoration-info="result == 'na'"/>
+                                <field name="comment" optional="show"/>
+                            </tree>
+                            <form string="Checklist Item">
+                                <group>
+                                    <field name="name" readonly="1"/>
+                                    <field name="result"/>
+                                    <field name="comment" widget="text"
+                                           placeholder="Required if failed — describe findings..."/>
+                                    <field name="image" widget="image" string="Picture" nolabel="1"/>
+                                </group>
+                            </form>
+                        </field>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- List view for incoming inspections -->
     <record id="view_repair_helpdesk_incoming_inspection_list" model="ir.ui.view">
         <field name="name">repair_helpdesk.incoming_inspection.list</field>
         <field name="model">repair_helpdesk.incoming_inspection</field>
@@ -83,12 +68,10 @@
         </field>
     </record>
 
-    <!-- Action window -->
     <record id="action_repair_helpdesk_incoming_inspection" model="ir.actions.act_window">
         <field name="name">Incoming Inspections</field>
         <field name="res_model">repair_helpdesk.incoming_inspection</field>
-        <field name="view_mode">list,form</field>
-        <field name="view_ids" eval="[(5, 0, 0), (4, ref('view_repair_helpdesk_incoming_inspection_list')), (4, ref('view_repair_helpdesk_incoming_inspection_form'))]"/>
+        <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p>Create and review incoming inspection checklists for repair tickets.</p>
         </field>
