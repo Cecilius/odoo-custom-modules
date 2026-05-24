@@ -25,14 +25,18 @@ class RepairHelpdeskIncomingInspection(models.Model):
         copy=True,
     )
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('repair_helpdesk.incoming_inspection') or 'New'
-        inspection = super().create(vals)
-        if not inspection.line_ids:
-            inspection._create_default_lines()
-        return inspection
+    @api.model_create_multi
+    def create(self, vals_list):
+        if not vals_list:
+            return super().create(vals_list)
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('repair_helpdesk.incoming_inspection') or 'New'
+        inspections = super().create(vals_list)
+        for inspection in inspections:
+            if not inspection.line_ids:
+                inspection._create_default_lines()
+        return inspections
 
     def _create_default_lines(self):
         default_items = [
