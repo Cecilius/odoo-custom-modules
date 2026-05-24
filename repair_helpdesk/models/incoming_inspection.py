@@ -9,7 +9,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
     helpdesk_ticket_id = fields.Many2one('helpdesk.ticket', string='Helpdesk Ticket', required=True, ondelete='cascade')
     partner_id = fields.Many2one('res.partner', string='Customer', related='helpdesk_ticket_id.partner_id', readonly=True, store=True)
     ticket_ref = fields.Char(string='Ticket Reference', related='helpdesk_ticket_id.ticket_ref', readonly=True, store=True)
-    device_description = fields.Text(string='Device Description', related='helpdesk_ticket_id.x_device_description', readonly=True, store=True)
+    device_description = fields.Char(string='Device Description', related='helpdesk_ticket_id.x_device_description', readonly=True, store=True)
     serial_number = fields.Char(string='Serial Number', related='helpdesk_ticket_id.x_serial_number', readonly=True, store=True)
     inspection_note = fields.Text(string='Inspection Notes')
     status = fields.Selection(
