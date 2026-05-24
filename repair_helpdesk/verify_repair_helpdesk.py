@@ -6,9 +6,16 @@ from pathlib import Path
 
 script_dir = Path(__file__).resolve().parent
 repo_root = script_dir.parents[1]
-odoo_root = repo_root / 'odoo-enterprise'
-sys.path.insert(0, str(odoo_root))
-sys.path.insert(0, str(odoo_root / 'odoo'))
+
+
+def setup_odoo_path(odoo_root):
+    """Configure sys.path for Odoo imports."""
+    odoo_root = Path(odoo_root).resolve()
+    if not odoo_root.exists():
+        raise ValueError(f"Odoo root path does not exist: {odoo_root}")
+    sys.path.insert(0, str(odoo_root))
+    sys.path.insert(0, str(odoo_root / 'odoo'))
+    return odoo_root
 
 import odoo
 from odoo import api
@@ -79,7 +86,21 @@ def main():
     parser = argparse.ArgumentParser(description='Verify repair_helpdesk integration in Odoo.')
     parser.add_argument('-d', '--database', required=True, help='Odoo database name')
     parser.add_argument('-c', '--config', help='Path to Odoo configuration file')
+    parser.add_argument('--odoo-root', help='Path to Odoo installation root (default: ../odoo-enterprise relative to script)')
     args = parser.parse_args()
+
+    # Determine Odoo root path
+    if args.odoo_root:
+        odoo_root_path = args.odoo_root
+    else:
+        # Fall back to default location (odoo-enterprise sibling directory)
+        odoo_root_path = repo_root / 'odoo-enterprise'
+
+    try:
+        setup_odoo_path(odoo_root_path)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
     registry = get_env(args.database, args.config)
     verify_module(registry)

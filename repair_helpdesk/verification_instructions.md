@@ -21,6 +21,14 @@ From the repository root, execute:
 python3 odoo-custom-modules/repair_helpdesk/verify_repair_helpdesk.py -d <your_db> -c /path/to/odoo.conf
 ```
 
+**For CloudPepper or non-standard Odoo installations**, specify the Odoo root path:
+
+```bash
+python3 odoo-custom-modules/repair_helpdesk/verify_repair_helpdesk.py -d <your_db> -c /path/to/odoo.conf --odoo-root /path/to/odoo/root
+```
+
+Replace `/path/to/odoo/root` with your actual Odoo installation directory (the directory containing the `odoo` folder and `odoo-bin` script).
+
 Expected output:
 - `repair_helpdesk installed: True`
 - `Found quality inspection points: 5`
@@ -94,6 +102,14 @@ print(QualityCheck.search_count([('picking_id.helpdesk_ticket_id', '!=', False)]
 
 ## 5. Notes
 
-- The verification script assumes the Odoo codebase is at `odoo-enterprise/odoo` relative to the module.
+- The verification script assumes the Odoo codebase is at `odoo-enterprise/` relative to the module by default.
+- For CloudPepper or other custom infrastructure, use the `--odoo-root` parameter to specify your actual Odoo installation path.
+- Common Odoo root paths on CloudPepper:
+  - `/opt/odoo/` (if using standard CloudPepper layout)
+  - `/home/odoo/server/` (alternative path)
+  - Check your CloudPepper configuration for the exact location
 - If you use a different config path, pass it with `-c`.
-- If the script cannot import Odoo, make sure your Python environment includes the required Odoo dependencies.
+- If the script cannot import Odoo, verify:
+  - The `--odoo-root` path is correct
+  - Your Python environment includes the required Odoo dependencies
+  - The configuration file path is correct
