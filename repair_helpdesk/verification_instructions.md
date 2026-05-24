@@ -36,18 +36,26 @@ Note: an optional automation script (`verify_repair_helpdesk.py`) still exists i
 1. On the ticket, create the incoming picking.
 2. Confirm the created picking opens directly in form view.
 3. Validate the picking.
-4. Verify a `quality.check` record was created for each incoming inspection point.
+4. Verify that quality inspection checks were created for the incoming shipment.
    - Drop damage
    - Water damage
    - Contamination
    - Accessories
    - Visible damages
 
+> Note: the current implementation creates one `quality.check` record per inspection point. If you want a single incoming inspection record instead, we can simplify the setup to use one quality point that contains the full checklist.
+
 ### 3.3 Confirm inspection outcomes
 1. Open the created quality checks from the Picking or Quality app.
 2. Set each check to `pass` or `fail` as appropriate.
-3. If all checks pass, confirm the ticket stage updates to `Awaiting item`.
+3. If all checks pass, confirm the ticket stage updates to `Diagnostics`.
 4. If any check fails, confirm a `quality.alert` is created and the ticket receives a note.
+
+> Why it should not go back: `Awaiting item` is the stage before receiving the product. After inspection passes, the ticket should move forward into diagnostics, not backward.
+>
+> On failure: the current flow records a failure alert and notes the ticket. The next step is a manual business decision: inform the customer, decide whether to continue repair, return the item, or apply storage/shipping fees. That customer-decision process is best handled outside this core inspection automation.
+
+
 
 ### 3.4 Verify repair location data
 1. Open Inventory > Locations.
@@ -61,6 +69,8 @@ Note: an optional automation script (`verify_repair_helpdesk.py`) still exists i
 3. Open Inventory > Routes and confirm these routes exist:
    - Repair Incoming Inspection Flow
    - Repair Return Dispatch Flow
+locations and routes are not there - it's not enabled in odoo. can we make it enabe automatically by installing the module?
+
 
 ### 3.5 Validate stock route structure
 1. Open each repair route.

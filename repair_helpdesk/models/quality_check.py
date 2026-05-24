@@ -33,9 +33,9 @@ class QualityCheck(models.Model):
                     for qc in picking.check_ids
                 )
                 if all_passed:
-                    ticket._set_stage('repair_helpdesk.stage_repair_awaiting_item')
+                    ticket._set_stage('repair_helpdesk.stage_repair_diagnostics')
                     ticket.message_post(
-                        body=_('All incoming inspection checks passed for shipment %s. Ticket moved to Awaiting item.') % picking.name
+                        body=_('All incoming inspection checks passed for shipment %s. Ticket moved to Diagnostics.') % picking.name
                     )
             elif check.quality_state == 'fail':
                 alert_model = self.env['quality.alert']
