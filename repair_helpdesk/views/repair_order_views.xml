@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="repair.view_repair_order_form"/>
         <field name="arch" type="xml">
             <!-- Show the originating helpdesk ticket on the repair order. -->
-            <xpath expr="//sheet//group" position="inside">
+            <xpath expr="//field[@name='under_warranty']" position="after">
                 <field name="helpdesk_ticket_id" readonly="1"/>
             </xpath>
         </field>

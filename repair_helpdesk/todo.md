@@ -8,11 +8,20 @@
 - [x] Prepare repair order workflow sync hooks from `repair.order` to helpdesk ticket
 
 ## Sprint 2 — Logistics integration
-- [ ] Create incoming shipment from a helpdesk ticket
-- [ ] Confirm device receipt and move ticket to `Awaiting item`
-- [ ] Create return shipment from a ticket when repair is complete
-- [ ] Automate stage transitions based on picking events (inbound/outbound)
+- [x] Create incoming shipment from a helpdesk ticket
+- [x] Confirm device receipt and move ticket to `Awaiting item`
+- [x] Create return shipment from a ticket when repair is complete
+- [x] Automate stage transitions based on picking events (inbound/outbound)
 - [ ] Visualize connection between helpdesk ticket and a shipment (shipment scree -> Additional Info, just below Sales Order)
+- [ ] convert the location draft into Odoo `stock.location` creation XML (data file) and add a migration script to create these locations automatically.
+### Repair inventory location draft
+The following dedicated locations are planned to keep repair inventory separate from normal sales inventory:
+ - `Incoming Inspection Location` — receive returned devices for intake and inspection
+ - `Awaiting Repair Location` — hold inspected devices waiting for repair work
+ - `Repair In Progress Location` — where devices actively under repair are staged
+ - `Quality Control` — final verification before return dispatch
+ - `Repair Done` — waiting for customer to pay
+ - `Repair Return Dispatch` — staging area for outgoing return shipments
 
 ## Sprint 3 — Repair lifecycle automation
 - [ ] Sync repair order state changes to helpdesk ticket stages
@@ -40,3 +49,4 @@
 - [ ] Add quick actions for receive device, start diagnostics, and ship return
 - [ ] Add smart buttons for related sales orders, repair orders, shipments, and invoices
 - [ ] Make Helpdesk the main technician workspace with a cleaner workflow view
+- [ ] Secure all readonly fields (connections between modules / apps)
