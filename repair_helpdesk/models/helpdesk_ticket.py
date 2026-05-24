@@ -327,7 +327,7 @@ class HelpdeskTicket(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Shipments'),
             'res_model': 'stock.picking',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
@@ -443,23 +443,47 @@ class HelpdeskTicket(models.Model):
         return self.action_view_repair_orders()
 
     def action_view_sale_orders(self):
+        """Open linked quotations / sales orders.
+
+        - If only one document exists, open it directly in form view.
+        - If several exist, open a filtered list view.
         """
-        Opens the sale.order tree view with a domain to show only 'Draft' orders
-        and a context to set a default salesperson.
-        """
-        return {
-            'name': "Draft Sales Orders",
+        self.ensure_one()
+
+        if self.sale_order_count == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Quotation'),
+                'res_model': 'sale.order',
+                'view_mode': 'form',
+                'res_id': self.sale_order_ids[:1].id,
+                'target': 'current',
+            }
+
+        tree_view = self.env.ref('sale.view_order_tree', raise_if_not_found=False)
+        form_view = self.env.ref('sale.view_order_form', raise_if_not_found=False)
+        views = []
+        if tree_view:
+            views.append((tree_view.id, 'list'))
+        if form_view:
+            views.append((form_view.id, 'form'))
+
+        action = {
             'type': 'ir.actions.act_window',
+            'name': _('Quotations / Sales Orders'),
             'res_model': 'sale.order',
-            'view_mode': 'tree,form', # You can specify 'tree' if you only want the tree view
-            'domain': [('state', '=', 'draft')], # Filter for sales orders in 'Draft' state
-            'context': {
-                'default_user_id': self.env.user.id, # Sets the current user as the default salesperson
-                'search_default_my_draft_filter': 1, # Example: Activates a predefined search filter (if one exists)
-                'some_custom_key': 'some_value', # Another example of a custom context key
-            },
-            'target': 'current', # 'current' opens in the main content area, 'new' opens in a dialog
+            'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'context': {'default_helpdesk_ticket_id': self.id},
+            'target': 'current',
         }
+        if views:
+            action['views'] = views
+            action['view_id'] = views[0][0]
+            action['view_mode'] = ','.join([view_type for _, view_type in views])
+        else:
+            action['view_mode'] = 'list,form'
+
+        return action
 
     def action_view_repair_orders(self):
         """Open linked repair orders.
@@ -483,7 +507,7 @@ class HelpdeskTicket(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Repair Orders'),
             'res_model': 'repair.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
             'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
