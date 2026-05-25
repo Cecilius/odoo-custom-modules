@@ -159,8 +159,8 @@ class HelpdeskTicket(models.Model):
         'outgoing_picking_ids',
         'inspection_ids',
         'inspection_ids.status',
+        'inspection_ids.has_failures',
         'inspection_ids.repair_approved',
-        'inspection_ids.line_ids.result',
     )
     def _compute_repair_workflow_flags(self):
         """Control which workflow buttons are visible on the ticket.

@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class SaleOrder(models.Model):
@@ -13,11 +13,10 @@ class SaleOrder(models.Model):
         index=True,
     )
 
-    @api.model_create_multi
     def create(self, vals_list):
         ticket_id = self.env.context.get('repair_helpdesk_ticket_id')
         if ticket_id:
-            for vals in vals_list:
+            for vals in vals_list if isinstance(vals_list, list) else [vals_list]:
                 if not vals.get('helpdesk_ticket_id'):
                     vals['helpdesk_ticket_id'] = ticket_id
         return super().create(vals_list)

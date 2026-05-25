@@ -14,6 +14,7 @@ class RepairOrder(models.Model):
     )
 
     def action_create_sale_order(self):
+        self.ensure_one()
         ctx = self.env.context
         if self.helpdesk_ticket_id:
             ctx = dict(ctx, repair_helpdesk_ticket_id=self.helpdesk_ticket_id.id)
