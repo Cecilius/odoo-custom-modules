@@ -24,7 +24,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Checklist Items',
         copy=True,
     )
-    ticket_in_initial_stage = fields.Boolean(
+    ticket_in_inspection_stage = fields.Boolean(
         string='Ticket in Initial Inspection Stage',
         compute='_compute_ticket_stage_flags',
     )
@@ -33,7 +33,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
     def _compute_ticket_stage_flags(self):
         initial_stage = self.env.ref('repair_helpdesk.stage_repair_initial_inspection', raise_if_not_found=False)
         for inspection in self:
-            inspection.ticket_in_initial_stage = bool(
+            inspection.ticket_in_inspection_stage = bool(
                 initial_stage
                 and inspection.helpdesk_ticket_id
                 and inspection.helpdesk_ticket_id.stage_id == initial_stage
@@ -65,7 +65,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
         self.ensure_one()
         if self.status == 'done':
             return
-        if not self.ticket_in_initial_stage:
+        if not self.ticket_in_inspection_stage:
             raise UserError(_(
                 'Inspection can only be completed when the ticket is in the '
                 '"Received / Initial Inspection" stage.'

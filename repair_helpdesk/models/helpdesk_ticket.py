@@ -161,11 +161,13 @@ class HelpdeskTicket(models.Model):
         }
         incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
         outgoing_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_ready_return'}
+        inspection_stage_xmlids = {'repair_helpdesk.stage_repair_initial_inspection'}
 
         quotation_stage_ids = self._stage_ids_from_xmlids(quotation_stage_xmlids)
         repair_stage_ids = self._stage_ids_from_xmlids(repair_stage_xmlids)
         incoming_stage_ids = self._stage_ids_from_xmlids(incoming_shipment_stage_xmlids)
         outgoing_stage_ids = self._stage_ids_from_xmlids(outgoing_shipment_stage_xmlids)
+        inspection_stage_ids = self._stage_ids_from_xmlids(inspection_stage_xmlids)
 
         for ticket in self:
             is_repair = bool(ticket.team_id and ticket.team_id.x_repair_workflow_team)
@@ -194,6 +196,7 @@ class HelpdeskTicket(models.Model):
             )
             ticket.x_can_create_incoming_inspection = bool(
                 is_repair
+                and current_stage_id in inspection_stage_ids
                 and not ticket.inspection_ids
             )
 

@@ -40,7 +40,7 @@
                 <header>
                     <button name="action_done" type="object" string="Complete Inspection"
                             class="btn-primary"
-                            invisible="status == 'done' or not ticket_in_initial_stage"/>
+                            invisible="status == 'done' or not ticket_in_inspection_stage"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft"
                             invisible="status != 'done'"/>
                     <field name="status" widget="statusbar"/>
@@ -62,7 +62,7 @@
                         </group>
                     </group>
                     <group string="Notes">
-                        <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."
+                        <field name="inspection_note" placeholder="General inspection notes..."
                                readonly="status == 'done'"/>
                     </group>
                     <group string="Inspection Checklist">
