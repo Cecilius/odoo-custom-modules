@@ -574,7 +574,6 @@ class HelpdeskTicket(models.Model):
         repair_order = self.env['repair.order'].create(vals)
         self.message_post(body=_('Repair order %s created.') % (getattr(repair_order, 'name', _('(draft)'))))
 
-        self._set_stage('repair_helpdesk.stage_repair_diagnostics')
         return {
             'type': 'ir.actions.act_window',
             'name': _('Repair Order'),

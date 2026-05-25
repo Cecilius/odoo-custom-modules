@@ -20,11 +20,21 @@ class RepairOrder(models.Model):
             ctx = dict(ctx, repair_helpdesk_ticket_id=self.helpdesk_ticket_id.id)
         return super(RepairOrder, self.with_context(**ctx)).action_create_sale_order()
 
+    def action_validate(self):
+        res = super().action_validate()
+        for r in self:
+            if r.helpdesk_ticket_id:
+                r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_diagnostics')
+        return res
+
     def action_repair_start(self):
         res = super().action_repair_start()
         for r in self:
             if r.helpdesk_ticket_id:
-                r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_under_repair')
+                if r.is_parts_available:
+                    r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_under_repair')
+                else:
+                    r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_waiting_parts')
         return res
 
     def action_repair_end(self):
