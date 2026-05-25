@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import fields, models, _
 
 
 class RepairOrder(models.Model):
@@ -49,4 +49,33 @@ class RepairOrder(models.Model):
         for r in self:
             if r.helpdesk_ticket_id:
                 r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
+        return res
+
+    def write(self, vals):
+        # Read is_parts_available directly from DB (not cache) because
+        # stored computed fields are already updated in cache before
+        # the flush-triggered write() call fires.
+        old_available = {}
+        for r in self:
+            self.env.cr.execute(
+                "SELECT is_parts_available FROM repair_order WHERE id = %s",
+                [r.id],
+            )
+            row = self.env.cr.fetchone()
+            old_available[r.id] = row and row[0]
+        res = super().write(vals)
+        for r in self:
+            ticket = r.helpdesk_ticket_id
+            if not ticket:
+                continue
+            if r.is_parts_available and not old_available.get(r.id):
+                waiting_stage = self.env.ref(
+                    'repair_helpdesk.stage_repair_waiting_parts',
+                    raise_if_not_found=False,
+                )
+                if waiting_stage and ticket.stage_id == waiting_stage:
+                    ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
+                    ticket.message_post(
+                        body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name
+                    )
         return res
