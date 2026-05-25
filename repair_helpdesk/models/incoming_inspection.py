@@ -24,6 +24,20 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Checklist Items',
         copy=True,
     )
+    ticket_in_initial_stage = fields.Boolean(
+        string='Ticket in Initial Inspection Stage',
+        compute='_compute_ticket_stage_flags',
+    )
+
+    @api.depends('helpdesk_ticket_id.stage_id')
+    def _compute_ticket_stage_flags(self):
+        initial_stage = self.env.ref('repair_helpdesk.stage_repair_initial_inspection', raise_if_not_found=False)
+        for inspection in self:
+            inspection.ticket_in_initial_stage = bool(
+                initial_stage
+                and inspection.helpdesk_ticket_id
+                and inspection.helpdesk_ticket_id.stage_id == initial_stage
+            )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -51,6 +65,11 @@ class RepairHelpdeskIncomingInspection(models.Model):
         self.ensure_one()
         if self.status == 'done':
             return
+        if not self.ticket_in_initial_stage:
+            raise UserError(_(
+                'Inspection can only be completed when the ticket is in the '
+                '"Received / Initial Inspection" stage.'
+            ))
         if not self.line_ids:
             raise UserError(_('Please fill in the checklist items before completing the inspection.'))
         unset_lines = self.line_ids.filtered(lambda l: not l.result)
