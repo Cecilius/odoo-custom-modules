@@ -28,6 +28,25 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Ticket in Initial Inspection Stage',
         compute='_compute_ticket_stage_flags',
     )
+    repair_approved = fields.Boolean(string='Approved for Repair', default=False)
+    repair_approve_note = fields.Text(string='Approval Reason')
+    has_failures = fields.Boolean(
+        string='Has Failures',
+        compute='_compute_has_failures',
+        store=True,
+    )
+    customer_reported_drop = fields.Selection(
+        related='helpdesk_ticket_id.x_reported_drop_damage',
+        readonly=True,
+    )
+    customer_reported_water = fields.Selection(
+        related='helpdesk_ticket_id.x_reported_water_damage',
+        readonly=True,
+    )
+    customer_reported_contamination = fields.Selection(
+        related='helpdesk_ticket_id.x_reported_contamination',
+        readonly=True,
+    )
 
     @api.depends('helpdesk_ticket_id.stage_id')
     def _compute_ticket_stage_flags(self):
@@ -37,6 +56,13 @@ class RepairHelpdeskIncomingInspection(models.Model):
                 initial_stage
                 and inspection.helpdesk_ticket_id
                 and inspection.helpdesk_ticket_id.stage_id == initial_stage
+            )
+
+    @api.depends('line_ids.result')
+    def _compute_has_failures(self):
+        for inspection in self:
+            inspection.has_failures = any(
+                line.result == 'fail' for line in inspection.line_ids
             )
 
     @api.model_create_multi
@@ -88,14 +114,27 @@ class RepairHelpdeskIncomingInspection(models.Model):
         if self.status != 'done':
             raise UserError(_('Only completed inspections can be reset to draft.'))
         self.status = 'draft'
+        self.repair_approved = False
         self.helpdesk_ticket_id.message_post(
             body=_('Incoming inspection %s was reset to draft.') % self.name
         )
 
+    def action_approve_for_repair(self):
+        self.ensure_one()
+        if self.status != 'done':
+            raise UserError(_('Only completed inspections can be approved for repair.'))
+        if not self.has_failures:
+            raise UserError(_('This inspection has no failures — approval is not required.'))
+        if not self.repair_approve_note:
+            raise UserError(_('Please enter an approval reason before approving this failed inspection for repair.'))
+        self.repair_approved = True
+        self.helpdesk_ticket_id.message_post(
+            body=_('Incoming inspection %s approved for repair:\n%s') % (self.name, self.repair_approve_note)
+        )
+
     def _handle_inspection_passed(self, ticket):
-        ticket._set_stage('repair_helpdesk.stage_repair_diagnostics')
         ticket.message_post(
-            body=_('Incoming inspection %s completed. All checks passed. Ticket moved to Diagnostics.') % self.name
+            body=_('Incoming inspection %s completed. All checks passed.') % self.name
         )
 
     def _handle_inspection_failed(self, ticket, failed_lines):

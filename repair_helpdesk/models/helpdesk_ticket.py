@@ -81,6 +81,22 @@ class HelpdeskTicket(models.Model):
     x_serial_number = fields.Char(string='Serial Number')
     x_reported_issue = fields.Text(string='Reported Issue')
 
+    x_reported_drop_damage = fields.Selection(
+        [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
+        string='Drop Damage Reported',
+        default='unknown',
+    )
+    x_reported_water_damage = fields.Selection(
+        [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
+        string='Water Damage Reported',
+        default='unknown',
+    )
+    x_reported_contamination = fields.Selection(
+        [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
+        string='Contamination Reported',
+        default='unknown',
+    )
+
     # Helper flag: true only for tickets that belong to the repair workflow team.
     x_is_repair_ticket = fields.Boolean(
         string='Repair Ticket',
@@ -135,6 +151,10 @@ class HelpdeskTicket(models.Model):
         'repair_order_ids',
         'incoming_picking_ids',
         'outgoing_picking_ids',
+        'inspection_ids',
+        'inspection_ids.status',
+        'inspection_ids.repair_approved',
+        'inspection_ids.line_ids.result',
     )
     def _compute_repair_workflow_flags(self):
         """Control which workflow buttons are visible on the ticket.
@@ -173,6 +193,15 @@ class HelpdeskTicket(models.Model):
             is_repair = bool(ticket.team_id and ticket.team_id.x_repair_workflow_team)
             current_stage_id = ticket.stage_id.id if ticket.stage_id else False
 
+            done_inspections = ticket.inspection_ids.filtered(lambda i: i.status == 'done')
+            inspection_done = bool(done_inspections)
+            has_failures = any(
+                line.result == 'fail'
+                for insp in done_inspections
+                for line in insp.line_ids
+            )
+            overridden = any(done_inspections.mapped('repair_approved'))
+
             ticket.x_is_repair_ticket = is_repair
             ticket.x_can_create_quotation = bool(
                 is_repair
@@ -183,6 +212,8 @@ class HelpdeskTicket(models.Model):
                 is_repair
                 and not ticket.repair_order_ids
                 and current_stage_id in repair_stage_ids
+                and inspection_done
+                and (not has_failures or overridden)
             )
             ticket.x_can_create_incoming_picking = bool(
                 is_repair
@@ -490,7 +521,7 @@ class HelpdeskTicket(models.Model):
     def action_create_repair_order(self):
         """Create a repair order linked back to the ticket.
 
-        Once a repair order exists, the ticket moves to the initial inspection stage.
+        Once a repair order exists, the ticket moves to the diagnostics stage.
         """
         self.ensure_one()
 
@@ -519,8 +550,7 @@ class HelpdeskTicket(models.Model):
         repair_order = self.env['repair.order'].create(vals)
         self.message_post(body=_('Repair order %s created.') % (getattr(repair_order, 'name', _('(draft)'))))
 
-        # After the repair order is created, the workshop can start intake / initial inspection.
-        self._set_stage('repair_helpdesk.stage_repair_initial_inspection')
+        self._set_stage('repair_helpdesk.stage_repair_diagnostics')
         return {
             'type': 'ir.actions.act_window',
             'name': _('Repair Order'),

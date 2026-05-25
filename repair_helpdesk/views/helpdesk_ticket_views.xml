@@ -81,6 +81,11 @@
                         <field name="x_carrier_name"/>
                         <field name="x_tracking_reference"/>
                     </group>
+                    <group string="Customer Reported" colspan="2">
+                        <field name="x_reported_drop_damage"/>
+                        <field name="x_reported_water_damage"/>
+                        <field name="x_reported_contamination"/>
+                    </group>
                 </group>
             </xpath>
         </field>

@@ -1,0 +1,31 @@
+<odoo>
+    <template id="portal_helpdesk_ticket_submit" inherit_id="helpdesk.portal_submit_ticket">
+        <xpath expr="//div[hasclass('o_portal_helpdesk_ticket')]//div[hasclass('row')]" position="inside">
+            <p class="col-12 lead mb-3">Device Condition (if known)</p>
+            <div class="col-12 col-md-4 mb-3">
+                <label for="x_reported_drop_damage">Drop Damage</label>
+                <select name="x_reported_drop_damage" class="form-control" required="0">
+                    <option value="unknown" selected="selected">Unknown</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <label for="x_reported_water_damage">Water Damage</label>
+                <select name="x_reported_water_damage" class="form-control" required="0">
+                    <option value="unknown" selected="selected">Unknown</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <label for="x_reported_contamination">Contamination</label>
+                <select name="x_reported_contamination" class="form-control" required="0">
+                    <option value="unknown" selected="selected">Unknown</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+        </xpath>
+    </template>
+</odoo>
