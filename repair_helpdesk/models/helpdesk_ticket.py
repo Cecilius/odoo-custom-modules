@@ -131,6 +131,11 @@ class HelpdeskTicket(models.Model):
         compute='_compute_repair_workflow_flags',
         store=False,
     )
+    x_can_revise_quotation = fields.Boolean(
+        string='Can Revise Quotation',
+        compute='_compute_repair_workflow_flags',
+        store=False,
+    )
 
     @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
     def _compute_related_counts(self):
@@ -148,6 +153,7 @@ class HelpdeskTicket(models.Model):
         'team_id.x_repair_workflow_team',
         'stage_id',
         'sale_order_ids',
+        'sale_order_ids.state',
         'repair_order_ids',
         'incoming_picking_ids',
         'outgoing_picking_ids',
@@ -202,10 +208,17 @@ class HelpdeskTicket(models.Model):
             )
             overridden = any(done_inspections.mapped('repair_approved'))
 
+            active_quotations = ticket.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
+
             ticket.x_is_repair_ticket = is_repair
             ticket.x_can_create_quotation = bool(
                 is_repair
-                and not ticket.sale_order_ids
+                and not ticket.sale_order_ids.filtered(lambda so: so.state != 'cancel')
+                and current_stage_id in quotation_stage_ids
+            )
+            ticket.x_can_revise_quotation = bool(
+                is_repair
+                and bool(active_quotations)
                 and current_stage_id in quotation_stage_ids
             )
             ticket.x_can_create_repair_order = bool(
@@ -517,6 +530,21 @@ class HelpdeskTicket(models.Model):
             'res_id': quotation.id,
             'target': 'current',
         }
+
+    def action_revise_quotation(self):
+        """Cancel the current quotation and create a new draft for revision."""
+        self.ensure_one()
+        if not self.x_can_revise_quotation:
+            raise UserError(_(
+                'Quotation revision is not available in the current stage or '
+                'there is no active quotation to revise.'
+            ))
+        quotations = self.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
+        for quotation in quotations:
+            quotation.action_cancel()
+            self.message_post(body=_('Quotation %s cancelled for revision.') % quotation.name)
+        self._set_stage('repair_helpdesk.stage_repair_revised_approval')
+        return self.action_create_quotation()
 
     def action_create_repair_order(self):
         """Create a repair order linked back to the ticket.
