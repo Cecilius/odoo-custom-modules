@@ -43,6 +43,7 @@ The inspection system was simplified from a dual-system approach (Odoo native `q
 - **3 fixed sub-checks**: Drop damage, Water damage or corrosion, Excessive contamination. Each line has `result` (pass/fail/na), `comment`, and `image` (Binary, attachment=True).
 - **Fail enforcement**: If `result == 'fail'`, both `comment` and `image` are required (enforced via `@api.constrains`).
 - **Completion** (`action_done`): All pass/na → auto-move ticket to Diagnostics stage. Any fail → create `quality.alert`, post message on ticket, hold stage.
+- **Stage gate**: "Complete Inspection" button only works when the ticket is in "Received / Initial Inspection" stage (`ticket_in_initial_stage` computed field).
 - **Images**: Stored as `fields.Binary(attachment=True)` — automatically stored as `ir.attachment` records.
 - **Alerts**: `quality` is still in `depends` for creating `quality.alert` records on inspection failures.
 
