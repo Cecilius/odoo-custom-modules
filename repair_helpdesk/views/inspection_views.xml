@@ -62,11 +62,11 @@
                     </group>
                     <group string="Notes">
                         <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."
-                               attrs="{'readonly': [('status', '=', 'done')]}"/>
+                               readonly="status == 'done'"/>
                     </group>
                     <group string="Inspection Checklist">
                         <field name="line_ids"
-                               attrs="{'readonly': [('status', '=', 'done')]}"/>
+                               readonly="status == 'done'"/>
                     </group>
                 </sheet>
             </form>
