@@ -49,16 +49,21 @@ class SaleOrder(models.Model):
         return res
 
     def action_confirm(self):
-        """When the customer confirms the quotation, move the ticket."""
+        """When the customer confirms the quotation, move the ticket.
+
+        If this is a revised quotation, old quotations are cancelled first.
+        """
         res = super().action_confirm()
         for order in self:
             ticket = order.helpdesk_ticket_id
             if not ticket:
                 continue
-            has_prior = ticket.sale_order_ids.filtered(lambda so: so.id != order.id)
+            prior = ticket.sale_order_ids.filtered(lambda so: so.id != order.id and so.state != 'cancel')
+            if prior:
+                prior.action_cancel()
             stage_xmlid = (
                 'repair_helpdesk.stage_repair_ready_for_repair'
-                if has_prior
+                if prior
                 else 'repair_helpdesk.stage_repair_awaiting_item'
             )
             order._move_helpdesk_ticket_stage(stage_xmlid)

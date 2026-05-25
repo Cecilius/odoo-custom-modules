@@ -175,6 +175,7 @@ class HelpdeskTicket(models.Model):
             'repair_helpdesk.stage_repair_quote_approval',
             'repair_helpdesk.stage_repair_revised_approval',
             'repair_helpdesk.stage_repair_ready_for_repair',
+            'repair_helpdesk.stage_repair_initial_inspection',
         }
         repair_stage_xmlids = {'repair_helpdesk.stage_repair_ready_for_repair'}
         incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
@@ -524,17 +525,17 @@ class HelpdeskTicket(models.Model):
         }
 
     def action_revise_quotation(self):
-        """Cancel the current quotation and create a new draft for revision."""
+        """Create a new draft quotation for revision.
+
+        The old quotation stays active until the new one is confirmed.
+        On customer confirmation the old quotation is automatically cancelled.
+        """
         self.ensure_one()
         if not self.x_can_revise_quotation:
             raise UserError(_(
                 'Quotation revision is not available in the current stage or '
                 'there is no active quotation to revise.'
             ))
-        quotations = self.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
-        for quotation in quotations:
-            quotation.action_cancel()
-            self.message_post(body=_('Quotation %s cancelled for revision.') % quotation.name)
         return self.action_create_quotation()
 
     def action_create_repair_order(self):
