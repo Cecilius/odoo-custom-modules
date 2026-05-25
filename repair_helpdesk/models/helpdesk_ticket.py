@@ -469,8 +469,8 @@ class HelpdeskTicket(models.Model):
         """
         self.ensure_one()
 
-        if not self.x_can_create_quotation:
-            raise UserError(_('Quotation creation is not available in the current stage or the ticket already has a quotation.'))
+        if not self.x_can_create_quotation and not self.x_can_revise_quotation:
+            raise UserError(_('Quotation creation or revision is not available in the current stage.'))
 
         if not self.partner_id:
             raise UserError(_('Please set a customer on the ticket before creating a quotation.'))
