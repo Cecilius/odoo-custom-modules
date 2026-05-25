@@ -128,11 +128,13 @@ class RepairHelpdeskIncomingInspection(models.Model):
         if not self.repair_approve_note:
             raise UserError(_('Please enter an approval reason before approving this failed inspection for repair.'))
         self.repair_approved = True
+        self.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         self.helpdesk_ticket_id.message_post(
             body=_('Incoming inspection %s approved for repair:\n%s') % (self.name, self.repair_approve_note)
         )
 
     def _handle_inspection_passed(self, ticket):
+        ticket._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         ticket.message_post(
             body=_('Incoming inspection %s completed. All checks passed.') % self.name
         )

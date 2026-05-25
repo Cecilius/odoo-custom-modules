@@ -174,17 +174,9 @@ class HelpdeskTicket(models.Model):
             'repair_helpdesk.stage_repair_new',
             'repair_helpdesk.stage_repair_quote_approval',
             'repair_helpdesk.stage_repair_revised_approval',
+            'repair_helpdesk.stage_repair_ready_for_repair',
         }
-        repair_stage_xmlids = {
-            'repair_helpdesk.stage_repair_awaiting_item',
-            'repair_helpdesk.stage_repair_initial_inspection',
-            'repair_helpdesk.stage_repair_diagnostics',
-            'repair_helpdesk.stage_repair_under_repair',
-            'repair_helpdesk.stage_repair_waiting_parts',
-            'repair_helpdesk.stage_repair_qc',
-            'repair_helpdesk.stage_repair_payment',
-            'repair_helpdesk.stage_repair_ready_return',
-        }
+        repair_stage_xmlids = {'repair_helpdesk.stage_repair_ready_for_repair'}
         incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
         outgoing_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_ready_return'}
         inspection_stage_xmlids = {'repair_helpdesk.stage_repair_initial_inspection'}
@@ -543,7 +535,6 @@ class HelpdeskTicket(models.Model):
         for quotation in quotations:
             quotation.action_cancel()
             self.message_post(body=_('Quotation %s cancelled for revision.') % quotation.name)
-        self._set_stage('repair_helpdesk.stage_repair_revised_approval')
         return self.action_create_quotation()
 
     def action_create_repair_order(self):

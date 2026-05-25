@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class SaleOrder(models.Model):
@@ -12,6 +12,15 @@ class SaleOrder(models.Model):
         copy=False,
         index=True,
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        ticket_id = self.env.context.get('repair_helpdesk_ticket_id')
+        if ticket_id:
+            for vals in vals_list:
+                if not vals.get('helpdesk_ticket_id'):
+                    vals['helpdesk_ticket_id'] = ticket_id
+        return super().create(vals_list)
 
     def _move_helpdesk_ticket_stage(self, xmlid):
         """Move the linked helpdesk ticket to a specific workflow stage."""
@@ -27,11 +36,31 @@ class SaleOrder(models.Model):
         res = super().message_post(**kwargs)
         if self.env.context.get('mark_so_as_sent'):
             sent_orders = self.filtered(lambda o: o.state == 'sent')
-            sent_orders._move_helpdesk_ticket_stage('repair_helpdesk.stage_repair_quote_approval')
+            for order in sent_orders:
+                ticket = order.helpdesk_ticket_id
+                if not ticket:
+                    continue
+                has_prior = ticket.sale_order_ids.filtered(lambda so: so.id != order.id)
+                stage_xmlid = (
+                    'repair_helpdesk.stage_repair_revised_approval'
+                    if has_prior
+                    else 'repair_helpdesk.stage_repair_quote_approval'
+                )
+                order._move_helpdesk_ticket_stage(stage_xmlid)
         return res
 
     def action_confirm(self):
-        """When the customer confirms the quotation, move the ticket to awaiting item."""
+        """When the customer confirms the quotation, move the ticket."""
         res = super().action_confirm()
-        self._move_helpdesk_ticket_stage('repair_helpdesk.stage_repair_awaiting_item')
+        for order in self:
+            ticket = order.helpdesk_ticket_id
+            if not ticket:
+                continue
+            has_prior = ticket.sale_order_ids.filtered(lambda so: so.id != order.id)
+            stage_xmlid = (
+                'repair_helpdesk.stage_repair_ready_for_repair'
+                if has_prior
+                else 'repair_helpdesk.stage_repair_awaiting_item'
+            )
+            order._move_helpdesk_ticket_stage(stage_xmlid)
         return res

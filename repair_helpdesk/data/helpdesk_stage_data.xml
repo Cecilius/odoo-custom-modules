@@ -15,12 +15,16 @@
         <field name="name">Received / Initial inspection</field>
         <field name="sequence">40</field>
     </record>
-    <record id="stage_repair_diagnostics" model="helpdesk.stage">
-        <field name="name">Diagnostics in progress</field>
-        <field name="sequence">50</field>
-    </record>
     <record id="stage_repair_revised_approval" model="helpdesk.stage">
         <field name="name">Waiting for revised approval</field>
+        <field name="sequence">45</field>
+    </record>
+    <record id="stage_repair_ready_for_repair" model="helpdesk.stage">
+        <field name="name">Ready for Repair</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="stage_repair_diagnostics" model="helpdesk.stage">
+        <field name="name">Diagnostics in progress</field>
         <field name="sequence">60</field>
     </record>
     <record id="stage_repair_under_repair" model="helpdesk.stage">

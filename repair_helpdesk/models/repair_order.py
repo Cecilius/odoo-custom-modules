@@ -12,3 +12,9 @@ class RepairOrder(models.Model):
         copy=False,
         index=True,
     )
+
+    def action_create_sale_order(self):
+        ctx = self.env.context
+        if self.helpdesk_ticket_id:
+            ctx = dict(ctx, repair_helpdesk_ticket_id=self.helpdesk_ticket_id.id)
+        return super(RepairOrder, self.with_context(**ctx)).action_create_sale_order()

@@ -42,18 +42,21 @@ The inspection system was simplified from a dual-system approach (Odoo native `q
 - **Creation**: Created manually via "Create Inspection Checklist" button on the ticket (when in "Received / Initial Inspection" stage).
 - **3 fixed sub-checks**: Drop damage, Water damage or corrosion, Excessive contamination. Each line has `result` (pass/fail/na), `comment`, and `image` (Binary, attachment=True).
 - **Fail enforcement**: If `result == 'fail'`, both `comment` and `image` are required (enforced via `@api.constrains`).
-- **Completion** (`action_done`): All pass/na → inspection done (no stage change). Any fail → create `quality.alert`, post message, hold stage. Failed inspections can be overridden via "Approve for Repair" (requires reason note).
+- **Completion** (`action_done`): All pass/na → ticket moves to "Ready for Repair". Any fail → create `quality.alert`, post message, hold stage. Failed inspections can be overridden via "Approve for Repair" (requires reason note) which also moves ticket to "Ready for Repair".
 - **Stage gate**: "Complete Inspection" button only works when the ticket is in "Received / Initial Inspection" stage (`ticket_in_inspection_stage` computed field).
-- **Repair gate**: "Create Repair Order" button requires inspection to be completed AND (no failures OR repair_approved).
+- **Repair gate**: "Create Repair Order" button requires the ticket to be in "Ready for Repair" stage AND inspection completed AND (no failures OR repair_approved).
 - **Images**: Stored as `fields.Binary(attachment=True)` — automatically stored as `ir.attachment` records.
 - **Alerts**: `quality` is still in `depends` for creating `quality.alert` records on inspection failures.
+- **Quotation from repair**: When creating a sale order from `repair.order`, the context carries the ticket ID. The created quotation is auto-linked to the helpdesk ticket, enabling stage transitions on send/confirm.
 
 ### Flow
 
 ```
 Ticket → Create incoming picking → Validate picking →
   Technician creates inspection → Fills checklist →
-  Complete → pass: no stage change / fail: alert + hold
+  Complete → pass: Ready for Repair / fail: alert + hold
+    → Ready for Repair → Create Repair → Diagnostics
+    → Revise Quotation → Waiting for revised approval
 ```
 
 ## Git conventions
