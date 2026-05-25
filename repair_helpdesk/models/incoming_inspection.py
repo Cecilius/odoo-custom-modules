@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class RepairHelpdeskIncomingInspection(models.Model):
@@ -200,6 +200,6 @@ class RepairHelpdeskIncomingInspectionLine(models.Model):
         for line in self:
             if line.result == 'fail':
                 if not line.comment:
-                    raise UserError(_('A comment is required when "%s" is marked as failed.') % line.name)
+                    raise ValidationError(_('A comment is required when "%s" is marked as failed.') % line.name)
                 if not line.image:
-                    raise UserError(_('A picture is required when "%s" is marked as failed.') % line.name)
+                    raise ValidationError(_('A picture is required when "%s" is marked as failed.') % line.name)
