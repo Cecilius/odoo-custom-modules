@@ -6,11 +6,12 @@
             <list editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="result" widget="badge"
+                <field name="result" widget="selection_badge"
                        decoration-success="result == 'pass'"
                        decoration-danger="result == 'fail'"
                        decoration-info="result == 'na'"/>
                 <field name="comment" optional="show"/>
+                <field name="image" optional="show" widget="image" options="{&quot;zoom&quot;:true,&quot;reload&quot;:true,&quot;size&quot;:[0,90]}"/>
             </list>
         </field>
     </record>
@@ -39,6 +40,8 @@
                 <header>
                     <button name="action_done" type="object" string="Complete Inspection"
                             class="btn-primary" invisible="status == 'done'"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="status != 'done'"/>
                     <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -58,10 +61,12 @@
                         </group>
                     </group>
                     <group string="Notes">
-                        <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."/>
+                        <field name="inspection_note" nolabel="1" placeholder="General inspection notes..."
+                               attrs="{'readonly': [('status', '=', 'done')]}"/>
                     </group>
                     <group string="Inspection Checklist">
-                        <field name="line_ids"/>
+                        <field name="line_ids"
+                               attrs="{'readonly': [('status', '=', 'done')]}"/>
                     </group>
                 </sheet>
             </form>

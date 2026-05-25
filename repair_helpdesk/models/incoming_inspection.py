@@ -64,6 +64,15 @@ class RepairHelpdeskIncomingInspection(models.Model):
         else:
             self._handle_inspection_passed(ticket)
 
+    def action_reset_to_draft(self):
+        self.ensure_one()
+        if self.status != 'done':
+            raise UserError(_('Only completed inspections can be reset to draft.'))
+        self.status = 'draft'
+        self.helpdesk_ticket_id.message_post(
+            body=_('Incoming inspection %s was reset to draft.') % self.name
+        )
+
     def _handle_inspection_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_diagnostics')
         ticket.message_post(
