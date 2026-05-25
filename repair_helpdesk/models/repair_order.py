@@ -1,4 +1,7 @@
 from odoo import fields, models, _
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class RepairOrder(models.Model):
@@ -52,9 +55,7 @@ class RepairOrder(models.Model):
         return res
 
     def write(self, vals):
-        # Read is_parts_available directly from DB (not cache) because
-        # stored computed fields are already updated in cache before
-        # the flush-triggered write() call fires.
+        _logger.info("=== repair.write called ids=%s vals=%s", self.ids, vals)
         old_available = {}
         for r in self:
             self.env.cr.execute(
@@ -62,20 +63,44 @@ class RepairOrder(models.Model):
                 [r.id],
             )
             row = self.env.cr.fetchone()
-            old_available[r.id] = row and row[0]
+            db_val = row and row[0]
+            cache_val = r.is_parts_available
+            old_available[r.id] = db_val
+            _logger.info(
+                "  repair %s: DB is_parts_available=%s, cache is_parts_available=%s",
+                r.id, db_val, cache_val,
+            )
         res = super().write(vals)
         for r in self:
             ticket = r.helpdesk_ticket_id
             if not ticket:
+                _logger.info("  repair %s: no ticket, skip", r.id)
                 continue
+            _logger.info(
+                "  repair %s: after write is_parts_available=%s, old=%s, ticket.stage_id=%s",
+                r.id, r.is_parts_available, old_available.get(r.id), ticket.stage_id.id,
+            )
             if r.is_parts_available and not old_available.get(r.id):
                 waiting_stage = self.env.ref(
                     'repair_helpdesk.stage_repair_waiting_parts',
                     raise_if_not_found=False,
                 )
                 if waiting_stage and ticket.stage_id == waiting_stage:
+                    _logger.info("  -> MATCH! Moving ticket to Under Repair")
                     ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
                     ticket.message_post(
                         body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name
                     )
+                else:
+                    _logger.info(
+                        "  -> waiting_stage=%s, ticket.stage_id=%s",
+                        waiting_stage and waiting_stage.id,
+                        ticket.stage_id.id,
+                    )
+            else:
+                _logger.info(
+                    "  -> no match: is_parts_available=%s, old=%s",
+                    r.is_parts_available,
+                    old_available.get(r.id),
+                )
         return res
