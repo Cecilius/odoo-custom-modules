@@ -18,7 +18,6 @@
         'views/inspection_views.xml',
         'views/sale_order_views.xml',
         'views/repair_order_views.xml',
-        'views/helpdesk_portal_templates.xml',
     ],
     'installable': True,
     'application': False,
