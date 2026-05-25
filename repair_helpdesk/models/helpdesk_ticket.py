@@ -173,9 +173,13 @@ class HelpdeskTicket(models.Model):
         quotation_stage_xmlids = {
             'repair_helpdesk.stage_repair_new',
             'repair_helpdesk.stage_repair_quote_approval',
+            'repair_helpdesk.stage_repair_initial_inspection',
             'repair_helpdesk.stage_repair_revised_approval',
             'repair_helpdesk.stage_repair_ready_for_repair',
-            'repair_helpdesk.stage_repair_initial_inspection',
+            'repair_helpdesk.stage_repair_diagnostics',
+            'repair_helpdesk.stage_repair_under_repair',
+            'repair_helpdesk.stage_repair_waiting_parts',
+            'repair_helpdesk.stage_repair_qc',
         }
         repair_stage_xmlids = {'repair_helpdesk.stage_repair_ready_for_repair'}
         incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
@@ -201,7 +205,7 @@ class HelpdeskTicket(models.Model):
             )
             overridden = any(done_inspections.mapped('repair_approved'))
 
-            active_quotations = ticket.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
+            active_quotations = ticket.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent', "sale"))
 
             ticket.x_is_repair_ticket = is_repair
             ticket.x_can_create_quotation = bool(
