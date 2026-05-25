@@ -1,7 +1,4 @@
 from odoo import fields, models, _
-import logging
-
-_logger = logging.getLogger(__name__)
 
 
 class RepairOrder(models.Model):
@@ -54,53 +51,17 @@ class RepairOrder(models.Model):
                 r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         return res
 
-    def write(self, vals):
-        _logger.info("=== repair.write called ids=%s vals=%s", self.ids, vals)
-        old_available = {}
-        for r in self:
-            self.env.cr.execute(
-                "SELECT is_parts_available FROM repair_order WHERE id = %s",
-                [r.id],
-            )
-            row = self.env.cr.fetchone()
-            db_val = row and row[0]
-            cache_val = r.is_parts_available
-            old_available[r.id] = db_val
-            _logger.info(
-                "  repair %s: DB is_parts_available=%s, cache is_parts_available=%s",
-                r.id, db_val, cache_val,
-            )
-        res = super().write(vals)
+    def _check_parts_and_update_ticket(self):
         for r in self:
             ticket = r.helpdesk_ticket_id
-            if not ticket:
-                _logger.info("  repair %s: no ticket, skip", r.id)
+            if not ticket or not r.is_parts_available:
                 continue
-            _logger.info(
-                "  repair %s: after write is_parts_available=%s, old=%s, ticket.stage_id=%s",
-                r.id, r.is_parts_available, old_available.get(r.id), ticket.stage_id.id,
+            waiting_stage = self.env.ref(
+                'repair_helpdesk.stage_repair_waiting_parts',
+                raise_if_not_found=False,
             )
-            if r.is_parts_available and not old_available.get(r.id):
-                waiting_stage = self.env.ref(
-                    'repair_helpdesk.stage_repair_waiting_parts',
-                    raise_if_not_found=False,
+            if waiting_stage and ticket.stage_id == waiting_stage:
+                ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
+                ticket.message_post(
+                    body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name
                 )
-                if waiting_stage and ticket.stage_id == waiting_stage:
-                    _logger.info("  -> MATCH! Moving ticket to Under Repair")
-                    ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
-                    ticket.message_post(
-                        body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name
-                    )
-                else:
-                    _logger.info(
-                        "  -> waiting_stage=%s, ticket.stage_id=%s",
-                        waiting_stage and waiting_stage.id,
-                        ticket.stage_id.id,
-                    )
-            else:
-                _logger.info(
-                    "  -> no match: is_parts_available=%s, old=%s",
-                    r.is_parts_available,
-                    old_available.get(r.id),
-                )
-        return res
