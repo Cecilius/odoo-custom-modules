@@ -5,7 +5,7 @@
     'category': 'Services/Helpdesk',
     'author': 'Reparero',
     'license': 'LGPL-3',
-    'depends': ['helpdesk', 'sale_management', 'product', 'repair', 'stock', 'delivery', 'quality'],
+    'depends': ['helpdesk', 'sale_management', 'product', 'repair', 'stock', 'delivery', 'quality', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'data/helpdesk_stage_data.xml',
@@ -18,7 +18,6 @@
         'views/inspection_views.xml',
         'views/sale_order_views.xml',
         'views/repair_order_views.xml',
-        'views/quality_control_views.xml',
     ],
     'installable': True,
     'application': False,

@@ -4,6 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class RepairHelpdeskIncomingInspection(models.Model):
     _name = 'repair_helpdesk.incoming_inspection'
+    _inherit = ['mail.thread']
     _description = 'Repair Helpdesk Incoming Inspection'
 
     name = fields.Char(string='Inspection Reference', required=True, copy=False, default='New')
@@ -24,14 +25,12 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Checklist Items',
         copy=True,
     )
-    general_image_ids = fields.One2many(
-        'repair_helpdesk.incoming_inspection.image',
-        'inspection_id',
-        string='General Pictures',
-        copy=True,
-    )
     ticket_in_inspection_stage = fields.Boolean(
         string='Ticket in Initial Inspection Stage',
+        compute='_compute_ticket_stage_flags',
+    )
+    ticket_in_qc_stage = fields.Boolean(
+        string='Ticket in QC Stage',
         compute='_compute_ticket_stage_flags',
     )
     repair_approved = fields.Boolean(string='Approved for Repair', default=False)
@@ -62,15 +61,33 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Reported Fault Confirmed',
     )
     reported_fault_notes = fields.Text(string='Fault Diagnosis Notes')
+    qc_status = fields.Selection(
+        [('draft', 'Draft'), ('done', 'Done')],
+        string='QC Status',
+        default='draft',
+    )
+    qc_note = fields.Text(string='QC Notes')
+    qc_line_ids = fields.One2many(
+        'repair_helpdesk.incoming_inspection.qc_line',
+        'inspection_id',
+        string='QC Checklist Items',
+        copy=True,
+    )
 
     @api.depends('helpdesk_ticket_id.stage_id')
     def _compute_ticket_stage_flags(self):
         initial_stage = self.env.ref('repair_helpdesk.stage_repair_initial_inspection', raise_if_not_found=False)
+        qc_stage = self.env.ref('repair_helpdesk.stage_repair_qc', raise_if_not_found=False)
         for inspection in self:
             inspection.ticket_in_inspection_stage = bool(
                 initial_stage
                 and inspection.helpdesk_ticket_id
                 and inspection.helpdesk_ticket_id.stage_id == initial_stage
+            )
+            inspection.ticket_in_qc_stage = bool(
+                qc_stage
+                and inspection.helpdesk_ticket_id
+                and inspection.helpdesk_ticket_id.stage_id == qc_stage
             )
 
     @api.depends('line_ids.result')
@@ -101,6 +118,15 @@ class RepairHelpdeskIncomingInspection(models.Model):
         ]
         lines = [(0, 0, {'name': item, 'sequence': i + 1}) for i, item in enumerate(default_items)]
         self.write({'line_ids': lines})
+
+    def _create_default_qc_lines(self):
+        default_items = [
+            'Overall condition / New damage',
+            'Reported fault repaired',
+            'Device cleaned',
+        ]
+        lines = [(0, 0, {'name': item, 'sequence': i + 1}) for i, item in enumerate(default_items)]
+        self.write({'qc_line_ids': lines})
 
     def action_done(self):
         self.ensure_one()
@@ -148,6 +174,25 @@ class RepairHelpdeskIncomingInspection(models.Model):
             body=_('Incoming inspection %s approved for repair:\n%s') % (self.name, self.repair_approve_note)
         )
 
+    def action_qc_done(self):
+        self.ensure_one()
+        if self.qc_status == 'done':
+            return
+        if not self.ticket_in_qc_stage:
+            raise UserError(_('QC can only be completed when the ticket is in the "Quality control" stage.'))
+        if not self.qc_line_ids:
+            raise UserError(_('Please fill in the QC checklist items before completing the QC.'))
+        unset_lines = self.qc_line_ids.filtered(lambda l: not l.result)
+        if unset_lines:
+            raise UserError(_('All QC checklist items must have a result before completing the QC.'))
+        self.qc_status = 'done'
+        ticket = self.helpdesk_ticket_id
+        failed_lines = self.qc_line_ids.filtered(lambda l: l.result == 'fail')
+        if failed_lines:
+            self._handle_qc_failed(ticket, failed_lines)
+        else:
+            self._handle_qc_passed(ticket)
+
     def _handle_inspection_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         ticket.message_post(
@@ -189,6 +234,55 @@ class RepairHelpdeskIncomingInspection(models.Model):
             }
         )
 
+    def _handle_qc_passed(self, ticket):
+        ticket._set_stage('repair_helpdesk.stage_repair_finished')
+        ticket.message_post(
+            body=_('Quality control %s completed. All checks passed.') % self.name
+        )
+
+    def _handle_qc_failed(self, ticket, failed_lines):
+        failed_names = ', '.join(failed_lines.mapped('name'))
+        failed_details = '\n'.join(
+            '%s: %s' % (line.name, line.comment)
+            for line in failed_lines
+        )
+        alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
+        self.env['quality.alert'].create({
+            'name': _('Quality control failure: %s') % self.name,
+            'team_id': alert_team.id,
+            'company_id': alert_team.company_id.id or self.env.company.id,
+            'description': _(
+                'The following checks failed during quality control %(qc)s for ticket %(ticket)s:\n'
+                '%(items)s\n\n'
+                'Comments:\n'
+                '%(details)s'
+            ) % {
+                'qc': self.name,
+                'ticket': ticket.display_name,
+                'items': failed_names,
+                'details': failed_details,
+            },
+        })
+        repair = self.env['repair.order'].create({
+            'partner_id': ticket.partner_id.id,
+            'product_qty': 1.0,
+            'name': ticket.ticket_ref or ticket.name,
+            'helpdesk_ticket_id': ticket.id,
+            'under_warranty': False,
+            'description': _('Rework for QC failures: %s') % failed_names,
+        })
+        ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
+        ticket.message_post(
+            body=_(
+                'Quality control %(qc)s completed with failures: %(items)s. '
+                'New repair order %(repair)s created. Ticket moved to Under Repair.'
+            ) % {
+                'qc': self.name,
+                'items': failed_names,
+                'repair': repair.name,
+            }
+        )
+
 
 class RepairHelpdeskIncomingInspectionLine(models.Model):
     _name = 'repair_helpdesk.incoming_inspection.line'
@@ -208,13 +302,35 @@ class RepairHelpdeskIncomingInspectionLine(models.Model):
         string='Result',
     )
     comment = fields.Text(string='Comment')
-    image = fields.Binary(string='Picture', attachment=True)
 
-    @api.constrains('result', 'comment', 'image')
+    @api.constrains('result', 'comment')
     def _check_fail_requirements(self):
         for line in self:
-            if line.result == 'fail':
-                if not line.comment:
-                    raise ValidationError(_('A comment is required when "%s" is marked as failed.') % line.name)
-                if not line.image:
-                    raise ValidationError(_('A picture is required when "%s" is marked as failed.') % line.name)
+            if line.result == 'fail' and not line.comment:
+                raise ValidationError(_('A comment is required when "%s" is marked as failed.') % line.name)
+
+
+class RepairHelpdeskIncomingInspectionQcLine(models.Model):
+    _name = 'repair_helpdesk.incoming_inspection.qc_line'
+    _description = 'Repair Helpdesk Incoming Inspection QC Checklist Item'
+    _order = 'sequence, id'
+
+    inspection_id = fields.Many2one(
+        'repair_helpdesk.incoming_inspection',
+        string='Inspection',
+        required=True,
+        ondelete='cascade',
+    )
+    sequence = fields.Integer(string='Sequence', default=10)
+    name = fields.Char(string='Checklist Item', required=True)
+    result = fields.Selection(
+        [('pass', 'Pass'), ('fail', 'Fail'), ('na', 'N/A')],
+        string='Result',
+    )
+    comment = fields.Text(string='Comment')
+
+    @api.constrains('result', 'comment')
+    def _check_fail_requirements(self):
+        for line in self:
+            if line.result == 'fail' and not line.comment:
+                raise ValidationError(_('A comment is required when "%s" is marked as failed.') % line.name)

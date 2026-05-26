@@ -40,11 +40,13 @@ class RepairOrder(models.Model):
     def action_repair_end(self):
         res = super().action_repair_end()
         for r in self:
-            if r.helpdesk_ticket_id:
-                r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_qc')
-                self.env['repair_helpdesk.quality_control'].create({
-                    'helpdesk_ticket_id': r.helpdesk_ticket_id.id,
-                })
+            ticket = r.helpdesk_ticket_id
+            if not ticket:
+                continue
+            ticket._set_stage('repair_helpdesk.stage_repair_qc')
+            inspection = ticket.inspection_ids[:1]
+            if inspection and not inspection.qc_line_ids:
+                inspection._create_default_qc_lines()
         return res
 
     def action_cancel(self):

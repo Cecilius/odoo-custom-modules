@@ -62,11 +62,6 @@ class HelpdeskTicket(models.Model):
         string='Inspection Count',
         compute='_compute_related_counts',
     )
-    quality_control_ids = fields.One2many(
-        'repair_helpdesk.quality_control',
-        'helpdesk_ticket_id',
-        string='Quality Controls',
-    )
     quality_control_count = fields.Integer(
         string='QC Count',
         compute='_compute_related_counts',
@@ -146,7 +141,7 @@ class HelpdeskTicket(models.Model):
         store=False,
     )
 
-    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids', 'quality_control_ids')
+    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
         for ticket in self:
@@ -156,7 +151,7 @@ class HelpdeskTicket(models.Model):
             ticket.incoming_picking_count = len(ticket.incoming_picking_ids)
             ticket.outgoing_picking_count = len(ticket.outgoing_picking_ids)
             ticket.inspection_count = len(ticket.inspection_ids)
-            ticket.quality_control_count = len(ticket.quality_control_ids)
+            ticket.quality_control_count = len(ticket.inspection_ids.filtered('qc_line_ids'))
 
     @api.depends(
         'team_id',
@@ -432,22 +427,22 @@ class HelpdeskTicket(models.Model):
 
     def action_view_quality_controls(self):
         self.ensure_one()
-        if self.quality_control_count == 1:
+        inspections = self.inspection_ids.filtered('qc_line_ids')
+        if len(inspections) == 1:
             return {
                 'type': 'ir.actions.act_window',
-                'name': _('Quality Control'),
-                'res_model': 'repair_helpdesk.quality_control',
+                'name': _('Inspection'),
+                'res_model': 'repair_helpdesk.incoming_inspection',
                 'view_mode': 'form',
-                'res_id': self.quality_control_ids[:1].id,
+                'res_id': inspections[:1].id,
                 'target': 'current',
             }
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Quality Controls'),
-            'res_model': 'repair_helpdesk.quality_control',
+            'name': _('Inspections'),
+            'res_model': 'repair_helpdesk.incoming_inspection',
             'view_mode': 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
-            'context': {'default_helpdesk_ticket_id': self.id},
             'target': 'current',
         }
 

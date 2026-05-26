@@ -36,18 +36,18 @@ The module orchestrates 7 Odoo modules: `helpdesk`, `sale_management`, `product`
 
 ### Incoming inspection (current design)
 
-The inspection system was simplified from a dual-system approach (Odoo native `quality.point`/`quality.check` + custom `incoming_inspection` model) to a single custom model:
+The inspection system is a single unified model handling both initial inspection and quality control:
 
-- **Model**: `repair_helpdesk.incoming_inspection` with `repair_helpdesk.incoming_inspection.line`
+- **Model**: `repair_helpdesk.incoming_inspection` (`_inherit = ['mail.thread']` for chatter attachments)
+- **Sub-models**: `repair_helpdesk.incoming_inspection.line` (inspection checklist) and `repair_helpdesk.incoming_inspection.qc_line` (QC checklist)
 - **Creation**: Created manually via "Create Inspection Checklist" button on the ticket (when in "Received / Initial Inspection" stage).
-- **3 fixed sub-checks**: Drop damage, Water damage or corrosion, Excessive contamination. Each line has `result` (pass/fail/na), `comment`, and `image` (Binary, attachment=True).
-- **Fail enforcement**: If `result == 'fail'`, both `comment` and `image` are required (enforced via `@api.constrains`).
-- **Completion** (`action_done`): All pass/na → ticket moves to "Ready for Repair". Any fail → create `quality.alert`, post message, hold stage. Failed inspections can be overridden via "Approve for Repair" (requires reason note) which also moves ticket to "Ready for Repair".
-- **Stage gate**: "Complete Inspection" button only works when the ticket is in "Received / Initial Inspection" stage (`ticket_in_inspection_stage` computed field).
-- **Repair gate**: "Create Repair Order" button requires the ticket to be in "Ready for Repair" stage AND inspection completed AND (no failures OR repair_approved).
-- **Images**: Stored as `fields.Binary(attachment=True)` — automatically stored as `ir.attachment` records.
-- **Alerts**: `quality` is still in `depends` for creating `quality.alert` records on inspection failures.
-- **Quotation from repair**: When creating a sale order from `repair.order`, the context carries the ticket ID. The created quotation is auto-linked to the helpdesk ticket, enabling stage transitions on send/confirm.
+- **3 fixed sub-checks**: Drop damage, Water damage or corrosion, Excessive contamination.
+- **Fail enforcement**: If `result == 'fail'`, a `comment` is required (enforced via `@api.constrains`).
+- **Pictures**: Uploaded as chatter attachments — no custom image fields or models.
+- **Completion** (`action_done`): All pass/na → ticket moves to "Ready for Repair". Any fail → create `quality.alert`, hold stage. Failed inspections can be overridden via "Approve for Repair" (requires reason note).
+- **Stage gate**: "Complete Inspection" button only works when the ticket is in "Received / Initial Inspection" stage.
+- **QC**: Default QC lines auto-created when `action_repair_end()` fires. "Complete QC" button works when ticket is in "Quality control" stage. Pass → "Repair finished", fail → new repair + Under Repair.
+- **Alerts**: `quality` in `depends` for creating `quality.alert` records on inspection/QC failures.
 
 ### Flow
 

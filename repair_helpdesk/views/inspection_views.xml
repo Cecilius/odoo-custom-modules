@@ -1,51 +1,4 @@
 <odoo>
-    <record id="view_inspection_image_tree" model="ir.ui.view">
-        <field name="name">repair_helpdesk.incoming_inspection.image.tree</field>
-        <field name="model">repair_helpdesk.incoming_inspection.image</field>
-        <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="sequence" widget="handle"/>
-                <field name="image" widget="image" nolabel="1"
-                       options='{"zoom":true,"size":[0,90]}'/>
-                <field name="description"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="view_inspection_image_form" model="ir.ui.view">
-        <field name="name">repair_helpdesk.incoming_inspection.image.form</field>
-        <field name="model">repair_helpdesk.incoming_inspection.image</field>
-        <field name="arch" type="xml">
-            <form string="Picture">
-                <group>
-                    <field name="image" widget="image" nolabel="1"
-                           options='{"zoom":true}'/>
-                    <field name="description" placeholder="What does this show?"/>
-                </group>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_inspection_image_kanban" model="ir.ui.view">
-        <field name="name">repair_helpdesk.incoming_inspection.image.kanban</field>
-        <field name="model">repair_helpdesk.incoming_inspection.image</field>
-        <field name="arch" type="xml">
-            <kanban>
-                <templates>
-                    <t t-name="card">
-                        <div class="oe_kanban_card">
-                            <field name="image" widget="image"
-                                   options='{"size":[0,150],"zoom":true}'/>
-                            <div class="oe_kanban_content">
-                                <field name="description"/>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
     <record id="view_repair_helpdesk_incoming_inspection_line_list" model="ir.ui.view">
         <field name="name">repair_helpdesk.incoming_inspection.line.list</field>
         <field name="model">repair_helpdesk.incoming_inspection.line</field>
@@ -58,7 +11,6 @@
                        decoration-danger="result == 'fail'"
                        decoration-info="result == 'na'"/>
                 <field name="comment" optional="show"/>
-                <field name="image" optional="show" widget="image" options="{&quot;zoom&quot;:true,&quot;reload&quot;:true,&quot;size&quot;:[0,90]}"/>
             </list>
         </field>
     </record>
@@ -73,7 +25,37 @@
                     <field name="result"/>
                     <field name="comment" widget="text"
                            placeholder="Required if failed — describe findings..."/>
-                    <field name="image" widget="image" string="Picture" nolabel="1"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_repair_helpdesk_incoming_inspection_qc_line_list" model="ir.ui.view">
+        <field name="name">repair_helpdesk.incoming_inspection.qc_line.list</field>
+        <field name="model">repair_helpdesk.incoming_inspection.qc_line</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="result" widget="selection_badge"
+                       decoration-success="result == 'pass'"
+                       decoration-danger="result == 'fail'"
+                       decoration-info="result == 'na'"/>
+                <field name="comment" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_repair_helpdesk_incoming_inspection_qc_line_form" model="ir.ui.view">
+        <field name="name">repair_helpdesk.incoming_inspection.qc_line.form</field>
+        <field name="model">repair_helpdesk.incoming_inspection.qc_line</field>
+        <field name="arch" type="xml">
+            <form string="QC Checklist Item">
+                <group>
+                    <field name="name" readonly="1"/>
+                    <field name="result"/>
+                    <field name="comment" widget="text"
+                           placeholder="Required if failed — describe findings..."/>
                 </group>
             </form>
         </field>
@@ -83,16 +65,18 @@
         <field name="name">repair_helpdesk.incoming_inspection.form</field>
         <field name="model">repair_helpdesk.incoming_inspection</field>
         <field name="arch" type="xml">
-            <form string="Incoming Inspection">
+            <form string="Inspection / Quality Control">
                 <header>
                     <button name="action_done" type="object" string="Complete Inspection"
                             class="btn-primary"
                             invisible="status == 'done' or not ticket_in_inspection_stage"/>
                     <button name="action_approve_for_repair" type="object" string="Approve for Repair"
                             invisible="status != 'done' or not has_failures or repair_approved"/>
+                    <button name="action_qc_done" type="object" string="Complete QC"
+                            class="btn-primary"
+                            invisible="qc_status == 'done' or not ticket_in_qc_stage"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft"
                             invisible="status != 'done'"/>
-                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -110,42 +94,57 @@
                             <field name="device_description" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Customer Reported (for reference)">
-                        <group>
-                            <field name="customer_reported_drop"/>
-                        </group>
-                        <group>
-                            <field name="customer_reported_water"/>
-                        </group>
-                        <group>
-                            <field name="customer_reported_contamination"/>
-                        </group>
-                    </group>
-                    <group string="Reported Issue" readonly="status == 'done'">
-                        <field name="customer_reported_issue" widget="text" nolabel="1"/>
-                    </group>
-                    <group string="Fault Confirmation" readonly="status == 'done'">
-                        <field name="reported_fault_confirmed"/>
-                        <field name="reported_fault_notes" widget="text"
-                               placeholder="Describe findings about the reported fault..."/>
-                    </group>
-                    <group string="Notes">
-                        <field name="inspection_note" placeholder="General inspection notes..."
-                               readonly="status == 'done'"/>
-                    </group>
-                    <group string="Inspection Checklist">
-                        <field name="line_ids"
-                               readonly="status == 'done'"/>
-                    </group>
-                    <group string="General Pictures">
-                        <field name="general_image_ids"/>
-                    </group>
-                    <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">
-                        <field name="repair_approve_note"
-                               placeholder="Enter the reason for approving this repair despite inspection failures..."
-                               widget="text"/>
-                    </group>
+                    <notebook>
+                        <page string="Initial Inspection">
+                            <group string="Customer Reported (for reference)">
+                                <group>
+                                    <field name="customer_reported_drop"/>
+                                </group>
+                                <group>
+                                    <field name="customer_reported_water"/>
+                                </group>
+                                <group>
+                                    <field name="customer_reported_contamination"/>
+                                </group>
+                            </group>
+                            <group string="Reported Issue" readonly="status == 'done'">
+                                <field name="customer_reported_issue" widget="text" nolabel="1"/>
+                            </group>
+                            <group string="Fault Confirmation" readonly="status == 'done'">
+                                <field name="reported_fault_confirmed"/>
+                                <field name="reported_fault_notes" widget="text"
+                                       placeholder="Describe findings about the reported fault..."/>
+                            </group>
+                            <group string="Notes">
+                                <field name="inspection_note" placeholder="General inspection notes..."
+                                       readonly="status == 'done'"/>
+                            </group>
+                            <group string="Inspection Checklist">
+                                <field name="line_ids"
+                                       readonly="status == 'done'"/>
+                            </group>
+                            <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">
+                                <field name="repair_approve_note"
+                                       placeholder="Enter the reason for approving this repair despite inspection failures..."
+                                       widget="text"/>
+                            </group>
+                        </page>
+                        <page string="Quality Control" invisible="not qc_line_ids">
+                            <group string="QC Notes">
+                                <field name="qc_note" placeholder="General QC notes..."
+                                       readonly="qc_status == 'done'"/>
+                            </group>
+                            <group string="QC Checklist">
+                                <field name="qc_line_ids"
+                                       readonly="qc_status == 'done'"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
@@ -154,21 +153,22 @@
         <field name="name">repair_helpdesk.incoming_inspection.list</field>
         <field name="model">repair_helpdesk.incoming_inspection</field>
         <field name="arch" type="xml">
-            <list string="Incoming Inspections">
+            <list string="Inspections">
                 <field name="name"/>
                 <field name="ticket_ref"/>
                 <field name="partner_id"/>
                 <field name="status"/>
+                <field name="qc_status"/>
             </list>
         </field>
     </record>
 
     <record id="action_repair_helpdesk_incoming_inspection" model="ir.actions.act_window">
-        <field name="name">Incoming Inspections</field>
+        <field name="name">Inspections</field>
         <field name="res_model">repair_helpdesk.incoming_inspection</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
-            <p>Create and review incoming inspection checklists for repair tickets.</p>
+            <p>Create and review inspection checklists for repair tickets.</p>
         </field>
     </record>
 </odoo>
