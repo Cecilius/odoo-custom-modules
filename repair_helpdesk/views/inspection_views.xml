@@ -18,10 +18,32 @@
         <field name="arch" type="xml">
             <form string="Picture">
                 <group>
-                    <field name="image" widget="image" nolabel="1"/>
+                    <field name="image" widget="image" nolabel="1"
+                           options='{"zoom":true}'/>
                     <field name="description" placeholder="What does this show?"/>
                 </group>
             </form>
+        </field>
+    </record>
+
+    <record id="view_inspection_image_kanban" model="ir.ui.view">
+        <field name="name">repair_helpdesk.incoming_inspection.image.kanban</field>
+        <field name="model">repair_helpdesk.incoming_inspection.image</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_image_grid">
+                <field name="image" widget="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card">
+                            <field name="image" widget="image"
+                                   options='{"size":[0,150],"zoom":true}'/>
+                            <div class="oe_kanban_content">
+                                <field name="description"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
@@ -118,7 +140,9 @@
                     </group>
                     <group string="General Pictures">
                         <field name="general_image_ids"
+                               mode="kanban,tree,form"
                                context="{'tree_view_ref': 'repair_helpdesk.view_inspection_image_tree',
+                                         'kanban_view_ref': 'repair_helpdesk.view_inspection_image_kanban',
                                          'form_view_ref': 'repair_helpdesk.view_inspection_image_form'}"/>
                     </group>
                     <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">

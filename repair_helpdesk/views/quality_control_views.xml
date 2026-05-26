@@ -1,14 +1,22 @@
 <odoo>
-    <record id="view_quality_control_image_tree" model="ir.ui.view">
-        <field name="name">repair_helpdesk.quality_control.image.tree</field>
+    <record id="view_quality_control_image_kanban" model="ir.ui.view">
+        <field name="name">repair_helpdesk.quality_control.image.kanban</field>
         <field name="model">repair_helpdesk.quality_control.image</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="sequence" widget="handle"/>
-                <field name="image" widget="image" nolabel="1"
-                       options='{"zoom":true,"size":[0,90]}'/>
-                <field name="description"/>
-            </list>
+            <kanban class="o_kanban_image_grid">
+                <field name="image" widget="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card">
+                            <field name="image" widget="image"
+                                   options='{"size":[0,150],"zoom":true}'/>
+                            <div class="oe_kanban_content">
+                                <field name="description"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
@@ -18,7 +26,8 @@
         <field name="arch" type="xml">
             <form string="Picture">
                 <group>
-                    <field name="image" widget="image" nolabel="1"/>
+                    <field name="image" widget="image" nolabel="1"
+                           options='{"zoom":true}'/>
                     <field name="description" placeholder="What does this show?"/>
                 </group>
             </form>
@@ -84,25 +93,40 @@
                             <field name="device_description" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Notes">
-                        <field name="qc_note" placeholder="General QC notes..."
-                               readonly="status == 'done'"/>
-                    </group>
-                    <group string="QC Checklist">
-                        <field name="line_ids"
-                               readonly="status == 'done'"/>
-                    </group>
-                    <group string="General Pictures">
-                        <field name="general_image_ids"
-                               context="{'tree_view_ref': 'repair_helpdesk.view_quality_control_image_tree',
-                                         'form_view_ref': 'repair_helpdesk.view_quality_control_image_form'}"/>
-                    </group>
-                    <group string="Initial Inspection Reference" colspan="2"
-                           invisible="not inspection_summary">
-                        <field name="inspection_id"/>
-                        <field name="inspection_summary" widget="text" nolabel="1"
-                               placeholder="Initial inspection reference will appear here..."/>
-                    </group>
+                    <notebook>
+                        <page string="QC Details">
+                            <group string="Notes">
+                                <field name="qc_note" placeholder="General QC notes..."
+                                       readonly="status == 'done'"/>
+                            </group>
+                            <group string="QC Checklist">
+                                <field name="line_ids"
+                                       readonly="status == 'done'"/>
+                            </group>
+                            <group string="Pictures">
+                                <field name="general_image_ids"
+                                       mode="kanban,tree,form"
+                                       context="{'tree_view_ref': 'repair_helpdesk.view_quality_control_image_tree',
+                                                 'kanban_view_ref': 'repair_helpdesk.view_quality_control_image_kanban',
+                                                 'form_view_ref': 'repair_helpdesk.view_quality_control_image_form'}"/>
+                            </group>
+                        </page>
+                        <page string="Initial Inspection" invisible="not inspection_id">
+                            <group string="Inspection" colspan="2">
+                                <field name="inspection_id"/>
+                            </group>
+                            <group string="Fault Confirmation" colspan="2">
+                                <field name="inspection_summary" widget="text" nolabel="1"/>
+                            </group>
+                            <group string="Inspection Pictures" invisible="not inspection_image_ids">
+                                <field name="inspection_image_ids"
+                                       mode="kanban,tree,form"
+                                       context="{'tree_view_ref': 'repair_helpdesk.view_inspection_image_tree',
+                                                 'kanban_view_ref': 'repair_helpdesk.view_inspection_image_kanban',
+                                                 'form_view_ref': 'repair_helpdesk.view_inspection_image_form'}"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

@@ -35,10 +35,18 @@ class RepairHelpdeskQualityControl(models.Model):
         string='Initial Inspection',
         compute='_compute_inspection_ref',
         readonly=True,
+        store=True,
     )
     inspection_summary = fields.Text(
         string='Initial Inspection Summary',
         compute='_compute_inspection_ref',
+        readonly=True,
+    )
+    inspection_image_ids = fields.One2many(
+        'repair_helpdesk.incoming_inspection.image',
+        'inspection_id',
+        string='Inspection Pictures',
+        compute='_compute_inspection_image_ids',
         readonly=True,
     )
 
@@ -69,6 +77,15 @@ class RepairHelpdeskQualityControl(models.Model):
             else:
                 qc.inspection_summary = False
 
+    @api.depends('inspection_id')
+    def _compute_inspection_image_ids(self):
+        for qc in self:
+            qc.inspection_image_ids = (
+                qc.inspection_id.general_image_ids
+                if qc.inspection_id
+                else self.env['repair_helpdesk.incoming_inspection.image']
+            )
+
     @api.model_create_multi
     def create(self, vals_list):
         if not vals_list:
@@ -80,7 +97,28 @@ class RepairHelpdeskQualityControl(models.Model):
         for qc in qcs:
             if not qc.line_ids:
                 qc._create_default_lines()
+            qc._post_inspection_to_chatter()
         return qcs
+
+    def _post_inspection_to_chatter(self):
+        insp = self.inspection_id
+        if not insp:
+            return
+        lines = []
+        for line in insp.line_ids:
+            result_label = dict(line._fields['result'].selection).get(line.result, '-')
+            line_text = '%s: %s' % (line.name, result_label)
+            if line.comment:
+                line_text += '\n    Comment: %s' % line.comment
+            lines.append(line_text)
+        body = _('Initial Inspection %s Summary:\n\n') % insp.name
+        body += '\n'.join(lines)
+        if insp.reported_fault_confirmed:
+            confirmed = dict(insp._fields['reported_fault_confirmed'].selection).get(insp.reported_fault_confirmed, '-')
+            body += '\n\nFault confirmed: %s' % confirmed
+        if insp.reported_fault_notes:
+            body += '\n\nFault diagnosis: %s' % insp.reported_fault_notes
+        self.message_post(body=body)
 
     def _create_default_lines(self):
         default_items = [
