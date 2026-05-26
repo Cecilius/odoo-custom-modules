@@ -24,6 +24,50 @@ class RepairHelpdeskQualityControl(models.Model):
         string='Checklist Items',
         copy=True,
     )
+    general_image_ids = fields.One2many(
+        'repair_helpdesk.quality_control.image',
+        'qc_id',
+        string='General Pictures',
+        copy=True,
+    )
+    inspection_id = fields.Many2one(
+        'repair_helpdesk.incoming_inspection',
+        string='Initial Inspection',
+        compute='_compute_inspection_ref',
+        readonly=True,
+    )
+    inspection_summary = fields.Text(
+        string='Initial Inspection Summary',
+        compute='_compute_inspection_ref',
+        readonly=True,
+    )
+
+    @api.depends('helpdesk_ticket_id.inspection_ids')
+    def _compute_inspection_ref(self):
+        for qc in self:
+            inspections = qc.helpdesk_ticket_id.inspection_ids
+            insp = inspections.sorted('id', reverse=True)[:1]
+            qc.inspection_id = insp if inspections else False
+            if insp:
+                lines = '\n'.join(
+                    '  %s: %s' % (line.name, dict(line._fields['result'].selection).get(line.result, '-'))
+                    for line in insp.line_ids
+                )
+                issue = qc.helpdesk_ticket_id.x_reported_issue or ''
+                confirmed = dict(
+                    insp._fields['reported_fault_confirmed'].selection
+                ).get(insp.reported_fault_confirmed, '-') if insp.reported_fault_confirmed else '-'
+                qc.inspection_summary = _(
+                    'Reported issue: %(issue)s\n'
+                    'Fault confirmed: %(confirmed)s\n'
+                    'Checklist:\n%(lines)s'
+                ) % {
+                    'issue': issue or '(not specified)',
+                    'confirmed': confirmed,
+                    'lines': lines or '(no checklist items)',
+                }
+            else:
+                qc.inspection_summary = False
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -7,4 +7,5 @@ from . import repair_order
 from . import stock_picking
 from . import stock_move
 from . import quality_control
+from . import incoming_inspection_image
 

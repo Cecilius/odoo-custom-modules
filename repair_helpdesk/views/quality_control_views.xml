@@ -1,4 +1,30 @@
 <odoo>
+    <record id="view_quality_control_image_tree" model="ir.ui.view">
+        <field name="name">repair_helpdesk.quality_control.image.tree</field>
+        <field name="model">repair_helpdesk.quality_control.image</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="image" widget="image" nolabel="1"
+                       options='{"zoom":true,"size":[0,90]}'/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_quality_control_image_form" model="ir.ui.view">
+        <field name="name">repair_helpdesk.quality_control.image.form</field>
+        <field name="model">repair_helpdesk.quality_control.image</field>
+        <field name="arch" type="xml">
+            <form string="Picture">
+                <group>
+                    <field name="image" widget="image" nolabel="1"/>
+                    <field name="description" placeholder="What does this show?"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
     <record id="view_repair_helpdesk_quality_control_line_list" model="ir.ui.view">
         <field name="name">repair_helpdesk.quality_control.line.list</field>
         <field name="model">repair_helpdesk.quality_control.line</field>
@@ -65,6 +91,17 @@
                     <group string="QC Checklist">
                         <field name="line_ids"
                                readonly="status == 'done'"/>
+                    </group>
+                    <group string="General Pictures">
+                        <field name="general_image_ids"
+                               context="{'tree_view_ref': 'repair_helpdesk.view_quality_control_image_tree',
+                                         'form_view_ref': 'repair_helpdesk.view_quality_control_image_form'}"/>
+                    </group>
+                    <group string="Initial Inspection Reference" colspan="2"
+                           invisible="not inspection_summary">
+                        <field name="inspection_id"/>
+                        <field name="inspection_summary" widget="text" nolabel="1"
+                               placeholder="Initial inspection reference will appear here..."/>
                     </group>
                 </sheet>
             </form>

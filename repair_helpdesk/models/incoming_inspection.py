@@ -24,6 +24,12 @@ class RepairHelpdeskIncomingInspection(models.Model):
         string='Checklist Items',
         copy=True,
     )
+    general_image_ids = fields.One2many(
+        'repair_helpdesk.incoming_inspection.image',
+        'inspection_id',
+        string='General Pictures',
+        copy=True,
+    )
     ticket_in_inspection_stage = fields.Boolean(
         string='Ticket in Initial Inspection Stage',
         compute='_compute_ticket_stage_flags',

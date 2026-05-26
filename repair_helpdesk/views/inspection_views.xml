@@ -1,4 +1,30 @@
 <odoo>
+    <record id="view_inspection_image_tree" model="ir.ui.view">
+        <field name="name">repair_helpdesk.incoming_inspection.image.tree</field>
+        <field name="model">repair_helpdesk.incoming_inspection.image</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="image" widget="image" nolabel="1"
+                       options='{"zoom":true,"size":[0,90]}'/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_inspection_image_form" model="ir.ui.view">
+        <field name="name">repair_helpdesk.incoming_inspection.image.form</field>
+        <field name="model">repair_helpdesk.incoming_inspection.image</field>
+        <field name="arch" type="xml">
+            <form string="Picture">
+                <group>
+                    <field name="image" widget="image" nolabel="1"/>
+                    <field name="description" placeholder="What does this show?"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
     <record id="view_repair_helpdesk_incoming_inspection_line_list" model="ir.ui.view">
         <field name="name">repair_helpdesk.incoming_inspection.line.list</field>
         <field name="model">repair_helpdesk.incoming_inspection.line</field>
@@ -89,6 +115,11 @@
                     <group string="Inspection Checklist">
                         <field name="line_ids"
                                readonly="status == 'done'"/>
+                    </group>
+                    <group string="General Pictures">
+                        <field name="general_image_ids"
+                               context="{'tree_view_ref': 'repair_helpdesk.view_inspection_image_tree',
+                                         'form_view_ref': 'repair_helpdesk.view_inspection_image_form'}"/>
                     </group>
                     <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">
                         <field name="repair_approve_note"
