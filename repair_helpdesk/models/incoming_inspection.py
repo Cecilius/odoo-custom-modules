@@ -267,23 +267,14 @@ class RepairHelpdeskIncomingInspection(models.Model):
         })
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'under_repair'
-        repair = self.env['repair.order'].create({
-            'partner_id': ticket.partner_id.id,
-            'product_qty': 1.0,
-            'name': ticket.ticket_ref or ticket.name,
-            'helpdesk_ticket_id': ticket.id,
-            'under_warranty': False,
-            'description': _('Rework for QC failures: %s') % failed_names,
-        })
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
             body=_(
                 'Quality control %(qc)s completed with failures: %(items)s. '
-                'New repair order %(repair)s created. Ticket moved to Under Repair.'
+                'Repair reopened for rework. Ticket moved to Under Repair.'
             ) % {
                 'qc': self.name,
                 'items': failed_names,
-                'repair': repair.name,
             }
         )
 
