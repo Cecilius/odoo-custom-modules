@@ -2,7 +2,7 @@ from odoo import fields, models, _
 
 
 class RepairOrder(models.Model):
-    _inherit = 'repair.order'
+    _inherit = ['repair.order', 'mail.thread']
 
     # Reverse link to the originating helpdesk ticket.
     # This keeps repairs and support requests connected in both directions.
@@ -47,7 +47,9 @@ class RepairOrder(models.Model):
                 continue
             ticket._set_stage('repair_helpdesk.stage_repair_qc')
             inspection = ticket.inspection_ids[:1]
-            if inspection and not inspection.qc_line_ids:
+            if inspection:
+                inspection.qc_line_ids.unlink()
+                inspection.qc_status = 'draft'
                 inspection._create_default_qc_lines()
         return res
 

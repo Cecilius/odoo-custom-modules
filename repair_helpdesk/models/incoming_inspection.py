@@ -238,6 +238,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
         ticket._set_stage('repair_helpdesk.stage_repair_finished')
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'done'
+            repair.message_post(body=_('Quality control passed. All checks OK.'))
         ticket.message_post(
             body=_('Quality control %s completed. All checks passed.') % self.name
         )
@@ -265,8 +266,20 @@ class RepairHelpdeskIncomingInspection(models.Model):
                 'details': failed_details,
             },
         })
+        self.message_post(
+            body=_('Quality control failed.\n\nFailed checks:\n%(items)s\n\nDetails:\n%(details)s') % {
+                'items': failed_names,
+                'details': failed_details,
+            }
+        )
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'under_repair'
+            repair.message_post(
+                body=_('Quality control failed. Rework required:\n%(items)s\n\nDetails:\n%(details)s') % {
+                    'items': failed_names,
+                    'details': failed_details,
+                }
+            )
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
             body=_(
