@@ -47,6 +47,15 @@ class RepairHelpdeskIncomingInspection(models.Model):
         related='helpdesk_ticket_id.x_reported_contamination',
         readonly=True,
     )
+    customer_reported_issue = fields.Text(
+        related='helpdesk_ticket_id.x_reported_issue',
+        readonly=True,
+    )
+    reported_fault_confirmed = fields.Selection(
+        [('yes', 'Yes - fault found'), ('no', 'No - fault not found'), ('partial', 'Partial - symptoms exist but different cause')],
+        string='Reported Fault Confirmed',
+    )
+    reported_fault_notes = fields.Text(string='Fault Diagnosis Notes')
 
     @api.depends('helpdesk_ticket_id.stage_id')
     def _compute_ticket_stage_flags(self):

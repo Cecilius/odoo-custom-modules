@@ -42,6 +42,9 @@ class RepairOrder(models.Model):
         for r in self:
             if r.helpdesk_ticket_id:
                 r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_qc')
+                self.env['repair_helpdesk.quality_control'].create({
+                    'helpdesk_ticket_id': r.helpdesk_ticket_id.id,
+                })
         return res
 
     def action_cancel(self):

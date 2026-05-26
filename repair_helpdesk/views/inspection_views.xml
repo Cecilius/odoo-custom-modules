@@ -74,6 +74,14 @@
                             <field name="customer_reported_contamination"/>
                         </group>
                     </group>
+                    <group string="Reported Issue" readonly="status == 'done'">
+                        <field name="customer_reported_issue" widget="text" nolabel="1"/>
+                    </group>
+                    <group string="Fault Confirmation" readonly="status == 'done'">
+                        <field name="reported_fault_confirmed"/>
+                        <field name="reported_fault_notes" widget="text"
+                               placeholder="Describe findings about the reported fault..."/>
+                    </group>
                     <group string="Notes">
                         <field name="inspection_note" placeholder="General inspection notes..."
                                readonly="status == 'done'"/>

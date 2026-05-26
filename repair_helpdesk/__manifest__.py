@@ -18,6 +18,7 @@
         'views/inspection_views.xml',
         'views/sale_order_views.xml',
         'views/repair_order_views.xml',
+        'views/quality_control_views.xml',
     ],
     'installable': True,
     'application': False,

@@ -57,6 +57,9 @@ Ticket → Create incoming picking → Validate picking →
   Complete → pass: Ready for Repair / fail: alert + hold
     → Ready for Repair → Create Repair → Diagnostics
     → Revise Quotation → Waiting for revised approval
+    → Confirm repair → Diagnostics → Start repair → Under Repair
+    → End repair → QC (auto-create checklist) →
+      → pass: Repair finished / fail: new repair → Under Repair
 ```
 
 ## Git conventions
