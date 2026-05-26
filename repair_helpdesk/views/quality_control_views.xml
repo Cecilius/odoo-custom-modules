@@ -3,8 +3,7 @@
         <field name="name">repair_helpdesk.quality_control.image.kanban</field>
         <field name="model">repair_helpdesk.quality_control.image</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_image_grid">
-                <field name="image" widget="image"/>
+            <kanban>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_card">
