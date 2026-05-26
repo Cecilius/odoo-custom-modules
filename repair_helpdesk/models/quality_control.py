@@ -4,6 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class RepairHelpdeskQualityControl(models.Model):
     _name = 'repair_helpdesk.quality_control'
+    _inherit = ['mail.thread']
     _description = 'Repair Helpdesk Quality Control'
 
     name = fields.Char(string='QC Reference', required=True, copy=False, default='New')
