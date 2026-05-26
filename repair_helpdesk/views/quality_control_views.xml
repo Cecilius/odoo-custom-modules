@@ -104,10 +104,7 @@
                             </group>
                             <group string="Pictures">
                                 <field name="general_image_ids"
-                                       mode="kanban,tree,form"
-                                       context="{'tree_view_ref': 'repair_helpdesk.view_quality_control_image_tree',
-                                                 'kanban_view_ref': 'repair_helpdesk.view_quality_control_image_kanban',
-                                                 'form_view_ref': 'repair_helpdesk.view_quality_control_image_form'}"/>
+                                       readonly="status == 'done'"/>
                             </group>
                         </page>
                         <page string="Initial Inspection" invisible="not inspection_id">
@@ -118,11 +115,7 @@
                                 <field name="inspection_summary" widget="text" nolabel="1"/>
                             </group>
                             <group string="Inspection Pictures" invisible="not inspection_image_ids">
-                                <field name="inspection_image_ids"
-                                       mode="kanban,tree,form"
-                                       context="{'tree_view_ref': 'repair_helpdesk.view_inspection_image_tree',
-                                                 'kanban_view_ref': 'repair_helpdesk.view_inspection_image_kanban',
-                                                 'form_view_ref': 'repair_helpdesk.view_inspection_image_form'}"/>
+                                <field name="inspection_image_ids" readonly="1"/>
                             </group>
                         </page>
                     </notebook>

@@ -138,11 +138,7 @@
                                readonly="status == 'done'"/>
                     </group>
                     <group string="General Pictures">
-                        <field name="general_image_ids"
-                               mode="kanban,tree,form"
-                               context="{'tree_view_ref': 'repair_helpdesk.view_inspection_image_tree',
-                                         'kanban_view_ref': 'repair_helpdesk.view_inspection_image_kanban',
-                                         'form_view_ref': 'repair_helpdesk.view_inspection_image_form'}"/>
+                        <field name="general_image_ids"/>
                     </group>
                     <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">
                         <field name="repair_approve_note"
