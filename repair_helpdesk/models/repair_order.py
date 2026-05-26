@@ -12,6 +12,7 @@ class RepairOrder(models.Model):
         copy=False,
         index=True,
     )
+    state = fields.Selection(selection_add=[('qc', 'Quality Control')])
 
     def action_create_sale_order(self):
         self.ensure_one()
@@ -40,6 +41,7 @@ class RepairOrder(models.Model):
     def action_repair_end(self):
         res = super().action_repair_end()
         for r in self:
+            r.state = 'qc'
             ticket = r.helpdesk_ticket_id
             if not ticket:
                 continue

@@ -8,6 +8,10 @@
             <xpath expr="//field[@name='under_warranty']" position="after">
                 <field name="helpdesk_ticket_id" readonly="1"/>
             </xpath>
+            <!-- Hide the Create Quotation button; quotations are handled from the ticket. -->
+            <xpath expr="//button[@name='action_create_sale_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

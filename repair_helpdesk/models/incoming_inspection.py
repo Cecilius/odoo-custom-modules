@@ -236,6 +236,8 @@ class RepairHelpdeskIncomingInspection(models.Model):
 
     def _handle_qc_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_finished')
+        for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
+            repair.state = 'done'
         ticket.message_post(
             body=_('Quality control %s completed. All checks passed.') % self.name
         )
@@ -263,6 +265,8 @@ class RepairHelpdeskIncomingInspection(models.Model):
                 'details': failed_details,
             },
         })
+        for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
+            repair.state = 'under_repair'
         repair = self.env['repair.order'].create({
             'partner_id': ticket.partner_id.id,
             'product_qty': 1.0,
