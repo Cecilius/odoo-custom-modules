@@ -7,12 +7,5 @@
             <field name="padding">4</field>
             <field name="company_id" ref="base.main_company"/>
         </record>
-        <record id="seq_repair_helpdesk_quality_control" model="ir.sequence">
-            <field name="name">Repair Helpdesk Quality Control</field>
-            <field name="code">repair_helpdesk.quality_control</field>
-            <field name="prefix">QC/</field>
-            <field name="padding">4</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
     </data>
 </odoo>

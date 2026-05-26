@@ -87,17 +87,17 @@ class HelpdeskTicket(models.Model):
 
     x_reported_drop_damage = fields.Selection(
         [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
-        string='Drop Damage Reported',
+        string='Drop Damage',
         default='unknown',
     )
     x_reported_water_damage = fields.Selection(
         [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
-        string='Water Damage Reported',
+        string='Water Damage',
         default='unknown',
     )
     x_reported_contamination = fields.Selection(
         [('unknown', 'Unknown'), ('yes', 'Yes'), ('no', 'No')],
-        string='Contamination Reported',
+        string='Contamination',
         default='unknown',
     )
 

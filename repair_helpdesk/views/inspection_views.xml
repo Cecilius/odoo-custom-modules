@@ -67,16 +67,10 @@
         <field name="arch" type="xml">
             <form string="Inspection / Quality Control">
                 <header>
-                    <button name="action_done" type="object" string="Complete Inspection"
-                            class="btn-primary"
-                            invisible="status == 'done' or not ticket_in_inspection_stage"/>
-                    <button name="action_approve_for_repair" type="object" string="Approve for Repair"
-                            invisible="status != 'done' or not has_failures or repair_approved"/>
-                    <button name="action_qc_done" type="object" string="Complete QC"
-                            class="btn-primary"
-                            invisible="qc_status == 'done' or not ticket_in_qc_stage"/>
-                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
-                            invisible="status != 'done'"/>
+                    <button name="action_done" type="object" string="Complete Inspection" class="btn-primary" invisible="status == 'done' or not ticket_in_inspection_stage"/>
+                    <button name="action_approve_for_repair" type="object" string="Approve for Repair" invisible="status != 'done' or not has_failures or repair_approved"/>
+                    <button name="action_qc_done" type="object" string="Complete QC" class="btn-primary" invisible="qc_status == 'done' or not ticket_in_qc_stage"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" invisible="( status != 'done' or not ticket_in_inspection_stage ) and ( qc_status != 'done' or not ticket_in_qc_stage )"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -94,57 +88,47 @@
                             <field name="device_description" readonly="1"/>
                         </group>
                     </group>
+                    <group string="Customer Reported (for reference)" col="3">
+                        <group>
+                            <field name="customer_reported_drop"/>
+                        </group>
+                        <group>
+                            <field name="customer_reported_water"/>
+                        </group>
+                        <group>
+                            <field name="customer_reported_contamination"/>
+                        </group>
+                        <group colspan="3">
+                        <field name="customer_reported_issue" widget="text"/>
+                        </group>
+                    </group>
+                    <group string="Fault Confirmation">
+                        <field name="reported_fault_confirmed" readonly="status == 'done'"/>
+                        <field name="reported_fault_notes" widget="text" placeholder="Describe findings about the reported fault..." readonly="status == 'done'"/>
+                    </group>
+                    <group string="Approval for Repair" invisible="status != 'done' or not has_failures">
+                        <field name="repair_approve_note" placeholder="Enter the reason for approving this repair despite inspection failures..." widget="text" readonly="repair_approved"/>
+                    </group>
                     <notebook>
                         <page string="Initial Inspection">
-                            <group string="Customer Reported (for reference)">
-                                <group>
-                                    <field name="customer_reported_drop"/>
-                                </group>
-                                <group>
-                                    <field name="customer_reported_water"/>
-                                </group>
-                                <group>
-                                    <field name="customer_reported_contamination"/>
-                                </group>
-                            </group>
-                            <group string="Reported Issue" readonly="status == 'done'">
-                                <field name="customer_reported_issue" widget="text" nolabel="1"/>
-                            </group>
-                            <group string="Fault Confirmation" readonly="status == 'done'">
-                                <field name="reported_fault_confirmed"/>
-                                <field name="reported_fault_notes" widget="text"
-                                       placeholder="Describe findings about the reported fault..."/>
-                            </group>
                             <group string="Notes">
-                                <field name="inspection_note" placeholder="General inspection notes..."
-                                       readonly="status == 'done'"/>
+                                <field name="inspection_note" placeholder="General inspection notes..." readonly="status == 'done'"/>
                             </group>
-                            <group string="Inspection Checklist">
-                                <field name="line_ids"
-                                       readonly="status == 'done'"/>
-                            </group>
-                            <group string="Approval for Repair" invisible="status != 'done' or not has_failures or repair_approved">
-                                <field name="repair_approve_note"
-                                       placeholder="Enter the reason for approving this repair despite inspection failures..."
-                                       widget="text"/>
+                            <group string="Inspection Checklist" readonly="status == 'done'">
+                                <field name="line_ids" readonly="status == 'done'"/>
                             </group>
                         </page>
                         <page string="Quality Control" invisible="not qc_line_ids">
                             <group string="QC Notes">
-                                <field name="qc_note" placeholder="General QC notes..."
-                                       readonly="qc_status == 'done'"/>
+                                <field name="qc_note" placeholder="General QC notes..." readonly="qc_status == 'done'"/>
                             </group>
                             <group string="QC Checklist">
-                                <field name="qc_line_ids"
-                                       readonly="qc_status == 'done'"/>
+                                <field name="qc_line_ids" readonly="qc_status == 'done'"/>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
