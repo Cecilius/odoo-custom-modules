@@ -12,10 +12,6 @@
             <xpath expr="//button[@name='action_create_sale_order']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <!-- Add chatter for QC failure/pass history. -->
-            <xpath expr="//form/sheet" position="after">
-                <chatter/>
-            </xpath>
         </field>
     </record>
 </odoo>
