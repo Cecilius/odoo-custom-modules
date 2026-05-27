@@ -247,7 +247,7 @@ class RepairHelpdeskIncomingInspection(models.Model):
         failed_names = ', '.join(failed_lines.mapped('name'))
         result_labels = dict(self.qc_line_ids._fields['result'].selection)
         note_text = 'QC Notes: %s' % self.qc_note if self.qc_note else ''
-        lines_br = '<br/>'.join(
+        lines_br = '<br>'.join(
             '%s: %s%s' % (
                 line.name,
                 result_labels.get(line.result, '-'),
@@ -266,8 +266,8 @@ class RepairHelpdeskIncomingInspection(models.Model):
         alert_summary = 'QC failed - Rework required\n%s\n%s' % (
             note_text, lines_nl,
         ) if note_text else 'QC failed - Rework required\n%s' % lines_nl
-        chat_summary = '<b>QC failed - Rework required</b><br/>%s%s' % (
-            '<b>%s</b><br/>' % note_text if note_text else '',
+        chat_summary = 'QC failed - Rework required<br>%s%s' % (
+            '%s<br>' % note_text if note_text else '',
             lines_br,
         )
         alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
