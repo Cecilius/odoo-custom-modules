@@ -249,37 +249,38 @@ class RepairHelpdeskIncomingInspection(models.Model):
             '%s: %s' % (line.name, line.comment)
             for line in failed_lines
         )
+        result_labels = dict(self.qc_line_ids._fields['result'].selection)
+        all_lines = '\n'.join(
+            '  %s: %s' % (line.name, result_labels.get(line.result, '-'))
+            for line in self.qc_line_ids
+        )
+        line_comments = '\n'.join(
+            '  %s: %s' % (line.name, line.comment)
+            for line in self.qc_line_ids if line.comment
+        )
+        note_text = '\nQC Notes: %s' % self.qc_note if self.qc_note else ''
+        summary_parts = [
+            _('Checklist:\n%(lines)s') % {'lines': all_lines},
+        ]
+        if line_comments:
+            summary_parts.append(_('Comments:\n%(comments)s') % {'comments': line_comments})
+        if note_text:
+            summary_parts.append(note_text)
+        summary_parts.append(_('Failed: %(items)s') % {'items': failed_names})
+        if failed_details:
+            summary_parts.append(_('Failure details:\n%(details)s') % {'details': failed_details})
+        full_summary = '\n\n'.join(summary_parts)
         alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
         self.env['quality.alert'].create({
             'name': _('Quality control failure: %s') % self.name,
             'team_id': alert_team.id,
             'company_id': alert_team.company_id.id or self.env.company.id,
-            'description': _(
-                'The following checks failed during quality control %(qc)s for ticket %(ticket)s:\n'
-                '%(items)s\n\n'
-                'Comments:\n'
-                '%(details)s'
-            ) % {
-                'qc': self.name,
-                'ticket': ticket.display_name,
-                'items': failed_names,
-                'details': failed_details,
-            },
+            'description': full_summary,
         })
-        self.message_post(
-            body=_('Quality control failed.\n\nFailed checks:\n%(items)s\n\nDetails:\n%(details)s') % {
-                'items': failed_names,
-                'details': failed_details,
-            }
-        )
+        self.message_post(body=full_summary)
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'under_repair'
-            repair.message_post(
-                body=_('Quality control failed. Rework required:\n%(items)s\n\nDetails:\n%(details)s') % {
-                    'items': failed_names,
-                    'details': failed_details,
-                }
-            )
+            repair.message_post(body=_('Quality control failed. Rework required:\n\n%(summary)s') % {'summary': full_summary})
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
             body=_(
