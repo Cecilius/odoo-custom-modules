@@ -245,31 +245,20 @@ class RepairHelpdeskIncomingInspection(models.Model):
 
     def _handle_qc_failed(self, ticket, failed_lines):
         failed_names = ', '.join(failed_lines.mapped('name'))
-        failed_details = '\n'.join(
-            '%s: %s' % (line.name, line.comment)
-            for line in failed_lines
-        )
         result_labels = dict(self.qc_line_ids._fields['result'].selection)
-        all_lines = '\n'.join(
-            '  %s: %s' % (line.name, result_labels.get(line.result, '-'))
+        lines_with_results = '\n'.join(
+            '  %s: %s%s' % (
+                line.name,
+                result_labels.get(line.result, '-'),
+                ' - %s' % line.comment if line.comment else '',
+            )
             for line in self.qc_line_ids
         )
-        line_comments = '\n'.join(
-            '  %s: %s' % (line.name, line.comment)
-            for line in self.qc_line_ids if line.comment
-        )
-        note_text = '\nQC Notes: %s' % self.qc_note if self.qc_note else ''
-        summary_parts = [
-            _('Checklist:\n%(lines)s') % {'lines': all_lines},
-        ]
-        if line_comments:
-            summary_parts.append(_('Comments:\n%(comments)s') % {'comments': line_comments})
-        if note_text:
-            summary_parts.append(note_text)
-        summary_parts.append(_('Failed: %(items)s') % {'items': failed_names})
-        if failed_details:
-            summary_parts.append(_('Failure details:\n%(details)s') % {'details': failed_details})
-        full_summary = '\n\n'.join(summary_parts)
+        note_text = '\n\nQC Notes: %s' % self.qc_note if self.qc_note else ''
+        full_summary = _('QC failed - Rework required\n\n%(lines)s%(note)s') % {
+            'lines': lines_with_results,
+            'note': note_text,
+        }
         alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
         self.env['quality.alert'].create({
             'name': _('Quality control failure: %s') % self.name,
