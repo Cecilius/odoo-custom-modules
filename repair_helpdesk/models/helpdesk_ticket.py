@@ -338,7 +338,12 @@ class HelpdeskTicket(models.Model):
             'note': _('Incoming shipment for repair ticket %s') % self.display_name,
         })
 
-        self.message_post(body=_('Incoming shipment %s created.') % picking.name)
+        self.message_post(
+            subject=_('Incoming shipment %s created') % picking.name,
+            body=_('Incoming shipment %s created.') % picking.name,
+            body_is_html=True,
+            message_type='comment',
+        )
         return {
             'type': 'ir.actions.act_window',
             'name': _('Incoming Shipment'),
@@ -376,7 +381,12 @@ class HelpdeskTicket(models.Model):
 
         picking = self.env['stock.picking'].create(picking_vals)
 
-        self.message_post(body=_('Outgoing shipment %s created.') % picking.name)
+        self.message_post(
+            subject=_('Outgoing shipment %s created') % picking.name,
+            body=_('Outgoing shipment %s created.') % picking.name,
+            body_is_html=True,
+            message_type='comment',
+        )
         self._set_stage('repair_helpdesk.stage_repair_ready_return')
         return {
             'type': 'ir.actions.act_window',
@@ -394,7 +404,12 @@ class HelpdeskTicket(models.Model):
         inspection = self.env['repair_helpdesk.incoming_inspection'].create({
             'helpdesk_ticket_id': self.id,
         })
-        self.message_post(body=_('Incoming inspection %s created.') % inspection.name)
+        self.message_post(
+            subject=_('Inspection %s created') % inspection.name,
+            body=_('Incoming inspection %s created.') % inspection.name,
+            body_is_html=True,
+            message_type='comment',
+        )
         return {
             'type': 'ir.actions.act_window',
             'name': _('Incoming Inspection'),
@@ -541,7 +556,12 @@ class HelpdeskTicket(models.Model):
             'order_line': order_lines,
         })
 
-        self.message_post(body=_('Quotation %s created.') % quotation.name)
+        self.message_post(
+            subject=_('Quotation %s created') % quotation.name,
+            body=_('Quotation %s created.') % quotation.name,
+            body_is_html=True,
+            message_type='comment',
+        )
 
         # Do NOT move to quotation approval here.
         # The quotation is still only a draft at this point.
@@ -598,7 +618,13 @@ class HelpdeskTicket(models.Model):
             vals['description'] = self.x_reported_issue or self.description
 
         repair_order = self.env['repair.order'].create(vals)
-        self.message_post(body=_('Repair order %s created.') % (getattr(repair_order, 'name', _('(draft)'))))
+        repair_name = getattr(repair_order, 'name', _('(draft)'))
+        self.message_post(
+            subject=_('Repair order %s created') % repair_name,
+            body=_('Repair order %s created.') % repair_name,
+            body_is_html=True,
+            message_type='comment',
+        )
 
         return {
             'type': 'ir.actions.act_window',

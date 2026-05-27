@@ -72,5 +72,8 @@ class RepairOrder(models.Model):
             if waiting_stage and ticket.stage_id == waiting_stage:
                 ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
                 ticket.message_post(
-                    body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name
+                    subject=_('Parts available - %s') % r.name,
+                    body=_('All parts for repair %s are now available. Moving to Under Repair.') % r.name,
+                    body_is_html=True,
+                    message_type='comment',
                 )

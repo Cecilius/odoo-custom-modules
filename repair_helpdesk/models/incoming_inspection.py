@@ -157,7 +157,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
         self.status = 'draft'
         self.repair_approved = False
         self.helpdesk_ticket_id.message_post(
-            body=_('Incoming inspection %s was reset to draft.') % self.name
+            subject=_('Inspection %s reset to draft') % self.name,
+            body=_('Incoming inspection %s was reset to draft.') % self.name,
+            body_is_html=True,
+            message_type='comment',
         )
 
     def action_approve_for_repair(self):
@@ -171,7 +174,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
         self.repair_approved = True
         self.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         self.helpdesk_ticket_id.message_post(
-            body=_('Incoming inspection %s approved for repair:\n%s') % (self.name, self.repair_approve_note)
+            subject=_('Inspection %s approved for repair') % self.name,
+            body=_('Incoming inspection %s approved for repair:<br>%s') % (self.name, self.repair_approve_note),
+            body_is_html=True,
+            message_type='comment',
         )
 
     def action_qc_done(self):
@@ -196,7 +202,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
     def _handle_inspection_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
         ticket.message_post(
-            body=_('Incoming inspection %s completed. All checks passed.') % self.name
+            subject=_('Inspection %s completed') % self.name,
+            body=_('Incoming inspection %s completed. All checks passed.') % self.name,
+            body_is_html=True,
+            message_type='comment',
         )
 
     def _handle_inspection_failed(self, ticket, failed_lines):
@@ -225,22 +234,31 @@ class RepairHelpdeskIncomingInspection(models.Model):
             },
         })
         ticket.message_post(
-            body=_(
-                'Incoming inspection %(inspection)s completed with failures: %(items)s. '
-                'Quality alert created. Customer should be contacted before proceeding.'
-            ) % {
+            subject=_('Inspection %s failed') % self.name,
+            body=_('Incoming inspection %(inspection)s completed with failures: %(items)s. '
+                    'Quality alert created. Customer should be contacted before proceeding.') % {
                 'inspection': self.name,
                 'items': failed_names,
-            }
+            },
+            body_is_html=True,
+            message_type='comment',
         )
 
     def _handle_qc_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_finished')
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'done'
-            repair.message_post(body=_('Quality control passed. All checks OK.'))
+            repair.message_post(
+                subject=_('QC passed'),
+                body=_('Quality control passed. All checks OK.'),
+                body_is_html=True,
+                message_type='comment',
+            )
         ticket.message_post(
-            body=_('Quality control %s completed. All checks passed.') % self.name
+            subject=_('QC %s completed') % self.name,
+            body=_('Quality control %s completed. All checks passed.') % self.name,
+            body_is_html=True,
+            message_type='comment',
         )
 
     def _handle_qc_failed(self, ticket, failed_lines):
@@ -277,19 +295,30 @@ class RepairHelpdeskIncomingInspection(models.Model):
             'company_id': alert_team.company_id.id or self.env.company.id,
             'description': alert_summary,
         })
-        self.message_post(body=chat_summary)
+        self.message_post(
+            subject=_('QC failed - Rework required'),
+            body=chat_summary,
+            body_is_html=True,
+            message_type='comment',
+        )
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'under_repair'
-            repair.message_post(body=chat_summary)
+            repair.message_post(
+                subject=_('QC failed - Rework required'),
+                body=chat_summary,
+                body_is_html=True,
+                message_type='comment',
+            )
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
-            body=_(
-                'Quality control %(qc)s completed with failures: %(items)s. '
-                'Repair reopened for rework. Ticket moved to Under Repair.'
-            ) % {
+            subject=_('QC %s failed') % self.name,
+            body=_('Quality control %(qc)s completed with failures: %(items)s. '
+                    'Repair reopened for rework. Ticket moved to Under Repair.') % {
                 'qc': self.name,
                 'items': failed_names,
-            }
+            },
+            body_is_html=True,
+            message_type='comment',
         )
 
 
