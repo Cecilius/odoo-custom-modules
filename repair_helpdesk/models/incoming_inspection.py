@@ -246,30 +246,41 @@ class RepairHelpdeskIncomingInspection(models.Model):
     def _handle_qc_failed(self, ticket, failed_lines):
         failed_names = ', '.join(failed_lines.mapped('name'))
         result_labels = dict(self.qc_line_ids._fields['result'].selection)
-        lines_with_results = '\n'.join(
-            '  %s: %s%s' % (
+        note_text = 'QC Notes: %s' % self.qc_note if self.qc_note else ''
+        lines_br = '<br/>'.join(
+            '%s: %s%s' % (
                 line.name,
                 result_labels.get(line.result, '-'),
                 ' - %s' % line.comment if line.comment else '',
             )
             for line in self.qc_line_ids
         )
-        note_text = '\n\nQC Notes: %s' % self.qc_note if self.qc_note else ''
-        full_summary = _('QC failed - Rework required\n\n%(lines)s%(note)s') % {
-            'lines': lines_with_results,
-            'note': note_text,
-        }
+        lines_nl = '\n'.join(
+            '%s: %s%s' % (
+                line.name,
+                result_labels.get(line.result, '-'),
+                ' - %s' % line.comment if line.comment else '',
+            )
+            for line in self.qc_line_ids
+        )
+        alert_summary = 'QC failed - Rework required\n%s\n%s' % (
+            note_text, lines_nl,
+        ) if note_text else 'QC failed - Rework required\n%s' % lines_nl
+        chat_summary = '<b>QC failed - Rework required</b><br/>%s%s' % (
+            '<b>%s</b><br/>' % note_text if note_text else '',
+            lines_br,
+        )
         alert_team = self.env.ref('quality.quality_alert_team0', raise_if_not_found=False) or self.env['quality.alert.team'].search([], limit=1)
         self.env['quality.alert'].create({
             'name': _('Quality control failure: %s') % self.name,
             'team_id': alert_team.id,
             'company_id': alert_team.company_id.id or self.env.company.id,
-            'description': full_summary,
+            'description': alert_summary,
         })
-        self.message_post(body=full_summary)
+        self.message_post(body=chat_summary)
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'under_repair'
-            repair.message_post(body=_('Quality control failed. Rework required:\n\n%(summary)s') % {'summary': full_summary})
+            repair.message_post(body=chat_summary)
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
             body=_(
