@@ -36,6 +36,13 @@
                         invisible="not x_is_repair_ticket or quality_control_count == 0">
                     <field name="quality_control_count" string="QC" widget="statinfo"/>
                 </button>
+                <button name="action_view_invoices"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="not x_is_repair_ticket or invoice_count == 0">
+                    <field name="invoice_count" string="Invoices" widget="statinfo"/>
+                </button>
                 <button name="action_view_repair_orders"
                         type="object"
                         class="oe_stat_button"
@@ -85,6 +92,7 @@
                         <field name="incoming_picking_count" invisible="1"/>
                         <field name="outgoing_picking_count" invisible="1"/>
                         <field name="quality_control_count" invisible="1"/>
+                        <field name="invoice_count" invisible="1"/>
                     </group>
                     <group>
                         <field name="x_device_description"/>

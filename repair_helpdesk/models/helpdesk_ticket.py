@@ -66,6 +66,10 @@ class HelpdeskTicket(models.Model):
         string='QC Count',
         compute='_compute_related_counts',
     )
+    invoice_count = fields.Integer(
+        string='Invoice Count',
+        compute='_compute_related_counts',
+    )
 
     x_carrier_name = fields.Char(string='Carrier')
     x_tracking_reference = fields.Char(string='Tracking Reference')
@@ -141,7 +145,7 @@ class HelpdeskTicket(models.Model):
         store=False,
     )
 
-    @api.depends('sale_order_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
+    @api.depends('sale_order_ids', 'sale_order_ids.invoice_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
         for ticket in self:
@@ -152,6 +156,7 @@ class HelpdeskTicket(models.Model):
             ticket.outgoing_picking_count = len(ticket.outgoing_picking_ids)
             ticket.inspection_count = len(ticket.inspection_ids)
             ticket.quality_control_count = len(ticket.inspection_ids.filtered('qc_line_ids'))
+            ticket.invoice_count = sum(len(so.invoice_ids) for so in ticket.sale_order_ids)
 
     @api.depends(
         'team_id',
@@ -458,6 +463,30 @@ class HelpdeskTicket(models.Model):
             'res_model': 'repair_helpdesk.incoming_inspection',
             'view_mode': 'tree,form',
             'domain': [('helpdesk_ticket_id', '=', self.id)],
+            'target': 'current',
+        }
+
+    def action_view_invoices(self):
+        self.ensure_one()
+        invoices = self.env['account.move'].search([
+            ('invoice_line_ids.sale_line_ids.order_id', 'in', self.sale_order_ids.ids),
+            ('move_type', 'in', ('out_invoice', 'out_refund')),
+        ])
+        if len(invoices) == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Invoice'),
+                'res_model': 'account.move',
+                'view_mode': 'form',
+                'res_id': invoices.id,
+                'target': 'current',
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Invoices'),
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', invoices.ids)],
             'target': 'current',
         }
 
