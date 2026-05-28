@@ -149,21 +149,14 @@
                                           class="text-muted" t-esc="record.x_serial_number.value"/>
                                 </div>
                                 <div class="oe_kanban_status_flags small mb-1">
-                                    <t t-if="record.inspection_status.raw_value == 'pass' or record.inspection_status.raw_value == 'fail' or record.inspection_status.raw_value == 'draft'">
-                                        <span t-attf-class="badge #{'badge-pill badge-success' if record.inspection_status.raw_value == 'pass' else 'badge-pill badge-danger' if record.inspection_status.raw_value == 'fail' else 'badge-pill badge-info'} mr-1">
-                                            Insp: <t t-esc="record.inspection_status.value"/>
-                                        </span>
-                                    </t>
-                                    <t t-if="record.repair_status.raw_value == 'draft' or record.repair_status.raw_value == 'qc' or record.repair_status.raw_value == 'done'">
-                                        <span t-attf-class="badge #{'badge-pill badge-info' if record.repair_status.raw_value == 'draft' else 'badge-pill badge-warning text-dark' if record.repair_status.raw_value == 'qc' else 'badge-pill badge-success'} mr-1">
-                                            Rep: <t t-esc="record.repair_status.value"/>
-                                        </span>
-                                    </t>
-                                    <t t-if="record.payment_status.raw_value == 'pending' or record.payment_status.raw_value == 'paid'">
-                                        <span t-attf-class="badge #{'badge-pill badge-warning text-dark' if record.payment_status.raw_value == 'pending' else 'badge-pill badge-success'} mr-1">
-                                            Pay: <t t-esc="record.payment_status.value"/>
-                                        </span>
-                                    </t>
+                                    <span t-if="record.inspection_status.raw_value == 'pass'" class="badge badge-pill badge-success mr-1"><t t-esc="record.inspection_status.value"/></span>
+                                    <span t-if="record.inspection_status.raw_value == 'fail'" class="badge badge-pill badge-danger mr-1"><t t-esc="record.inspection_status.value"/></span>
+                                    <span t-if="record.inspection_status.raw_value == 'draft'" class="badge badge-pill badge-info mr-1"><t t-esc="record.inspection_status.value"/></span>
+                                    <span t-if="record.repair_status.raw_value == 'done'" class="badge badge-pill badge-success mr-1"><t t-esc="record.repair_status.value"/></span>
+                                    <span t-if="record.repair_status.raw_value == 'qc'" class="badge badge-pill badge-warning text-dark mr-1"><t t-esc="record.repair_status.value"/></span>
+                                    <span t-if="record.repair_status.raw_value == 'draft'" class="badge badge-pill badge-info mr-1"><t t-esc="record.repair_status.value"/></span>
+                                    <span t-if="record.payment_status.raw_value == 'paid'" class="badge badge-pill badge-success mr-1"><t t-esc="record.payment_status.value"/></span>
+                                    <span t-if="record.payment_status.raw_value == 'pending'" class="badge badge-pill badge-warning text-dark mr-1"><t t-esc="record.payment_status.value"/></span>
                                 </div>
                                 <div class="o_kanban_partner">
                                     <field name="partner_id"/>
