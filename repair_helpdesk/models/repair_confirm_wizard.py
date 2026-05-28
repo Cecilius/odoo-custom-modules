@@ -16,6 +16,13 @@ class RepairInvoiceConfirmWizard(models.TransientModel):
     sale_order_id = fields.Many2one('sale.order', string='Sales Order', required=True, readonly=True)
 
     def action_confirm(self):
-        return self.sale_order_id.with_context(
-            repair_helpdesk_force_invoice=True
-        ).action_create_invoice()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.advance.payment.inv',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'active_id': self.sale_order_id.id,
+                'active_ids': [self.sale_order_id.id],
+            },
+        }

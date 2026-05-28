@@ -21,26 +21,29 @@ class SaleOrder(models.Model):
                     vals['helpdesk_ticket_id'] = ticket_id
         return super().create(vals_list)
 
-    def action_create_invoice(self):
-        if not self.env.context.get('repair_helpdesk_force_invoice'):
-            for order in self:
-                ticket = order.helpdesk_ticket_id
-                if not ticket:
-                    continue
-                finished_stage = self.env.ref(
-                    'repair_helpdesk.stage_repair_finished',
-                    raise_if_not_found=False,
-                )
-                if finished_stage and ticket.stage_id.id < finished_stage.id:
-                    return {
-                        'type': 'ir.actions.act_window',
-                        'name': _('Confirm Invoice'),
-                        'res_model': 'repair_helpdesk.invoice_confirm.wizard',
-                        'view_mode': 'form',
-                        'target': 'new',
-                        'context': {'default_sale_order_id': order.id},
-                    }
-        return super().action_create_invoice()
+    def action_handle_create_invoice(self):
+        self.ensure_one()
+        ticket = self.helpdesk_ticket_id
+        finished_stage = self.env.ref(
+            'repair_helpdesk.stage_repair_finished',
+            raise_if_not_found=False,
+        )
+        if ticket and finished_stage and ticket.stage_id.id < finished_stage.id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Confirm Invoice'),
+                'res_model': 'repair_helpdesk.invoice_confirm.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_sale_order_id': self.id},
+            }
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.advance.payment.inv',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_id': self.id, 'active_ids': [self.id]},
+        }
 
     def _move_helpdesk_ticket_stage(self, xmlid):
         """Move the linked helpdesk ticket to a specific workflow stage."""

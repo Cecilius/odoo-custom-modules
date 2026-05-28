@@ -8,6 +8,16 @@
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
                 <field name="helpdesk_ticket_id" readonly="1"/>
             </xpath>
+            <!-- Replace the "Create Invoice" (to invoice) button. -->
+            <xpath expr="//button[@name='403'][@id='create_invoice']" position="replace">
+                <button name="action_handle_create_invoice" type="object" string="Create Invoice"
+                        class="btn-primary" invisible="invoice_status != 'to invoice'"/>
+            </xpath>
+            <!-- Replace the "Create Invoice" (percentage / advance) button. -->
+            <xpath expr="//button[@name='403'][@id='create_invoice_percentage']" position="replace">
+                <button name="action_handle_create_invoice" type="object" string="Create Invoice"
+                        class="btn-primary" invisible="invoice_status != 'no' or state != 'sale'"/>
+            </xpath>
         </field>
     </record>
 </odoo>
