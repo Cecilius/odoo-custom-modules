@@ -175,6 +175,6 @@
     <menuitem id="menu_helpdesk_repair_kanban"
               name="Repair Dashboard"
               action="action_helpdesk_ticket_repair_kanban"
-              parent="helpdesk.helpdesk_menu_main_ticket"
+              parent="helpdesk.helpdesk_ticket_menu_main"
               sequence="1"/>
 </odoo>
