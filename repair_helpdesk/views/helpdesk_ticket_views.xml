@@ -29,6 +29,13 @@
                         invisible="not x_is_repair_ticket or inspection_count == 0">
                     <field name="inspection_count" string="Inspections" widget="statinfo"/>
                 </button>
+                <button name="action_view_repair_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-wrench"
+                        invisible="not x_is_repair_ticket or repair_order_count == 0">
+                    <field name="repair_order_count" string="Repair Orders" widget="statinfo"/>
+                </button>
                 <button name="action_view_quality_controls"
                         type="object"
                         class="oe_stat_button"
@@ -42,13 +49,6 @@
                         icon="fa-file-text-o"
                         invisible="not x_is_repair_ticket or invoice_count == 0">
                     <field name="invoice_count" string="Invoices" widget="statinfo"/>
-                </button>
-                <button name="action_view_repair_orders"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-wrench"
-                        invisible="not x_is_repair_ticket or repair_order_count == 0">
-                    <field name="repair_order_count" string="Repair Orders" widget="statinfo"/>
                 </button>
             </xpath>
 
@@ -110,4 +110,71 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Repair dashboard kanban view. -->
+    <record id="helpdesk_ticket_view_kanban_repair" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.kanban.repair</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" quick_create="false" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="priority"/>
+                <field name="stage_id"/>
+                <field name="user_id"/>
+                <field name="team_id"/>
+                <field name="x_device_description"/>
+                <field name="x_serial_number"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div t-if="record.x_device_description.value or record.x_serial_number.value"
+                                     class="text-muted small mb-1">
+                                    <t t-if="record.x_device_description.value" t-esc="record.x_device_description.value"/>
+                                    <span t-if="record.x_device_description.value and record.x_serial_number.value"
+                                          class="mx-1 text-muted">—</span>
+                                    <span t-if="record.x_serial_number.value"
+                                          class="text-muted" t-esc="record.x_serial_number.value"/>
+                                </div>
+                                <div class="o_kanban_partner">
+                                    <field name="partner_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="user_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_helpdesk_ticket_repair_kanban" model="ir.actions.act_window">
+        <field name="name">Repair Dashboard</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="helpdesk_ticket_view_kanban_repair"/>
+        <field name="domain">[('team_id.x_repair_workflow_team', '=', True)]</field>
+    </record>
+
+    <menuitem id="menu_helpdesk_repair_kanban"
+              name="Repair Dashboard"
+              action="action_helpdesk_ticket_repair_kanban"
+              parent="helpdesk.helpdesk_menu_main_ticket"
+              sequence="1"/>
 </odoo>
