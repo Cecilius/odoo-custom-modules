@@ -167,7 +167,7 @@
     <record id="action_helpdesk_ticket_repair_kanban" model="ir.actions.act_window">
         <field name="name">Repair Dashboard</field>
         <field name="res_model">helpdesk.ticket</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,form</field>
         <field name="view_id" ref="helpdesk_ticket_view_kanban_repair"/>
         <field name="domain">[('team_id.x_repair_workflow_team', '=', True)]</field>
     </record>
