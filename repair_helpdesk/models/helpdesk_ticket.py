@@ -145,6 +145,26 @@ class HelpdeskTicket(models.Model):
         store=False,
     )
 
+    inspection_status = fields.Selection([
+        ('none', 'No Inspection'),
+        ('draft', 'In Progress'),
+        ('pass', 'Pass'),
+        ('fail', 'Fail'),
+    ], string='Inspection Status', compute='_compute_status_flags')
+
+    repair_status = fields.Selection([
+        ('none', 'Not Started'),
+        ('draft', 'In Progress'),
+        ('qc', 'QC'),
+        ('done', 'Done'),
+    ], string='Repair Status', compute='_compute_status_flags')
+
+    payment_status = fields.Selection([
+        ('none', 'Not Invoiced'),
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ], string='Payment Status', compute='_compute_status_flags')
+
     @api.depends('sale_order_ids', 'sale_order_ids.invoice_ids', 'repair_order_ids', 'incoming_picking_ids', 'outgoing_picking_ids', 'picking_ids', 'inspection_ids')
     def _compute_related_counts(self):
         """Compute smart-button counters for linked commercial and repair documents."""
@@ -157,6 +177,41 @@ class HelpdeskTicket(models.Model):
             ticket.inspection_count = len(ticket.inspection_ids)
             ticket.quality_control_count = len(ticket.inspection_ids.filtered('qc_line_ids'))
             ticket.invoice_count = sum(len(so.invoice_ids) for so in ticket.sale_order_ids)
+
+    @api.depends('inspection_ids', 'inspection_ids.status', 'inspection_ids.has_failures',
+                 'repair_order_ids', 'repair_order_ids.state',
+                 'sale_order_ids.invoice_ids', 'sale_order_ids.invoice_ids.payment_state')
+    def _compute_status_flags(self):
+        for ticket in self:
+            inspection = ticket.inspection_ids[:1]
+            if not inspection:
+                ticket.inspection_status = 'none'
+            elif inspection.status == 'draft':
+                ticket.inspection_status = 'draft'
+            elif inspection.has_failures and not inspection.repair_approved:
+                ticket.inspection_status = 'fail'
+            else:
+                ticket.inspection_status = 'pass'
+
+            repairs = ticket.repair_order_ids.filtered(lambda r: r.state != 'cancel')
+            if not repairs:
+                ticket.repair_status = 'none'
+            elif any(r.state == 'done' for r in repairs):
+                ticket.repair_status = 'done'
+            elif any(r.state == 'qc' for r in repairs):
+                ticket.repair_status = 'qc'
+            else:
+                ticket.repair_status = 'draft'
+
+            invoices = ticket.sale_order_ids.mapped('invoice_ids').filtered(
+                lambda m: m.move_type == 'out_invoice' and m.state == 'posted'
+            )
+            if not invoices:
+                ticket.payment_status = 'none'
+            elif all(inv.payment_state == 'paid' for inv in invoices):
+                ticket.payment_status = 'paid'
+            else:
+                ticket.payment_status = 'pending'
 
     @api.depends(
         'team_id',
