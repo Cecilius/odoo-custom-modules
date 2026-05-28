@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_repair_invoice_confirm_wizard" model="ir.ui.view">
+        <field name="name">repair_helpdesk.invoice_confirm.wizard.form</field>
+        <field name="model">repair_helpdesk.invoice_confirm.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Invoice">
+                <p class="alert alert-warning">
+                    <field name="note" nolabel="1"/>
+                </p>
+                <footer>
+                    <button name="action_confirm" string="Yes, Create Invoice" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
