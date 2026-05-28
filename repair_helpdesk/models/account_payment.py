@@ -7,7 +7,14 @@ class AccountPayment(models.Model):
     def action_post(self):
         res = super().action_post()
         for pay in self:
-            for inv in pay.reconciled_invoice_ids:
+            if not pay.move_id:
+                continue
+            invoices = pay.move_id.line_ids.mapped(
+                'full_reconcile_id.reconciled_line_ids.move_id'
+            ).filtered(
+                lambda m: m.move_type in ('out_invoice', 'out_refund') and m != pay.move_id
+            )
+            for inv in invoices:
                 ticket = inv._get_helpdesk_ticket()
                 if not ticket:
                     continue
