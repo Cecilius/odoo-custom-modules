@@ -117,7 +117,7 @@
         <field name="model">helpdesk.ticket</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="stage_id" quick_create="true" class="o_kanban_small_column">
+            <kanban default_group_by="stage_id" quick_create="false" class="o_kanban_small_column">
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="priority"/>
@@ -186,17 +186,28 @@
                             </div>
                         </div>
                     </t>
-                    <t t-name="quick_create">
-                        <div>
-                            <field name="team_id" required="1" domain="[('x_repair_workflow_team','=',True)]"/>
-                            <field name="name" required="1" placeholder="Describe the issue..."/>
-                            <field name="partner_id"/>
-                            <field name="x_device_description" placeholder="Device / Model"/>
-                            <field name="x_serial_number" placeholder="Serial Number"/>
-                        </div>
-                    </t>
                 </templates>
             </kanban>
+        </field>
+    </record>
+
+    <!-- Server action: create a new repair ticket with pre-filled team and stage. -->
+    <record id="action_repair_ticket_create" model="ir.actions.server">
+        <field name="name">New Repair Ticket</field>
+        <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+        <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'helpdesk.ticket',
+    'view_mode': 'form',
+    'target': 'current',
+    'context': {
+        'default_team_id': env.ref('repair_helpdesk.team_repairs').id if env.ref('repair_helpdesk.team_repairs', raise_if_not_found=False) else False,
+        'default_stage_id': env.ref('repair_helpdesk.stage_repair_new').id if env.ref('repair_helpdesk.stage_repair_new', raise_if_not_found=False) else False,
+    },
+}
         </field>
     </record>
 
