@@ -186,12 +186,6 @@
                 <filter name="my_tickets" string="My Tickets" domain="[('user_id','=',uid)]"/>
                 <filter name="active" string="Active" domain="[('stage_id.fold','=',False)]"/>
                 <separator/>
-                <filter name="inspection_due" string="Inspection Due"
-                        domain="[('stage_id.id','=',ref('repair_helpdesk.stage_repair_initial_inspection'))]"/>
-                <filter name="qc_due" string="QC Due"
-                        domain="[('stage_id.id','=',ref('repair_helpdesk.stage_repair_qc'))]"/>
-                <filter name="ready_ship" string="Ready for Shipment"
-                        domain="[('stage_id.id','=',ref('repair_helpdesk.stage_repair_ready_return'))]"/>
                 <filter name="unassigned" string="Unassigned" domain="[('user_id','=',False)]"/>
             </search>
         </field>
