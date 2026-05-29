@@ -191,28 +191,6 @@
         </field>
     </record>
 
-    <!-- Server action: create a new repair ticket with pre-filled team and stage. -->
-    <record id="action_repair_ticket_create" model="ir.actions.server">
-        <field name="name">New Repair Ticket</field>
-        <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
-        <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
-        <field name="state">code</field>
-        <field name="code">
-team = env['ir.model.data']._xmlid_to_res_id('repair_helpdesk.team_repairs')
-stage = env['ir.model.data']._xmlid_to_res_id('repair_helpdesk.stage_repair_new')
-action = {
-    'type': 'ir.actions.act_window',
-    'res_model': 'helpdesk.ticket',
-    'view_mode': 'form',
-    'target': 'current',
-    'context': {
-        'default_team_id': team or False,
-        'default_stage_id': stage or False,
-    },
-}
-        </field>
-    </record>
-
     <!-- Repair dashboard search filters. -->
     <record id="helpdesk_ticket_search_repair" model="ir.ui.view">
         <field name="name">helpdesk.ticket.search.repair</field>
