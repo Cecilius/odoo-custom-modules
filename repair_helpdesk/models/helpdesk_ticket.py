@@ -246,138 +246,21 @@ class HelpdeskTicket(models.Model):
             'repair_helpdesk.stage_repair_waiting_parts',
             'repair_helpdesk.stage_repair_qc',
         }
-        repair_stage_xmlids = {'repair_helpdesk.stage_repair_ready_for_repair'}
-        incoming_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_awaiting_item'}
-        outgoing_shipment_stage_xmlids = {'repair_helpdesk.stage_repair_ready_return'}
-        inspection_stage_xmlids = {'repair_helpdesk.stage_repair_initial_inspection'}
 
-        quotation_stage_ids = self._stage_ids_from_xmlids(quotation_stage_xmlids)
-        repair_stage_ids = self._stage_ids_from_xmlids(repair_stage_xmlids)
-        incoming_stage_ids = self._stage_ids_from_xmlids(incoming_shipment_stage_xmlids)
-        outgoing_stage_ids = self._stage_ids_from_xmlids(outgoing_shipment_stage_xmlids)
-        inspection_stage_ids = self._stage_ids_from_xmlids(inspection_stage_xmlids)
-
-        for ticket in self:
-            is_repair = bool(ticket.team_id and ticket.team_id.x_repair_workflow_team)
-            current_stage_id = ticket.stage_id.id if ticket.stage_id else False
-
-            done_inspections = ticket.inspection_ids.filtered(lambda i: i.status == 'done')
-            inspection_done = bool(done_inspections)
-            has_failures = any(
-                line.result == 'fail'
-                for insp in done_inspections
-                for line in insp.line_ids
-            )
-            overridden = any(done_inspections.mapped('repair_approved'))
-
-            active_quotations = ticket.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent', "sale"))
-
-            ticket.x_is_repair_ticket = is_repair
-            ticket.x_can_create_quotation = bool(
-                is_repair
-                and not ticket.sale_order_ids.filtered(lambda so: so.state != 'cancel')
-                and current_stage_id in quotation_stage_ids
-            )
-            ticket.x_can_revise_quotation = bool(
-                is_repair
-                and bool(active_quotations)
-                and current_stage_id in quotation_stage_ids
-            )
-            ticket.x_can_create_repair_order = bool(
-                is_repair
-                and not ticket.repair_order_ids
-                and current_stage_id in repair_stage_ids
-                and inspection_done
-                and (not has_failures or overridden)
-            )
-            ticket.x_can_create_incoming_picking = bool(
-                is_repair
-                and current_stage_id in incoming_stage_ids
-                and not ticket.incoming_picking_ids
-            )
-            ticket.x_can_create_outgoing_picking = bool(
-                is_repair
-                and current_stage_id in outgoing_stage_ids
-                and not ticket.outgoing_picking_ids
-            )
-            ticket.x_can_create_incoming_inspection = bool(
-                is_repair
-                and current_stage_id in inspection_stage_ids
-                and not ticket.inspection_ids
-            )
-
-    def _stage_ids_from_xmlids(self, xmlids):
-        """Resolve a set of XML IDs into existing stage record IDs.
-
-        Missing XML IDs are ignored, which keeps the compute method resilient.
-        """
-        ids = set()
-        for xmlid in xmlids:
-            record = self.env.ref(xmlid, raise_if_not_found=False)
-            if record:
-                ids.add(record.id)
-        return ids
-
-    def _set_stage(self, xmlid):
-        """Move the ticket to a target stage if that stage exists."""
-        self.ensure_one()
-        stage = self.env.ref(xmlid, raise_if_not_found=False)
-        if stage:
-            self.stage_id = stage.id
-
-    def _get_default_sales_team(self):
-        """Find an active sales team to use when generating a quotation.
-
-        Later this can be replaced by a dedicated repair sales team configuration.
-        """
-        sales_team = self.env['crm.team'].search([('active', '=', True)], limit=1)
-        if not sales_team:
-            raise UserError(_('Please configure at least one active Sales Team before creating a quotation.'))
-        return sales_team
-
-    def _get_default_diagnostic_product(self):
-        """Return the default diagnostic service product used on the initial quotation."""
-        return self.env.ref('repair_helpdesk.product_diagnostic_fee_others', raise_if_not_found=False)
-
-    def _get_incoming_pickings_for_outgoing(self):
-        """Return the incoming pickings used to prefill outgoing shipment products."""
-        return self.incoming_picking_ids.filtered(lambda p: p.state == 'done')
-
-    def _prepare_outgoing_moves(self, incoming_pickings, picking_type):
-        """Build outgoing move values based on incoming shipment products."""
-        moves = []
-        if not incoming_pickings:
-            return moves
-
-        for move in incoming_pickings.mapped('move_ids').filtered(lambda m: m.state != 'cancel'):
-            moves.append((0, 0, {
-                'description_picking': move.description_picking or move.product_id.name,
-                'product_id': move.product_id.id,
-                'product_uom_qty': move.product_uom_qty,
-                'product_uom': move.product_uom.id,
-                'location_id': picking_type.default_location_src_id.id,
-                'location_dest_id': picking_type.default_location_dest_id.id,
-                'company_id': self.env.company.id,
-            }))
-        return moves
-
-    def _get_default_picking_type(self, code):
-        """Return the default incoming or outgoing picking type for the current company."""
-        picking_type = self.env['stock.picking.type'].search([
-            ('code', '=', code),
-            ('active', '=', True),
-            ('company_id', '=', self.env.company.id),
-        ], limit=1)
-        if not picking_type:
-            picking_type = self.env['stock.picking.type'].search([
-                ('code', '=', code),
-                ('active', '=', True),
-            ], limit=1)
-        if not picking_type:
-            raise UserError(_(
-                'Please configure an active %s picking type before creating shipments.'
-            ) % code.capitalize())
-        return picking_type
+    @api.model
+    def action_create_repair_ticket(self):
+        team = self.env.ref('repair_helpdesk.team_repairs', raise_if_not_found=False)
+        stage = self.env.ref('repair_helpdesk.stage_repair_new', raise_if_not_found=False)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'helpdesk.ticket',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_team_id': team.id if team else False,
+                'default_stage_id': stage.id if stage else False,
+            },
+        }
 
     def action_create_incoming_picking(self):
         """Create an incoming shipment linked to the repair ticket."""
