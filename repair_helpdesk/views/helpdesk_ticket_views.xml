@@ -129,6 +129,9 @@
                 <field name="inspection_status"/>
                 <field name="repair_status"/>
                 <field name="payment_status"/>
+                <field name="x_can_create_incoming_inspection"/>
+                <field name="x_can_create_repair_order"/>
+                <field name="x_can_create_outgoing_picking"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_card oe_kanban_global_click">
@@ -169,6 +172,17 @@
                                 <div class="oe_kanban_bottom_right">
                                     <field name="user_id"/>
                                 </div>
+                            </div>
+                            <div class="oe_kanban_quick_actions" t-if="record.x_can_create_incoming_inspection.raw_value or record.x_can_create_repair_order.raw_value or record.x_can_create_outgoing_picking.raw_value">
+                                <button t-if="record.x_can_create_incoming_inspection.raw_value"
+                                        type="object" name="action_create_incoming_inspection"
+                                        class="btn btn-sm btn-primary w-100 mt-1">Create Inspection</button>
+                                <button t-if="record.x_can_create_repair_order.raw_value"
+                                        type="object" name="action_create_repair_order"
+                                        class="btn btn-sm btn-primary w-100 mt-1">Create Repair</button>
+                                <button t-if="record.x_can_create_outgoing_picking.raw_value"
+                                        type="object" name="action_create_outgoing_picking"
+                                        class="btn btn-sm btn-primary w-100 mt-1">Create Shipment</button>
                             </div>
                         </div>
                     </t>
