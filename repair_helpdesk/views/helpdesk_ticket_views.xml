@@ -206,8 +206,6 @@
         <field name="model">helpdesk.ticket</field>
         <field name="arch" type="xml">
             <search>
-                <button name="action_create_repair_ticket" type="object"
-                        string="New Repair Ticket" class="btn btn-primary"/>
                 <filter name="my_tickets" string="My Tickets" domain="[('user_id','=',uid)]"/>
                 <filter name="active" string="Active" domain="[('stage_id.fold','=',False)]"/>
                 <separator/>

@@ -379,21 +379,6 @@ class HelpdeskTicket(models.Model):
             ) % code.capitalize())
         return picking_type
 
-    @api.model
-    def action_create_repair_ticket(self):
-        team = self.env.ref('repair_helpdesk.team_repairs', raise_if_not_found=False)
-        stage = self.env.ref('repair_helpdesk.stage_repair_new', raise_if_not_found=False)
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'helpdesk.ticket',
-            'view_mode': 'form',
-            'target': 'current',
-            'context': {
-                'default_team_id': team.id if team else False,
-                'default_stage_id': stage.id if stage else False,
-            },
-        }
-
     def action_create_incoming_picking(self):
         """Create an incoming shipment linked to the repair ticket."""
         self.ensure_one()
