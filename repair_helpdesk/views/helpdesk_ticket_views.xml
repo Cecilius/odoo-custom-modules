@@ -212,6 +212,10 @@
         <field name="view_id" ref="helpdesk_ticket_view_kanban_repair"/>
         <field name="search_view_id" ref="helpdesk_ticket_search_repair"/>
         <field name="domain">[('team_id.x_repair_workflow_team', '=', True)]</field>
+        <field name="context">{
+            'default_team_id': ref('repair_helpdesk.team_repairs'),
+            'default_stage_id': ref('repair_helpdesk.stage_repair_new'),
+        }</field>
     </record>
 
     <menuitem id="menu_helpdesk_repair_kanban"
