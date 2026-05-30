@@ -356,11 +356,8 @@ class HelpdeskTicket(models.Model):
                 'product_uom_qty': move.product_uom_qty,
                 'product_uom': move.product_uom.id,
             'location_id': picking_type.default_location_src_id.id,
-            'location_dest_id': self.env.ref(
-                'repair_helpdesk.repair_location_incoming_inspection',
-                raise_if_not_found=False,
-            ).id or picking_type.default_location_dest_id.id,
-                'company_id': self.env.company.id,
+            'location_dest_id': picking_type.default_location_dest_id.id,
+            'company_id': self.env.company.id,
             }))
         return moves
 
@@ -436,13 +433,17 @@ class HelpdeskTicket(models.Model):
             raise UserError(_('Please set a customer on the ticket before creating an incoming shipment.'))
 
         picking_type = self._get_default_picking_type('incoming')
+        incoming_loc = self.env.ref(
+            'repair_helpdesk.repair_location_incoming_inspection',
+            raise_if_not_found=False,
+        )
         picking = self.env['stock.picking'].create({
             'picking_type_id': picking_type.id,
             'origin': self.ticket_ref or self.name,
             'partner_id': self.partner_id.id,
             'helpdesk_ticket_id': self.id,
             'location_id': picking_type.default_location_src_id.id,
-            'location_dest_id': picking_type.default_location_dest_id.id,
+            'location_dest_id': incoming_loc.id if incoming_loc else picking_type.default_location_dest_id.id,
             'note': _('Incoming shipment for repair ticket %s') % self.display_name,
         })
 
@@ -475,12 +476,16 @@ class HelpdeskTicket(models.Model):
             raise UserError(_('Please create and validate an incoming shipment before creating an outgoing shipment.'))
 
         move_lines = self._prepare_outgoing_moves(incoming_pickings, picking_type)
+        return_loc = self.env.ref(
+            'repair_helpdesk.repair_location_return_dispatch',
+            raise_if_not_found=False,
+        )
         picking_vals = {
             'picking_type_id': picking_type.id,
             'origin': self.ticket_ref or self.name,
             'partner_id': self.partner_id.id,
             'helpdesk_ticket_id': self.id,
-            'location_id': picking_type.default_location_src_id.id,
+            'location_id': return_loc.id if return_loc else picking_type.default_location_src_id.id,
             'location_dest_id': picking_type.default_location_dest_id.id,
             'note': _('Outgoing shipment for repair ticket %s') % self.display_name,
         }
