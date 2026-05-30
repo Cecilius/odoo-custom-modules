@@ -403,7 +403,7 @@ class HelpdeskTicket(models.Model):
                 'product_id': m.product_id.id,
                 'product_uom_qty': m.product_uom_qty,
                 'product_uom': m.product_uom.id,
-                'name': m.product_id.display_name,
+                'description_picking': m.product_id.display_name,
                 'location_id': src.id,
                 'location_dest_id': dest.id,
             }))
