@@ -321,6 +321,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
                 body_is_html=True,
                 message_type='comment',
             )
+        ticket._transfer_repair_stock(
+            'repair_helpdesk.repair_location_quality_control',
+            'repair_helpdesk.repair_location_in_progress',
+        )
         ticket._set_stage('repair_helpdesk.stage_repair_under_repair')
         ticket.message_post(
             subject=_('QC %s failed') % self.name,
