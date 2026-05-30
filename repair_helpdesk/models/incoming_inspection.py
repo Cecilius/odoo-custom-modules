@@ -173,6 +173,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
             raise UserError(_('Please enter an approval reason before approving this failed inspection for repair.'))
         self.repair_approved = True
         self.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
+        self.helpdesk_ticket_id._transfer_repair_stock(
+            'repair_helpdesk.repair_location_incoming_inspection',
+            'repair_helpdesk.repair_location_awaiting_repair',
+        )
         self.helpdesk_ticket_id.message_post(
             subject=_('Inspection %s approved for repair') % self.name,
             body=_('Incoming inspection %s approved for repair:<br>%s') % (self.name, self.repair_approve_note),
@@ -201,6 +205,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
 
     def _handle_inspection_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_ready_for_repair')
+        ticket._transfer_repair_stock(
+            'repair_helpdesk.repair_location_incoming_inspection',
+            'repair_helpdesk.repair_location_awaiting_repair',
+        )
         ticket.message_post(
             subject=_('Inspection %s completed') % self.name,
             body=_('Incoming inspection %s completed. All checks passed.') % self.name,
@@ -246,6 +254,10 @@ class RepairHelpdeskIncomingInspection(models.Model):
 
     def _handle_qc_passed(self, ticket):
         ticket._set_stage('repair_helpdesk.stage_repair_finished')
+        ticket._transfer_repair_stock(
+            'repair_helpdesk.repair_location_quality_control',
+            'repair_helpdesk.repair_location_return_dispatch',
+        )
         for repair in ticket.repair_order_ids.filtered(lambda r: r.state == 'qc'):
             repair.state = 'done'
             repair.message_post(

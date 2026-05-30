@@ -379,6 +379,51 @@ class HelpdeskTicket(models.Model):
             ) % code.capitalize())
         return picking_type
 
+    def _transfer_repair_stock(self, src_xmlid, dest_xmlid):
+        """Create and auto-validate an internal picking between repair locations."""
+        self.ensure_one()
+        src = self.env.ref(src_xmlid, raise_if_not_found=False)
+        dest = self.env.ref(dest_xmlid, raise_if_not_found=False)
+        if not src or not dest:
+            return
+        done_incoming = self.incoming_picking_ids.filtered(lambda p: p.state == 'done')
+        if not done_incoming:
+            return
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'internal'), ('active', '=', True),
+        ], limit=1)
+        if not picking_type:
+            return
+        moves = []
+        for m in done_incoming.mapped('move_ids').filtered(lambda m: m.state == 'done'):
+            moves.append((0, 0, {
+                'product_id': m.product_id.id,
+                'product_uom_qty': m.product_uom_qty,
+                'product_uom': m.product_uom.id,
+                'name': m.product_id.display_name,
+                'location_id': src.id,
+                'location_dest_id': dest.id,
+            }))
+        if not moves:
+            return
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': picking_type.id,
+            'location_id': src.id,
+            'location_dest_id': dest.id,
+            'move_ids': moves,
+            'origin': self.ticket_ref or self.name,
+            'helpdesk_ticket_id': self.id,
+        })
+        picking.action_confirm()
+        picking.action_assign()
+        picking.button_validate()
+        self.message_post(
+            subject=_('Stock transferred'),
+            body=_('Device moved from %s to %s.') % (src.name, dest.name),
+            body_is_html=True,
+            message_type='comment',
+        )
+
     def action_create_incoming_picking(self):
         """Create an incoming shipment linked to the repair ticket."""
         self.ensure_one()

@@ -34,6 +34,10 @@ class RepairOrder(models.Model):
             if r.helpdesk_ticket_id:
                 if r.is_parts_available:
                     r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_under_repair')
+                    r.helpdesk_ticket_id._transfer_repair_stock(
+                        'repair_helpdesk.repair_location_awaiting_repair',
+                        'repair_helpdesk.repair_location_in_progress',
+                    )
                 else:
                     r.helpdesk_ticket_id._set_stage('repair_helpdesk.stage_repair_waiting_parts')
         return res
@@ -46,6 +50,10 @@ class RepairOrder(models.Model):
             if not ticket:
                 continue
             ticket._set_stage('repair_helpdesk.stage_repair_qc')
+            ticket._transfer_repair_stock(
+                'repair_helpdesk.repair_location_in_progress',
+                'repair_helpdesk.repair_location_quality_control',
+            )
             inspection = ticket.inspection_ids[:1]
             if inspection:
                 inspection.qc_line_ids.unlink()
