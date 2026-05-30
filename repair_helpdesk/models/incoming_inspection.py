@@ -137,6 +137,11 @@ class RepairHelpdeskIncomingInspection(models.Model):
                 'Inspection can only be completed when the ticket is in the '
                 '"Received / Initial Inspection" stage.'
             ))
+        if not self.reported_fault_confirmed:
+            raise UserError(_(
+                'Please confirm whether the reported fault was found '
+                'before completing the inspection.'
+            ))
         if not self.line_ids:
             raise UserError(_('Please fill in the checklist items before completing the inspection.'))
         unset_lines = self.line_ids.filtered(lambda l: not l.result)
