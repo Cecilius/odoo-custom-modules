@@ -355,8 +355,11 @@ class HelpdeskTicket(models.Model):
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'product_uom': move.product_uom.id,
-                'location_id': picking_type.default_location_src_id.id,
-                'location_dest_id': picking_type.default_location_dest_id.id,
+            'location_id': picking_type.default_location_src_id.id,
+            'location_dest_id': self.env.ref(
+                'repair_helpdesk.repair_location_incoming_inspection',
+                raise_if_not_found=False,
+            ).id or picking_type.default_location_dest_id.id,
                 'company_id': self.env.company.id,
             }))
         return moves
