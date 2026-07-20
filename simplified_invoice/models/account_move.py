@@ -38,6 +38,9 @@ class AccountMove(models.Model):
         if self.env.context.get("allow_invoice_exception"):
             return super().action_post()
         self.ensure_one()
+        
+        if self.move_type != "out_invoice":
+        return super().action_post()
 
         partner = self.commercial_partner_id
         is_spanish_company = self.country_code == "ES"
