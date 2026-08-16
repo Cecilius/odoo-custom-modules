@@ -1,0 +1,10 @@
+<odoo>
+    <template id="inherit_web_external_layout_standard_company_registry" inherit_id="web.external_layout_standard">
+        <xpath expr="//ul[@name='company_address_list']/li[@t-if='not forced_vat']" position="before">
+            <li t-if="company.company_registry">
+                NIF:
+                <span t-field="company.company_registry"/>
+            </li>
+        </xpath>
+    </template>
+</odoo>
