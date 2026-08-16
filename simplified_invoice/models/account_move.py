@@ -61,6 +61,8 @@ class AccountMove(models.Model):
     def action_post(self):
         if self.env.context.get("allow_invoice_exception"):
             return super().action_post()
+        if not self or any(move.move_type != "out_invoice" for move in self):
+            return super().action_post()
         self.ensure_one()
 
         partner = self.commercial_partner_id

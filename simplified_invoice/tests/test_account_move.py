@@ -70,6 +70,9 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         # This should not be blocked by the Spanish VAT rule.
         move.action_post()
 
+    def test_empty_move_set_can_be_posted(self):
+        self.env["account.move"].browse([]).action_post()
+
     def test_simplified_invoice_cannot_be_rendered_as_proforma(self):
         move = self._make_invoice(
             self.journal_simplified,
