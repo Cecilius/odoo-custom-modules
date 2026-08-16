@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_simplified" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@name='invoice_title']/parent::span" position="before">
+            <span t-if="o.move_type == 'out_invoice' and o.state == 'posted' and o.l10n_es_is_simplified" name="simplified_invoice_title">Simplified invoice</span>
+        </xpath>
+        <xpath expr="//t[@name='invoice_title']/parent::span" position="attributes">
+            <attribute name="t-if">o.move_type == 'out_invoice' and o.state == 'posted' and not o.l10n_es_is_simplified</attribute>
+        </xpath>
+
+        <xpath expr="//span[@id='payment_terms_note_id']" position="attributes">
+            <attribute name="t-if">o.payment_state != 'paid' and o.invoice_payment_term_id.note</attribute>
+        </xpath>
+        <xpath expr="//div[@id='total_payment_term_details_table']" position="attributes">
+            <attribute name="t-if">o.payment_state != 'paid' and o.show_payment_term_details</attribute>
+        </xpath>
+        <xpath expr="//p[@name='payment_communication']" position="attributes">
+            <attribute name="t-if">o.payment_state != 'paid'</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='show_qr']" position="attributes">
+            <attribute name="t-value">o.payment_state != 'paid' and o.display_qr_code and o.amount_residual</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='show_link_qr']" position="attributes">
+            <attribute name="t-value">o.payment_state != 'paid' and o.display_link_qr_code and o.amount_residual</attribute>
+        </xpath>
+    </template>
+</odoo>

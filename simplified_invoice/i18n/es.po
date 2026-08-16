@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo\n"
+"PO-Revision-Date: 2026-08-16 00:00+0000\n"
+"Last-Translator: Simplified Invoice Team\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.report_invoice_document_simplified
+msgid "Simplified invoice"
+msgstr "Factura simplificada"
+
+#. module: simplified_invoice
+#: code:addons/simplified_invoice/models/ir_actions_report.py:14
+msgid "Simplified invoices cannot be issued as proforma invoices."
+msgstr "Las facturas simplificadas no pueden emitirse como facturas proforma."

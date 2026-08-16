@@ -70,6 +70,21 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         # This should not be blocked by the Spanish VAT rule.
         move.action_post()
 
+    def test_simplified_invoice_cannot_be_rendered_as_proforma(self):
+        move = self._make_invoice(
+            self.journal_simplified,
+            vat=False,
+            price_unit=10.0,
+            simplified=True,
+        )
+
+        with self.assertRaises(UserError):
+            self.env["ir.actions.report"]._pre_render_qweb_pdf(
+                "account.account_invoices",
+                move.ids,
+                data={"proforma": True},
+            )
+
     def test_under_limit_non_spanish_eu_customer_is_not_simplified(self):
         non_spanish_partner = self.env["res.partner"].create({
             "name": "French Customer",
