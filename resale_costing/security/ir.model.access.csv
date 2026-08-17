@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_cost_component_user,resale.cost.component.user,model_resale_cost_component,resale_core.group_resale_user,1,1,1,0
+access_resale_cost_component_manager,resale.cost.component.manager,model_resale_cost_component,resale_core.group_resale_manager,1,1,1,1
+access_resale_cost_adjustment_user,resale.cost.adjustment.user,model_resale_cost_adjustment,resale_core.group_resale_user,1,0,0,0
+access_resale_cost_adjustment_manager,resale.cost.adjustment.manager,model_resale_cost_adjustment,resale_core.group_resale_manager,1,1,1,0

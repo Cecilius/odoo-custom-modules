@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_category_user,resale.category.user,model_resale_category,group_resale_user,1,0,0,0
+access_resale_category_manager,resale.category.manager,model_resale_category,group_resale_manager,1,1,1,0
+access_resale_brand_user,resale.brand.user,model_resale_brand,group_resale_user,1,0,0,0
+access_resale_brand_manager,resale.brand.manager,model_resale_brand,group_resale_manager,1,1,1,0
+access_resale_acquisition_batch_user,resale.acquisition.batch.user,model_resale_acquisition_batch,group_resale_user,1,1,1,0
+access_resale_acquisition_batch_manager,resale.acquisition.batch.manager,model_resale_acquisition_batch,group_resale_manager,1,1,1,1
+access_resale_rfb_label_user,resale.rfb.label.user,model_resale_rfb_label,group_resale_user,1,1,1,0
+access_resale_rfb_label_manager,resale.rfb.label.manager,model_resale_rfb_label,group_resale_manager,1,1,1,1
+access_resale_item_user,resale.item.user,model_resale_item,group_resale_user,1,1,1,0
+access_resale_item_manager,resale.item.manager,model_resale_item,group_resale_manager,1,1,1,1
+access_resale_condition_user,resale.condition.user,model_resale_condition,group_resale_user,1,0,0,0
+access_resale_condition_manager,resale.condition.manager,model_resale_condition,group_resale_manager,1,1,1,0
+access_resale_warranty_policy_user,resale.warranty.policy.user,model_resale_warranty_policy,group_resale_user,1,0,0,0
+access_resale_warranty_policy_manager,resale.warranty.policy.manager,model_resale_warranty_policy,group_resale_manager,1,1,1,0

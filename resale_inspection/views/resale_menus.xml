@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_resale_inspection_operations"
+              name="Inspection"
+              parent="resale_core.menu_resale_operations"
+              sequence="40"/>
+
+    <menuitem id="menu_resale_initial_evaluations"
+              name="Initial Evaluations"
+              parent="menu_resale_inspection_operations"
+              action="action_resale_initial_evaluation"
+              sequence="10"/>
+
+    <menuitem id="menu_resale_detailed_tests"
+              name="Detailed Tests"
+              parent="menu_resale_inspection_operations"
+              action="action_resale_detailed_test"
+              sequence="20"/>
+
+    <menuitem id="menu_resale_test_types"
+              name="Test Types"
+              parent="resale_core.menu_resale_configuration"
+              action="action_resale_test_type"
+              sequence="50"/>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_acquisition_batch_form_inherit_costing" model="ir.ui.view">
+        <field name="name">resale.acquisition.batch.form.inherit.costing</field>
+        <field name="model">resale.acquisition.batch</field>
+        <field name="inherit_id" ref="resale_core.view_resale_acquisition_batch_form"/>
+        <field name="arch" type="xml">
+            <field name="received_items" position="after">
+                <field name="allocable_cost"/>
+                <field name="total_cash"/>
+            </field>
+            <field name="state" position="attributes">
+                <attribute name="statusbar_visible">ordered,awaiting,received,allocating,locked,done</attribute>
+            </field>
+            <header position="inside">
+                <button name="action_calculate_allocation" string="Calculate Allocation" type="object"
+                        class="oe_highlight" invisible="state in ('locked', 'done')"/>
+                <button name="action_lock_costs" string="Lock Costs" type="object"
+                        invisible="state in ('locked', 'done')"/>
+            </header>
+            <xpath expr="//notebook" position="inside">
+                <page string="Cost Components">
+                    <field name="component_ids">
+                        <list editable="bottom">
+                            <field name="date"/>
+                            <field name="name"/>
+                            <field name="component_type"/>
+                            <field name="amount_net"/>
+                            <field name="vat_amount"/>
+                            <field name="include_in_allocable"/>
+                            <field name="tax_treatment"/>
+                            <field name="source_document"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

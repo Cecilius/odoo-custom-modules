@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_resale_cost_components"
+              name="Cost Components"
+              parent="resale_core.menu_resale_operations"
+              action="action_resale_cost_component"
+              sequence="50"/>
+
+    <menuitem id="menu_resale_cost_adjustments"
+              name="Cost Adjustments"
+              parent="resale_core.menu_resale_operations"
+              action="action_resale_cost_adjustment"
+              sequence="60"/>
+</odoo>

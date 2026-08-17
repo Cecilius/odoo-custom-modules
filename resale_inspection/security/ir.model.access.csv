@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_initial_evaluation_user,resale.initial.evaluation.user,model_resale_initial_evaluation,resale_core.group_resale_user,1,1,1,0
+access_resale_initial_evaluation_manager,resale.initial.evaluation.manager,model_resale_initial_evaluation,resale_core.group_resale_manager,1,1,1,1
+access_resale_detailed_test_user,resale.detailed.test.user,model_resale_detailed_test,resale_core.group_resale_user,1,1,1,0
+access_resale_detailed_test_manager,resale.detailed.test.manager,model_resale_detailed_test,resale_core.group_resale_manager,1,1,1,1
+access_resale_test_type_user,resale.test.type.user,model_resale_test_type,resale_core.group_resale_user,1,0,0,0
+access_resale_test_type_manager,resale.test.type.manager,model_resale_test_type,resale_core.group_resale_manager,1,1,1,0

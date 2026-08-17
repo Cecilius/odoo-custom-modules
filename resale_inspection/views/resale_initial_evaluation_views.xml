@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_initial_evaluation_tree" model="ir.ui.view">
+        <field name="name">resale.initial.evaluation.tree</field>
+        <field name="model">resale.initial.evaluation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="item_id"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="basic_result"/>
+                <field name="disposition"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_resale_initial_evaluation_form" model="ir.ui.view">
+        <field name="name">resale.initial.evaluation.form</field>
+        <field name="model">resale.initial.evaluation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <field name="item_id"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                        <field name="condition_id"/>
+                        <field name="functional_status"/>
+                        <field name="completeness"/>
+                        <field name="basic_result"/>
+                        <field name="disposition"/>
+                        <field name="comment"/>
+                        <field name="image_ids" widget="many2many_binary"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_initial_evaluation" model="ir.actions.act_window">
+        <field name="name">Initial Evaluations</field>
+        <field name="res_model">resale.initial.evaluation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

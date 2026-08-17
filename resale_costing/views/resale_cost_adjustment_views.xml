@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_cost_adjustment_tree" model="ir.ui.view">
+        <field name="name">resale.cost.adjustment.tree</field>
+        <field name="model">resale.cost.adjustment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="item_id"/>
+                <field name="amount"/>
+                <field name="reason"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_resale_cost_adjustment_form" model="ir.ui.view">
+        <field name="name">resale.cost.adjustment.form</field>
+        <field name="model">resale.cost.adjustment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="item_id"/>
+                        <field name="date"/>
+                        <field name="amount"/>
+                        <field name="currency_id" groups="base.group_multi_currency"/>
+                        <field name="reason"/>
+                        <field name="user_id"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_cost_adjustment" model="ir.actions.act_window">
+        <field name="name">Cost Adjustments</field>
+        <field name="res_model">resale.cost.adjustment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

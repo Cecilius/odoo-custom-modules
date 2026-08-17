@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_detailed_test_tree" model="ir.ui.view">
+        <field name="name">resale.detailed.test.tree</field>
+        <field name="model">resale.detailed.test</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="item_id"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="state"/>
+                <field name="final_disposition"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_resale_detailed_test_form" model="ir.ui.view">
+        <field name="name">resale.detailed.test.form</field>
+        <field name="model">resale.detailed.test</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_complete" string="Complete Test" type="object"
+                            class="oe_highlight" invisible="state == 'done'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <field name="item_id"/>
+                        <field name="user_id"/>
+                        <field name="test_type_id"/>
+                        <field name="result"/>
+                        <field name="final_condition_id"/>
+                        <field name="final_functional_status"/>
+                        <field name="final_disposition"/>
+                        <field name="comment"/>
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                        <field name="date" readonly="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_detailed_test" model="ir.actions.act_window">
+        <field name="name">Detailed Tests</field>
+        <field name="res_model">resale.detailed.test</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
