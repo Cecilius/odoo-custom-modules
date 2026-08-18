@@ -30,6 +30,7 @@ Simplified resale workflow for second-hand electronics:
     'data': [
         'security/resale_groups.xml',
         'security/ir.model.access.csv',
+        'data/resale_user_data.xml',
         'data/stock_location_data.xml',
         'data/resale_sequence_data.xml',
         'data/resale_category_data.xml',
