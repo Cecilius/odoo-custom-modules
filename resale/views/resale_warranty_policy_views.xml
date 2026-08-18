@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_warranty_policy_tree" model="ir.ui.view">
+        <field name="name">resale.warranty.policy.tree</field>
+        <field name="model">resale.warranty.policy</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="duration_months"/>
+                <field name="has_functional_warranty"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_resale_warranty_policy_form" model="ir.ui.view">
+        <field name="name">resale.warranty.policy.form</field>
+        <field name="model">resale.warranty.policy</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="duration_months"/>
+                        <field name="has_functional_warranty"/>
+                        <field name="invoice_text_es"/>
+                        <field name="invoice_text_en"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_warranty_policy" model="ir.actions.act_window">
+        <field name="name">Warranty Policies</field>
+        <field name="res_model">resale.warranty.policy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

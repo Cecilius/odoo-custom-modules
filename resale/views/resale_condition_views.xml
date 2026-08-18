@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_condition_tree" model="ir.ui.view">
+        <field name="name">resale.condition.tree</field>
+        <field name="model">resale.condition</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="condition_factor"/>
+                <field name="functional_warranty"/>
+                <field name="is_for_parts"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_resale_condition_form" model="ir.ui.view">
+        <field name="name">resale.condition.form</field>
+        <field name="model">resale.condition</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="condition_factor"/>
+                        <field name="warranty_policy_id"/>
+                        <field name="functional_warranty"/>
+                        <field name="is_for_parts"/>
+                        <field name="operator_description"/>
+                        <field name="advertisement_text_es"/>
+                        <field name="advertisement_text_en"/>
+                        <field name="invoice_text_es"/>
+                        <field name="invoice_text_en"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_condition" model="ir.actions.act_window">
+        <field name="name">Conditions</field>
+        <field name="res_model">resale.condition</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_resale_root"
+              name="Resale"
+              sequence="40"/>
+
+    <menuitem id="menu_resale_operations"
+              name="Operations"
+              parent="menu_resale_root"
+              sequence="10"/>
+    <menuitem id="menu_resale_items"
+              name="Resale Items"
+              parent="menu_resale_operations"
+              action="action_resale_product"
+              sequence="10"/>
+    <menuitem id="menu_resale_batches"
+              name="Acquisition Batches"
+              parent="menu_resale_operations"
+              action="action_resale_acquisition_batch"
+              sequence="20"/>
+    <menuitem id="menu_resale_detailed_tests"
+              name="Detailed Tests"
+              parent="menu_resale_operations"
+              action="action_resale_detailed_test"
+              sequence="30"/>
+
+    <menuitem id="menu_resale_configuration"
+              name="Configuration"
+              parent="menu_resale_root"
+              sequence="90"/>
+    <menuitem id="menu_resale_categories"
+              name="Categories"
+              parent="menu_resale_configuration"
+              action="action_resale_category"
+              sequence="10"/>
+    <menuitem id="menu_resale_brands"
+              name="Brands"
+              parent="menu_resale_configuration"
+              action="action_resale_brand"
+              sequence="20"/>
+    <menuitem id="menu_resale_conditions"
+              name="Conditions"
+              parent="menu_resale_configuration"
+              action="action_resale_condition"
+              sequence="30"/>
+    <menuitem id="menu_resale_warranty_policies"
+              name="Warranty Policies"
+              parent="menu_resale_configuration"
+              action="action_resale_warranty_policy"
+              sequence="40"/>
+    <menuitem id="menu_resale_test_types"
+              name="Test Types"
+              parent="menu_resale_configuration"
+              action="action_resale_test_type"
+              sequence="50"/>
+</odoo>
