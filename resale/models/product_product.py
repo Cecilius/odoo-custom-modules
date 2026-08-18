@@ -224,6 +224,17 @@ class ProductProduct(models.Model):
             product.write(vals)
         return True
 
+    def action_open_resale_item(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'product.product',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(self.env.ref('resale.view_resale_product_form').id, 'form')],
+            'target': 'current',
+        }
+
     def action_start_detailed_test(self):
         self.ensure_one()
         return {
