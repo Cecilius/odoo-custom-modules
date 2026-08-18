@@ -106,10 +106,15 @@ class AcquisitionBatch(models.Model):
         return batches
 
     def write(self, vals):
-        if self.filtered(lambda batch: batch.state == 'locked'):
+        locked_or_done = self.filtered(lambda batch: batch.state in ('locked', 'done'))
+        if locked_or_done:
             if {'tax_regime', 'currency_id'}.intersection(vals):
                 raise AccessError(_(
                     'Locked batches cannot change tax regime or currency.'
+                ))
+            if {'bill_ids', 'component_ids'}.intersection(vals):
+                raise AccessError(_(
+                    'Cannot modify vendor bills or cost components on a locked or closed batch.'
                 ))
         res = super().write(vals)
         if 'bill_ids' in vals:

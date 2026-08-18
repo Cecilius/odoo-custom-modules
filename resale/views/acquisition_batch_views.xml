@@ -70,7 +70,7 @@
                             </field>
                         </page>
                         <page string="Vendor Bills">
-                            <field name="bill_ids">
+                            <field name="bill_ids" readonly="state in ('locked','done')">
                                 <list>
                                     <field name="name"/>
                                     <field name="partner_id"/>
@@ -83,7 +83,7 @@
                             </field>
                         </page>
                         <page string="Cost Components">
-                            <field name="component_ids">
+                            <field name="component_ids" readonly="state in ('locked','done')">
                                 <list editable="bottom">
                                     <field name="date"/>
                                     <field name="bill_id" optional="show"/>
