@@ -35,4 +35,9 @@
             Command.link(ref('sales_team.group_sale_manager')),
         ]"/>
     </record>
+
+    <!-- Auto-assign the default administrator so the pilot is usable out of the box -->
+    <record id="base.user_admin" model="res.users">
+        <field name="groups_id" eval="[(4, ref('group_resale_manager'))]"/>
+    </record>
 </odoo>
