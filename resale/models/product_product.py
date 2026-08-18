@@ -9,7 +9,7 @@ class ProductProduct(models.Model):
     # --- Resale identity ---------------------------------------------------
     rfb = fields.Char(string='RFB', copy=False, index=True)
     resale_category_id = fields.Many2one(
-        'resale.category', string='Resale Category', index=True,
+        'product.category', string='Resale Category', index=True,
         help='Category used for RFB generation and resale reporting.',
     )
     resale_brand_id = fields.Many2one('resale.brand', string='Resale Brand')
@@ -162,7 +162,7 @@ class ProductProduct(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('resale_category_id') and not vals.get('rfb'):
-                category = self.env['resale.category'].browse(vals['resale_category_id'])
+                category = self.env['product.category'].browse(vals['resale_category_id'])
                 sequence = category._get_or_create_rfb_sequence()
                 rfb = sequence.next_by_id()
                 vals['rfb'] = rfb

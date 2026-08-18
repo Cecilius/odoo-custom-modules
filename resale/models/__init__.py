@@ -1,5 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from . import resale_category
+from . import product_category
 from . import resale_brand
 from . import resale_condition
 from . import resale_warranty_policy

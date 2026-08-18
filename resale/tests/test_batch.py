@@ -12,9 +12,9 @@ class TestAcquisitionBatch(TransactionCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.partner = cls.env['res.partner'].create({'name': 'Supplier'})
-        cls.category = cls.env['resale.category'].create({
+        cls.category = cls.env['product.category'].create({
             'name': 'Test Category',
-            'code': 'TC',
+            'rfb_prefix': 'TC',
         })
         cls.manager = cls.env['res.users'].create({
             'name': 'Resale Manager',

@@ -8,7 +8,7 @@ class TestType(models.Model):
     _order = 'sequence'
 
     name = fields.Char(string='Name', required=True)
-    category_id = fields.Many2one('resale.category', string='Category')
+    category_id = fields.Many2one('product.category', string='Category')
     instructions = fields.Html(string='Procedure Instructions')
     sequence = fields.Integer(string='Sequence', default=10)
     active = fields.Boolean(string='Active', default=True)
