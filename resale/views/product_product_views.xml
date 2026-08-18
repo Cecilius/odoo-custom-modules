@@ -50,8 +50,8 @@
                             <field name="min_price"/>
                             <field name="recommended_price"/>
                             <field name="list_price" string="Approved Price"/>
-                            <field name="acquisition_cost"/>
-                            <field name="cost_status"/>
+                            <field name="acquisition_cost" readonly="cost_status in ('locked','legacy_locked')"/>
+                            <field name="cost_status" readonly="cost_status in ('locked','legacy_locked')"/>
                         </group>
                     </group>
                     <notebook>
