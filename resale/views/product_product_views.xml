@@ -129,6 +129,11 @@
         <field name="name">Resale Items</field>
         <field name="res_model">product.product</field>
         <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_resale_product_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_resale_product_form')}),
+        ]"/>
         <field name="domain">[('rfb', '!=', False)]</field>
         <field name="context">{
             'default_type': 'consu',
