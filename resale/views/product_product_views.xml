@@ -7,7 +7,7 @@
             <list>
                 <field name="rfb"/>
                 <field name="name"/>
-                <field name="resale_category_id"/>
+                <field name="categ_id"/>
                 <field name="resale_brand_id"/>
                 <field name="condition_id"/>
                 <field name="resale_state"/>
@@ -38,7 +38,7 @@
                     </div>
                     <group>
                         <group string="Identity">
-                            <field name="resale_category_id" required="1"/>
+                            <field name="categ_id" required="1"/>
                             <field name="resale_brand_id"/>
                             <field name="barcode" readonly="1"/>
                             <field name="default_code" readonly="1"/>
@@ -139,6 +139,7 @@
             'default_type': 'consu',
             'default_is_storable': True,
             'default_resale_state': 'received',
+            'default_categ_id': ref('product_category_other'),
         }</field>
     </record>
 </odoo>

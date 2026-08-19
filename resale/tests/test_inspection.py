@@ -24,7 +24,7 @@ class TestResaleInspection(TransactionCase):
     def test_detailed_test_updates_item(self):
         product = self.env['product.product'].create({
             'name': 'Detailed Test Item',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         test = self.env['resale.detailed.test'].create({
             'product_id': product.id,

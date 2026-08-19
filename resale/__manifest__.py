@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Resale',
-    'version': '2.0.0',
+    'version': '2.1.0',
     'category': 'Inventory/Resale',
     'summary': 'Second-hand and salvaged electronics resale workflow',
     'author': 'Resale Project',

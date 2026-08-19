@@ -25,7 +25,7 @@ class TestAcquisitionBatch(TransactionCase):
     def _create_item(self, name, initial_value):
         return self.env['product.product'].create({
             'name': name,
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
             'initial_value': initial_value,
             'eval_basic_result': 'pass',
             'eval_disposition': 'sale',

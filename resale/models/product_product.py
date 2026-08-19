@@ -8,10 +8,6 @@ class ProductProduct(models.Model):
 
     # --- Resale identity ---------------------------------------------------
     rfb = fields.Char(string='RFB', copy=False, index=True)
-    resale_category_id = fields.Many2one(
-        'product.category', string='Resale Category', index=True,
-        help='Category used for RFB generation and resale reporting.',
-    )
     resale_brand_id = fields.Many2one('resale.brand', string='Resale Brand')
     batch_id = fields.Many2one(
         'resale.acquisition.batch', string='Acquisition Batch',
@@ -161,17 +157,25 @@ class ProductProduct(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('resale_category_id') and not vals.get('rfb'):
-                category = self.env['product.category'].browse(vals['resale_category_id'])
+            if vals.get('categ_id') and not vals.get('rfb'):
+                category = self.env['product.category'].browse(vals['categ_id'])
                 sequence = category._get_or_create_rfb_sequence()
-                rfb = sequence.next_by_id()
-                vals['rfb'] = rfb
+                if sequence:
+                    vals['rfb'] = sequence.next_by_id()
             if vals.get('rfb'):
                 vals['default_code'] = vals['rfb']
                 vals['barcode'] = vals['rfb']
                 vals.setdefault('type', 'consu')
                 vals.setdefault('is_storable', True)
-        return super().create(vals_list)
+        products = super().create(vals_list)
+        # Products created without explicit categ_id may still get a resale default category.
+        for product in products:
+            if not product.rfb and product.categ_id.rfb_prefix:
+                sequence = product.categ_id._get_or_create_rfb_sequence()
+                if sequence:
+                    rfb = sequence.next_by_id()
+                    product.write({'rfb': rfb, 'default_code': rfb, 'barcode': rfb})
+        return products
 
     def write(self, vals):
         locked = self.filtered(

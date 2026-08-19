@@ -60,7 +60,7 @@
                                 <list editable="bottom">
                                     <button name="action_open_resale_item" type="object" icon="fa-external-link" title="Open item"/>
                                     <field name="name"/>
-                                    <field name="resale_category_id"/>
+                                    <field name="categ_id"/>
                                     <field name="rfb" optional="show" readonly="1"/>
                                     <field name="resale_brand_id" optional="show"/>
                                     <field name="model_es" optional="show"/>

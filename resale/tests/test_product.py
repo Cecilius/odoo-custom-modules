@@ -25,7 +25,7 @@ class TestResaleProduct(TransactionCase):
     def test_create_product_generates_rfb(self):
         product = self.env['product.product'].create({
             'name': 'Test Item',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         self.assertTrue(product.rfb)
         self.assertTrue(product.rfb.startswith('RFB-TC-'))
@@ -37,11 +37,11 @@ class TestResaleProduct(TransactionCase):
     def test_rfb_sequence_increments(self):
         p1 = self.env['product.product'].create({
             'name': 'Sequence Item 1',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         p2 = self.env['product.product'].create({
             'name': 'Sequence Item 2',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         self.assertTrue(p2.rfb > p1.rfb)
 
@@ -49,19 +49,19 @@ class TestResaleProduct(TransactionCase):
         self.env['product.product'].create({
             'name': 'RFB Item 1',
             'rfb': 'RFB-TC-999999',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         with self.assertRaises(ValidationError):
             self.env['product.product'].create({
                 'name': 'RFB Item 1 Duplicate',
                 'rfb': 'RFB-TC-999999',
-                'resale_category_id': self.category.id,
+                'categ_id': self.category.id,
             })
 
     def test_complete_evaluation(self):
         product = self.env['product.product'].create({
             'name': 'Eval Item',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         product.write({
             'eval_basic_result': 'pass',
@@ -75,7 +75,7 @@ class TestResaleProduct(TransactionCase):
     def test_complete_evaluation_requires_result(self):
         product = self.env['product.product'].create({
             'name': 'Eval Item No Result',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         with self.assertRaises(UserError):
             product.action_complete_evaluation()
@@ -83,7 +83,7 @@ class TestResaleProduct(TransactionCase):
     def test_lock_cost_only_manager(self):
         product = self.env['product.product'].create({
             'name': 'Lock Item',
-            'resale_category_id': self.category.id,
+            'categ_id': self.category.id,
         })
         product.with_user(self.manager)._lock_cost()
         self.assertEqual(product.cost_status, 'locked')

@@ -5,7 +5,7 @@
         <field name="model">product.category</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="name"/>
+                <field name="display_name"/>
                 <field name="rfb_prefix"/>
                 <field name="is_other" optional="show"/>
             </list>
@@ -39,7 +39,7 @@
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_resale_category_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_resale_category_form')}),
         ]"/>
-        <field name="domain">[('rfb_prefix', '!=', False)]</field>
-        <field name="context">{'default_rfb_prefix': '99'}</field>
+        <field name="domain">[('parent_id', 'child_of', ref('product_category_resale'))]</field>
+        <field name="context">{'default_parent_id': ref('product_category_resale')}</field>
     </record>
 </odoo>
