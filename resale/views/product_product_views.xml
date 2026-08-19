@@ -27,6 +27,7 @@
                 <header>
                     <button name="action_complete_evaluation" string="Complete Evaluation" type="object" class="oe_highlight" invisible="eval_done or resale_state in ('sold','scrapped','dismantled')"/>
                     <button name="action_start_detailed_test" string="Start Detailed Test" type="object" invisible="resale_state in ('received','sold','scrapped','dismantled')"/>
+                    <button name="action_open_standard_product" string="Standard Product" type="object" icon="fa-external-link"/>
                     <field name="resale_state" widget="statusbar" statusbar_visible="received,inspecting,needs_repair,needs_dismantling,ready,published,reserved,sold"/>
                 </header>
                 <sheet>

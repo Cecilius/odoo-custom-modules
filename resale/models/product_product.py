@@ -228,6 +228,10 @@ class ProductProduct(models.Model):
             product.write(vals)
         return True
 
+    def action_open_standard_product(self):
+        self.ensure_one()
+        return self.get_formview_action()
+
     def action_open_resale_item(self):
         self.ensure_one()
         return {
