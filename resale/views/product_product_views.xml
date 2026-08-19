@@ -135,11 +135,11 @@
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_resale_product_form')}),
         ]"/>
         <field name="domain">[('rfb', '!=', False)]</field>
-        <field name="context">{
+        <field name="context" eval="{
             'default_type': 'consu',
             'default_is_storable': True,
             'default_resale_state': 'received',
             'default_categ_id': ref('product_category_other'),
-        }</field>
+        }"/>
     </record>
 </odoo>

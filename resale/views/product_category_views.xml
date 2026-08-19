@@ -39,7 +39,7 @@
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_resale_category_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_resale_category_form')}),
         ]"/>
-        <field name="domain">[('parent_id', 'child_of', ref('product_category_resale'))]</field>
-        <field name="context">{'default_parent_id': ref('product_category_resale')}</field>
+        <field name="domain" eval="[('parent_id', 'child_of', ref('product_category_resale'))]"/>
+        <field name="context" eval="{'default_parent_id': ref('product_category_resale')}"/>
     </record>
 </odoo>
