@@ -24,6 +24,7 @@
             <form>
                 <header>
                     <button name="action_receive" string="Receive" type="object" class="oe_highlight" invisible="state in ('received', 'allocating', 'locked', 'done')"/>
+                    <button name="action_receive_stock" string="Receive into Stock" type="object" class="oe_highlight" invisible="state != 'received'"/>
                     <button name="action_sync_bills" string="Sync Bills" type="object" invisible="state in ('locked', 'done')"/>
                     <button name="action_calculate_allocation" string="Calculate Allocation" type="object" class="oe_highlight" invisible="state not in ('received', 'allocating')"/>
                     <button name="action_lock_costs" string="Lock Costs" type="object" invisible="state != 'allocating'"/>
@@ -66,6 +67,16 @@
                                     <field name="model_es" optional="show"/>
                                     <field name="initial_value" optional="show"/>
                                     <field name="resale_state" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Stock Receipts">
+                            <field name="receipt_picking_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="date_done"/>
+                                    <field name="state"/>
                                 </list>
                             </field>
                         </page>

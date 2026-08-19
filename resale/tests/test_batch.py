@@ -69,6 +69,20 @@ class TestAcquisitionBatch(TransactionCase):
         batch.action_done()
         self.assertEqual(batch.state, 'done')
 
+    def test_receive_creates_native_stock_receipt(self):
+        batch = self.env['resale.acquisition.batch'].create({
+            'partner_id': self.partner.id,
+            'expected_items': 1,
+        })
+        item = self._create_item('Stock Item', 100.0)
+        item.batch_id = batch.id
+
+        batch.action_receive()
+
+        self.assertEqual(len(batch.receipt_picking_ids), 1)
+        self.assertEqual(batch.receipt_picking_ids.state, 'done')
+        self.assertEqual(item.qty_available, 1.0)
+
     def test_cannot_lock_without_evaluation(self):
         batch = self.env['resale.acquisition.batch'].create({
             'partner_id': self.partner.id,

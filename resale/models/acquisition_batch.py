@@ -34,6 +34,12 @@ class AcquisitionBatch(models.Model):
         compute='_compute_item_counts', store=True,
     )
     item_ids = fields.One2many('product.product', 'batch_id', string='Items')
+    receipt_picking_ids = fields.One2many(
+        'stock.picking',
+        'resale_batch_id',
+        string='Stock Receipts',
+        copy=False,
+    )
 
     state = fields.Selection([
         ('ordered', 'Ordered'),
@@ -132,6 +138,56 @@ class AcquisitionBatch(models.Model):
                 'state': 'received',
                 'received_date': fields.Date.context_today(batch),
             })
+            if batch.item_ids:
+                return batch.action_receive_stock()
+
+    def action_receive_stock(self):
+        self.ensure_one()
+        if self.state != 'received':
+            raise UserError(_('The batch must be received before stock is recorded.'))
+        items = self.item_ids.filtered('rfb')
+        received_product_ids = self.receipt_picking_ids.filtered(
+            lambda picking: picking.state == 'done'
+        ).move_ids.product_id.ids
+        items = items.filtered(lambda item: item.id not in received_product_ids)
+        if not items:
+            raise UserError(_('There are no new items to receive into stock.'))
+
+        company = self.env.company
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('company_id', '=', company.id),
+        ], limit=1)
+        if not picking_type:
+            raise UserError(_('No incoming operation type is configured for this company.'))
+        destination = self.env.ref('resale.location_resale_stock')
+        source = picking_type.default_location_src_id or self.env.ref(
+            'stock.stock_location_suppliers'
+        )
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': picking_type.id,
+            'location_id': source.id,
+            'location_dest_id': destination.id,
+            'partner_id': self.partner_id.id,
+            'origin': self.name,
+            'resale_batch_id': self.id,
+        })
+        StockMove = self.env['stock.move']
+        for item in items:
+            StockMove.create({
+                'picking_id': picking.id,
+                'product_id': item.id,
+                'product_uom': item.uom_id.id,
+                'product_uom_qty': 1.0,
+                'location_id': source.id,
+                'location_dest_id': destination.id,
+                'company_id': company.id,
+            })
+        picking.action_confirm()
+        picking.action_assign()
+        picking.move_ids.picked = True
+        picking.button_validate()
+        return picking.get_formview_action()
 
     def action_calculate_allocation(self):
         self.ensure_one()

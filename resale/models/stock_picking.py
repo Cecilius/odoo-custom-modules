@@ -7,6 +7,13 @@ from odoo import fields, models
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    resale_batch_id = fields.Many2one(
+        'resale.acquisition.batch',
+        string='Resale Batch',
+        copy=False,
+        index=True,
+    )
+
     def _action_done(self):
         res = super()._action_done()
         for picking in self:
