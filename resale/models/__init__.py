@@ -9,3 +9,5 @@ from . import cost_component
 from . import cost_adjustment
 from . import test_type
 from . import detailed_test
+from . import sale_order
+from . import stock_picking
