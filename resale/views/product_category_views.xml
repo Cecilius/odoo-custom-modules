@@ -5,7 +5,8 @@
         <field name="model">product.category</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="display_name"/>
+                <field name="name"/>
+                <field name="parent_id" optional="show"/>
                 <field name="rfb_prefix"/>
                 <field name="is_other" optional="show"/>
             </list>
