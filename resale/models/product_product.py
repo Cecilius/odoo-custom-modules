@@ -1,5 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 
@@ -59,6 +59,12 @@ class ProductProduct(models.Model):
     eval_comment = fields.Text(string='Evaluation Comment')
 
     # --- Final condition / assessment ---------------------------------------
+    condition_grade_value_id = fields.Many2one(
+        'product.attribute.value',
+        string='Condition Grade',
+        compute='_compute_condition_grade_value',
+        inverse='_inverse_condition_grade_value',
+    )
     condition_id = fields.Many2one('resale.condition', string='Condition')
     functional_status = fields.Selection([
         ('working', 'Working'),
@@ -154,8 +160,98 @@ class ProductProduct(models.Model):
             if self.condition_id.warranty_policy_id and not self.warranty_policy_id:
                 self.warranty_policy_id = self.condition_id.warranty_policy_id
 
+    def _condition_grade_attribute(self):
+        return self.env.ref(
+            'resale.product_attribute_condition_grade',
+            raise_if_not_found=False,
+        )
+
+    @api.depends('product_tmpl_id.attribute_line_ids.value_ids')
+    def _compute_condition_grade_value(self):
+        attribute = self._condition_grade_attribute()
+        for product in self:
+            line = product.product_tmpl_id.attribute_line_ids.filtered(
+                lambda item: attribute and item.attribute_id == attribute
+            )[:1]
+            product.condition_grade_value_id = line.value_ids[:1] if line else False
+
+    def _apply_condition_grade_metadata(self, value, include_policy=True):
+        self.ensure_one()
+        vals = {}
+        if value.resale_condition_id:
+            vals['condition_id'] = value.resale_condition_id.id
+        if include_policy and value.resale_warranty_policy_id:
+            vals['warranty_policy_id'] = value.resale_warranty_policy_id.id
+        if value.resale_condition_factor:
+            vals['condition_factor'] = value.resale_condition_factor
+        if vals:
+            self.write(vals)
+
+    def _set_condition_grade_value(self, value):
+        self.ensure_one()
+        attribute = self._condition_grade_attribute()
+        if not attribute or not value or value.attribute_id != attribute:
+            return
+        line = self.product_tmpl_id.attribute_line_ids.filtered(
+            lambda item: item.attribute_id == attribute
+        )[:1]
+        if line:
+            line.value_ids = [Command.set([value.id])]
+        else:
+            self.env['product.template.attribute.line'].create({
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'attribute_id': attribute.id,
+                'value_ids': [Command.link(value.id)],
+            })
+        self._apply_condition_grade_metadata(
+            value,
+            include_policy=self.type != 'service',
+        )
+
+    def _sync_condition_grade_from_condition(self):
+        for product in self:
+            if not product.condition_id:
+                continue
+            attribute = self._condition_grade_attribute()
+            if not attribute:
+                continue
+            value = self.env['product.attribute.value'].search([
+                ('attribute_id', '=', attribute.id),
+                ('resale_condition_id', '=', product.condition_id.id),
+            ], limit=1)
+            if value:
+                product._set_condition_grade_value(value)
+
+    @api.model
+    def _ensure_generic_warranty_all(self):
+        service_policy = self.env.ref(
+            'resale.warranty_service_3_months',
+            raise_if_not_found=False,
+        )
+        goods_policy = self.env.ref(
+            'resale.warranty_36_months',
+            raise_if_not_found=False,
+        )
+        for product in self.search([]):
+            if product.condition_id:
+                product._sync_condition_grade_from_condition()
+            elif product.condition_grade_value_id:
+                product._apply_condition_grade_metadata(
+                    product.condition_grade_value_id,
+                    include_policy=product.type != 'service',
+                )
+            if not product.warranty_policy_id:
+                policy = service_policy if product.type == 'service' else goods_policy
+                if policy:
+                    product.warranty_policy_id = policy
+
+    def _inverse_condition_grade_value(self):
+        for product in self:
+            product._set_condition_grade_value(product.condition_grade_value_id)
+
     @api.model_create_multi
     def create(self, vals_list):
+        explicit_policies = [vals.get('warranty_policy_id') for vals in vals_list]
         for vals in vals_list:
             if vals.get('categ_id') and not vals.get('rfb'):
                 category = self.env['product.category'].browse(vals['categ_id'])
@@ -168,13 +264,28 @@ class ProductProduct(models.Model):
                 vals.setdefault('type', 'consu')
                 vals.setdefault('is_storable', True)
         products = super().create(vals_list)
+        service_policy = self.env.ref(
+            'resale.warranty_service_3_months',
+            raise_if_not_found=False,
+        )
         # Products created without explicit categ_id may still get a resale default category.
-        for product in products:
+        for product, explicit_policy in zip(products, explicit_policies):
             if not product.rfb and product.categ_id.rfb_prefix:
                 sequence = product.categ_id._get_or_create_rfb_sequence()
                 if sequence:
                     rfb = sequence.next_by_id()
                     product.write({'rfb': rfb, 'default_code': rfb, 'barcode': rfb})
+            if product.condition_grade_value_id:
+                if explicit_policy:
+                    product.warranty_policy_id = explicit_policy
+                product._apply_condition_grade_metadata(
+                    product.condition_grade_value_id,
+                    include_policy=(
+                        not explicit_policy and product.type != 'service'
+                    ),
+                )
+            if product.type == 'service' and not explicit_policy and service_policy:
+                product.warranty_policy_id = service_policy
         return products
 
     def write(self, vals):

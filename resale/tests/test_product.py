@@ -87,3 +87,28 @@ class TestResaleProduct(TransactionCase):
         })
         product.with_user(self.manager)._lock_cost()
         self.assertEqual(product.cost_status, 'locked')
+
+    def test_goods_default_to_new_grade_and_warranty(self):
+        product = self.env['product.product'].create({'name': 'New Goods'})
+        self.assertEqual(product.condition_grade_value_id.name, 'New')
+        self.assertEqual(product.warranty_policy_id.duration_months, 36)
+
+    def test_service_defaults_to_service_warranty(self):
+        product = self.env['product.product'].create({
+            'name': 'Service Product',
+            'type': 'service',
+        })
+        self.assertEqual(product.condition_grade_value_id.name, 'New')
+        self.assertEqual(product.warranty_policy_id.duration_months, 3)
+
+    def test_condition_grade_updates_factor_and_warranty(self):
+        product = self.env['product.product'].create({
+            'name': 'Gradeable Item',
+            'categ_id': self.category.id,
+        })
+        product.condition_grade_value_id = self.env.ref(
+            'resale.product_attribute_value_condition_very_good'
+        )
+        self.assertEqual(product.condition_id.code, 'VG')
+        self.assertEqual(product.condition_factor, 0.9)
+        self.assertEqual(product.warranty_policy_id.duration_months, 12)

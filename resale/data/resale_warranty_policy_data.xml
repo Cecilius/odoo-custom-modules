@@ -22,5 +22,12 @@
             <field name="has_functional_warranty" eval="False"/>
             <field name="sequence">30</field>
         </record>
+        <record id="warranty_service_3_months" model="resale.warranty.policy">
+            <field name="name">Service Warranty - 3 Months</field>
+            <field name="code">SRV3</field>
+            <field name="duration_months">3</field>
+            <field name="has_functional_warranty" eval="True"/>
+            <field name="sequence">40</field>
+        </record>
     </data>
 </odoo>

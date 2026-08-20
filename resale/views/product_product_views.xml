@@ -73,7 +73,7 @@
                                 <field name="eval_done" readonly="1"/>
                                 <field name="eval_date" readonly="1"/>
                                 <field name="eval_user_id" readonly="1"/>
-                                <field name="condition_id"/>
+                                <field name="condition_grade_value_id" domain="[('resale_is_condition_grade', '=', True)]"/>
                                 <field name="functional_status"/>
                                 <field name="completeness"/>
                                 <field name="eval_basic_result"/>
@@ -95,7 +95,7 @@
                         </page>
                         <page string="Warranty">
                             <group>
-                                <field name="warranty_policy_id"/>
+                                <field name="warranty_policy_id" readonly="1"/>
                                 <field name="warranty_start"/>
                                 <field name="warranty_end"/>
                             </group>

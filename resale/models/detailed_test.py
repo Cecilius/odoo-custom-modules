@@ -84,6 +84,7 @@ class DetailedTest(models.Model):
             if test.final_condition_id:
                 item_vals['condition_factor'] = test.final_condition_id.condition_factor
             test.product_id.write(item_vals)
+            test.product_id._sync_condition_grade_from_condition()
             test.write({
                 'state': 'done',
                 'date': fields.Datetime.now(),
