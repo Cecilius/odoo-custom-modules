@@ -17,6 +17,20 @@ class StockPicking(models.Model):
     def _action_done(self):
         res = super()._action_done()
         for picking in self:
+            if picking.picking_type_id.code == 'incoming':
+                returned_products = picking.move_ids.filtered(
+                    'origin_returned_move_id'
+                ).mapped('product_id').filtered('rfb')
+                for product in returned_products:
+                    product.write({
+                        'resale_state': 'inspecting',
+                        'eval_done': False,
+                        'eval_date': False,
+                        'eval_user_id': False,
+                        'warranty_start': False,
+                        'warranty_end': False,
+                    })
+                continue
             if picking.picking_type_id.code != 'outgoing':
                 continue
             done_date = (

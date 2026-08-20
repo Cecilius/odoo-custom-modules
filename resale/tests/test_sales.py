@@ -89,3 +89,38 @@ class TestResaleSales(TransactionCase):
 
         self.assertEqual(self.product.resale_state, 'ready')
         self.assertEqual(self.product.free_qty, 1.0)
+
+    def test_customer_return_reopens_inspection(self):
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner.id,
+            'order_line': [
+                (0, 0, {
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1.0,
+                }),
+            ],
+        })
+        so.action_confirm()
+        delivery = so.picking_ids.filtered(
+            lambda p: p.picking_type_id.code == 'outgoing'
+        )
+        delivery.action_assign()
+        delivery.button_validate()
+        self.assertEqual(self.product.resale_state, 'sold')
+
+        return_wizard = self.env['stock.return.picking'].with_context(
+            active_ids=delivery.ids,
+            active_id=delivery.id,
+            active_model='stock.picking',
+        ).create({})
+        return_wizard.product_return_moves.quantity = 1.0
+        return_picking = self.env['stock.picking'].browse(
+            return_wizard.action_create_returns()['res_id']
+        )
+        return_picking.button_validate()
+
+        self.assertEqual(return_picking.state, 'done')
+        self.assertEqual(self.product.resale_state, 'inspecting')
+        self.assertFalse(self.product.eval_done)
+        self.assertFalse(self.product.warranty_start)
+        self.assertEqual(self.product.qty_available, 1.0)
