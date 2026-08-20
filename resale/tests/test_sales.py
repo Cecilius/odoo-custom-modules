@@ -71,3 +71,21 @@ class TestResaleSales(TransactionCase):
             self.product.warranty_end,
             self.product.warranty_start + relativedelta(months=3),
         )
+
+    def test_sale_cancellation_releases_item(self):
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner.id,
+            'order_line': [
+                (0, 0, {
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1.0,
+                }),
+            ],
+        })
+        so.action_confirm()
+        self.assertEqual(self.product.resale_state, 'reserved')
+
+        so.action_cancel()
+
+        self.assertEqual(self.product.resale_state, 'ready')
+        self.assertEqual(self.product.free_qty, 1.0)
