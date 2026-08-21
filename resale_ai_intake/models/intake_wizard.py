@@ -38,6 +38,11 @@ class ResaleAIIntakeWizard(models.TransientModel):
     confidence = fields.Float(readonly=True)
     sources = fields.Text(readonly=True)
     raw_response = fields.Text(readonly=True)
+    raw_agent_response = fields.Text(
+        string='Raw AI Response',
+        readonly=True,
+        help='Exact response returned by the selected native Odoo AI agent.',
+    )
     agent_id = fields.Many2one('ai.agent', string='Agent Used', readonly=True)
     error_message = fields.Text(readonly=True)
     item_count = fields.Integer(compute='_compute_item_count')
@@ -128,6 +133,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             self._prompt(deep=deep, secondary=secondary),
             context_message='Return strict JSON only. Do not use markdown.',
         )
+        self.raw_agent_response = '\n'.join(response or [])
         return self._parse_response(response)
 
     def _find_brand(self, result):
@@ -244,6 +250,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'confidence': 0.0,
             'sources': False,
             'raw_response': False,
+            'raw_agent_response': False,
             'agent_id': False,
             'error_message': False,
         })
