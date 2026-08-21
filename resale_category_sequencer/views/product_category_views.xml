@@ -18,7 +18,7 @@
         <field name="model">product.category</field>
         <field name="inherit_id" ref="product.product_category_list_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='complete_name']" position="after">
+            <xpath expr="//field[@name='name']" position="after">
                 <field name="category_code" optional="show"/>
             </xpath>
         </field>
