@@ -14,5 +14,6 @@
             <field name="resale_is_brand" eval="True"/>
         </record>
         <function model="product.product" name="_migrate_brand_attribute_all"/>
+        <function model="product.attribute.value" name="_ensure_brand_values_all"/>
     </data>
 </odoo>

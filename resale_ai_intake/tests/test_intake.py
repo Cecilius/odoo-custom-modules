@@ -50,6 +50,13 @@ class TestResaleAIIntake(TransactionCase):
         self.assertEqual(configuration.name, 'Default')
         self.assertTrue(configuration.automatic_fallback)
 
+    def test_new_brand_attribute_value_is_selectable(self):
+        value = self.env['product.attribute.value'].create({
+            'name': 'Test Brand',
+            'attribute_id': self.env.ref('resale.product_attribute_brand').id,
+        })
+        self.assertTrue(value.resale_is_brand)
+
     def test_error_can_return_to_input(self):
         partner = self.env['res.partner'].create({'name': 'AI Intake Supplier'})
         batch = self.env['resale.acquisition.batch'].create({
