@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Extend Product Category Form View -->
+    <!-- Add category_code to Product Category form -->
     <record id="product_category_form_view_inherit_rfb" model="ir.ui.view">
         <field name="name">product.category.form.inherit.rfb</field>
         <field name="model">product.category</field>
@@ -12,14 +12,22 @@
         </field>
     </record>
 
-    <!-- Extend Product Category List View by appending to the view root -->
-    <record id="product_category_list_view_inherit_rfb" model="ir.ui.view">
-        <field name="name">product.category.list.inherit.rfb</field>
-        <field name="model">product.category</field>
-        <field name="inherit_id" ref="product.product_category_list_view"/>
+    <!-- Add Confirmation Alert Banner to Product Template form -->
+    <record id="product_template_form_view_inherit_rfb" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.rfb</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="/*[self::tree or self::list]" position="inside">
-                <field name="category_code" optional="show"/>
+            <xpath expr="//sheet" position="before">
+                <field name="needs_rfb_confirmation" invisible="1"/>
+                <div class="alert alert-warning text-center mb-0" role="alert" invisible="not needs_rfb_confirmation">
+                    <strong>Category Code Confirmation Required!</strong><br/>
+                    Generating a new internal reference (RFB-XX-YYYYYY) is required for this category.
+                    <div class="mt-2">
+                        <button name="action_confirm_rfb_category" type="object" string="Confirm &amp; Generate Code" class="btn btn-primary me-2"/>
+                        <button name="action_reject_rfb_category" type="object" string="Reject / Revert" class="btn btn-secondary"/>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>

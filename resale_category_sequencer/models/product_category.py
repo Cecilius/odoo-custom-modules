@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-
 
 class ProductCategory(models.Model):
     _inherit = 'product.category'
@@ -26,28 +24,9 @@ class ProductCategory(models.Model):
         for rec in self:
             if rec.category_code:
                 if not rec.category_code.isdigit() or len(rec.category_code) != 2:
-                    raise ValidationError(
-                        _("Category Code must be exactly 2 numeric digits (00-99).")
-                    )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        categories = super().create(vals_list)
-        for cat in categories:
-            if cat.category_code:
-                cat._get_or_create_sequence()
-        return categories
-
-    def write(self, vals):
-        res = super().write(vals)
-        if 'category_code' in vals:
-            for cat in self:
-                if cat.category_code:
-                    cat._get_or_create_sequence()
-        return res
+                    raise ValidationError(_("Category Code must be exactly 2 numeric digits (00-99)."))
 
     def _get_or_create_sequence(self):
-        """Finds or dynamically generates an ir.sequence for this category code."""
         self.ensure_one()
         if not self.category_code:
             return None

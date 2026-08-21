@@ -7,16 +7,11 @@
     'author': 'Reparero',
     'website': 'https://reparero.es',
     'license': 'LGPL-3',
-    'depends': ['product', 'stock', 'web'],
+    'depends': ['product', 'stock'],
     'data': [
         'security/ir.model.access.csv',
         'views/product_category_views.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'resale_category_sequencer/static/src/js/product_form_controller.js',
-        ],
-    },
     'installable': True,
     'application': False,
     'auto_install': False,
