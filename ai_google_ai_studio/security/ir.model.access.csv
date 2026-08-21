@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ai_google_model_system,ai.google.model system,model_ai_google_model,base.group_system,1,1,1,1

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ai.openrouter</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="ai_app.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='ai_providers']" position="inside">
+                <setting id="openrouter_provider"
+                         string="Use your OpenRouter account"
+                         help="Provide an OpenRouter API key to use OpenRouter models"
+                         groups="base.group_system">
+                    <field name="openrouter_key_enabled"/>
+                    <group invisible="not openrouter_key_enabled">
+                        <div class="mt-2">
+                            <label for="openrouter_key" string="OpenRouter API key" class="form-label"/>
+                            <field name="openrouter_key" placeholder="Key" password="True" nolabel="1" class="w-100"/>
+                        </div>
+                        <div class="mt-2">
+                            <label for="openrouter_http_referer" string="HTTP referer (optional)" class="form-label"/>
+                            <field name="openrouter_http_referer" placeholder="https://example.com" nolabel="1" class="w-100"/>
+                        </div>
+                        <div class="mt-2">
+                            <label for="openrouter_title" string="Application title (optional)" class="form-label"/>
+                            <field name="openrouter_title" placeholder="My Odoo AI" nolabel="1" class="w-100"/>
+                        </div>
+                        <button name="action_sync_openrouter_models"
+                                type="object"
+                                string="Synchronize available models"
+                                class="btn-link mt-2"
+                                icon="fa-refresh"/>
+                        <button name="action_open_openrouter_models"
+                                type="object"
+                                string="Manage allowed models"
+                                class="btn-link"
+                                icon="fa-list"/>
+                    </group>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
