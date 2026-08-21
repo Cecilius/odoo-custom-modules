@@ -194,6 +194,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
             f'{category.id}: {category.complete_name}'
             for category in self.env['product.category'].search([
                 ('id', 'child_of', root.id),
+                ('rfb_prefix', '!=', False),
             ], order='complete_name')
         )
 
@@ -284,7 +285,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
         category = self.env['product.category']
         if result.get('category_id'):
             category = self.env['product.category'].browse(int(result['category_id']))
-            if not category.exists():
+            if not category.exists() or not category.rfb_prefix:
                 category = self.env['product.category']
         brand = self._find_brand(result)
         sources = result.get('sources') or []
@@ -442,6 +443,8 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             raise UserError(_('Run a lookup and review the result before confirming.'))
         if not self.category_id:
             raise UserError(_('Select or confirm a resale category before creating the item.'))
+        if not self.category_id.rfb_prefix:
+            raise UserError(_('Select a leaf resale category with an RFB prefix.'))
         brand = self.brand_id
         if self.result_brand_name and (
             not brand

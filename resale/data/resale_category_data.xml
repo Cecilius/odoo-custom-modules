@@ -1,62 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data noupdate="1">
-        <!-- Root of the resale category tree -->
-        <record id="product_category_resale" model="product.category">
-            <field name="name">Resale</field>
-        </record>
-
-        <!-- Main resale categories -->
-        <record id="product_category_computers" model="product.category">
-            <field name="name">Computers</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">10</field>
-        </record>
-        <record id="product_category_phones" model="product.category">
-            <field name="name">Phones</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">20</field>
-        </record>
-        <record id="product_category_storage" model="product.category">
-            <field name="name">Storage</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">30</field>
-        </record>
-        <record id="product_category_audio" model="product.category">
-            <field name="name">Audio</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">40</field>
-        </record>
-        <record id="product_category_gaming" model="product.category">
-            <field name="name">Gaming</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">50</field>
-        </record>
-        <record id="product_category_photo" model="product.category">
-            <field name="name">Photo</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">60</field>
-        </record>
-        <record id="product_category_network" model="product.category">
-            <field name="name">Network</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">70</field>
-        </record>
-        <record id="product_category_home" model="product.category">
-            <field name="name">Home</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">80</field>
-        </record>
-        <record id="product_category_office" model="product.category">
-            <field name="name">Office</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">90</field>
-        </record>
-        <record id="product_category_other" model="product.category">
-            <field name="name">Other / Miscellaneous</field>
-            <field name="parent_id" ref="product_category_resale"/>
-            <field name="rfb_prefix">99</field>
-            <field name="is_other" eval="True"/>
-        </record>
+    <data>
+        <function model="product.category" name="_ensure_resale_category_tree"/>
     </data>
 </odoo>

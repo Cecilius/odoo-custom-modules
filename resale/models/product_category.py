@@ -14,6 +14,11 @@ class ProductCategory(models.Model):
         string='Other / Miscellaneous',
         help='Permanent fallback category for exceptional items.',
     )
+    resale_protected = fields.Boolean(
+        string='Protected Resale Category',
+        copy=False,
+        help='Protected categories cannot be deleted from the resale workflow.',
+    )
     rfb_sequence_id = fields.Many2one(
         'ir.sequence',
         string='RFB Sequence',
@@ -84,7 +89,71 @@ class ProductCategory(models.Model):
         return res
 
     def unlink(self):
+        if self.filtered('resale_protected'):
+            from odoo.exceptions import UserError
+            raise UserError('Protected resale categories cannot be deleted.')
         sequences = self.mapped('rfb_sequence_id')
         res = super().unlink()
         sequences.unlink()
         return res
+
+    @api.model
+    def _ensure_resale_category_tree(self):
+        """Restore the shortcut root and standard categories if a user deleted them."""
+        category_data = [
+            ('product_category_computers', 'Computers', '10'),
+            ('product_category_phones', 'Phones', '20'),
+            ('product_category_storage', 'Storage', '30'),
+            ('product_category_audio', 'Audio', '40'),
+            ('product_category_gaming', 'Gaming', '50'),
+            ('product_category_photo', 'Photo', '60'),
+            ('product_category_network', 'Network', '70'),
+            ('product_category_home', 'Home', '80'),
+            ('product_category_office', 'Office', '90'),
+            ('product_category_other', 'Other / Miscellaneous', '99'),
+        ]
+        root = self.search([('name', '=', 'Resale')], limit=1)
+        if not root:
+            root = self.create({
+                'name': 'Resale',
+                'resale_protected': True,
+            })
+        elif not root.resale_protected:
+            root.resale_protected = True
+        self._ensure_external_id('product_category_resale', root)
+
+        for xml_name, name, prefix in category_data:
+            category = self.search([('name', '=', name)], limit=1)
+            if not category:
+                category = self.create({
+                    'name': name,
+                    'parent_id': root.id,
+                    'rfb_prefix': prefix,
+                    'is_other': xml_name == 'product_category_other',
+                })
+            else:
+                category.parent_id = root
+                if not category.rfb_prefix:
+                    category.rfb_prefix = prefix
+                if xml_name == 'product_category_other':
+                    category.is_other = True
+            self._ensure_external_id(xml_name, category)
+
+    def _ensure_external_id(self, name, record):
+        data = self.env['ir.model.data'].sudo().search([
+            ('module', '=', 'resale'),
+            ('name', '=', name),
+        ], limit=1)
+        values = {
+            'model': 'product.category',
+            'res_id': record.id,
+            'noupdate': True,
+        }
+        if data:
+            data.write(values)
+        else:
+            self.env['ir.model.data'].sudo().create(dict(
+                values,
+                module='resale',
+                name=name,
+            ))

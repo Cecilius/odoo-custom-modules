@@ -32,7 +32,7 @@
                         <field name="result_brand_name"/>
                         <field name="brand_id"/>
                         <field name="result_category_path" readonly="1"/>
-                        <field name="category_id"/>
+                        <field name="category_id" domain="[('rfb_prefix', '!=', False)]"/>
                         <field name="result_asin" readonly="1"/>
                         <field name="result_ean" readonly="1"/>
                         <field name="current_price"/>
