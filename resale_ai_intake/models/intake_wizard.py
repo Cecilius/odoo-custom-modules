@@ -262,7 +262,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'name': 'AI Product Lookup',
             'res_model': 'resale.ai.lookup.input.wizard',
             'view_mode': 'form',
-            'target': 'current',
+            'target': 'new',
             'context': {'default_parent_wizard_id': self.id},
         }
 
@@ -413,5 +413,5 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'res_model': self._name,
             'res_id': self.id,
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
         }

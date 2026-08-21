@@ -55,3 +55,18 @@ class TestResaleAIIntake(TransactionCase):
         })
         with self.assertRaises(UserError):
             wizard.action_lookup_from_identifiers(False, False)
+
+    def test_lookup_popup_and_parent_targets(self):
+        partner = self.env['res.partner'].create({'name': 'AI Intake Supplier 3'})
+        batch = self.env['resale.acquisition.batch'].create({
+            'partner_id': partner.id,
+        })
+        wizard = self.env['resale.ai.intake.wizard'].create({
+            'batch_id': batch.id,
+        })
+
+        popup_action = wizard.action_open_identifier_popup()
+        parent_action = wizard._reload_action()
+
+        self.assertEqual(popup_action['target'], 'new')
+        self.assertEqual(parent_action['target'], 'current')
