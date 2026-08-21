@@ -36,6 +36,7 @@ Simplified resale workflow for second-hand electronics:
         'data/resale_category_data.xml',
         'data/resale_brand_data.xml',
         'data/product_brand_attribute_data.xml',
+        'data/product_brand_attribute_sync.xml',
         'data/resale_warranty_policy_data.xml',
         'data/resale_condition_data.xml',
         'data/product_condition_attribute_data.xml',

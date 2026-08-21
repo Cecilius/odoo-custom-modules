@@ -214,7 +214,26 @@ class ProductProduct(models.Model):
 
     @api.model
     def _migrate_brand_attribute_all(self):
-        self.search([('resale_brand_id', '!=', False)])._sync_brand_attribute_from_legacy()
+        BrandValue = self.env['product.attribute.value']
+        attribute = self._brand_attribute()
+        if not attribute:
+            return
+        for legacy_brand in self.env['resale.brand'].search([]):
+            value = BrandValue.search([
+                ('attribute_id', '=', attribute.id),
+                ('name', '=ilike', legacy_brand.name),
+            ], limit=1)
+            if not value:
+                value = BrandValue.create({
+                    'name': legacy_brand.name,
+                    'attribute_id': attribute.id,
+                    'resale_is_brand': True,
+                })
+            else:
+                value.resale_is_brand = True
+            self.search([
+                ('resale_brand_id', '=', legacy_brand.id),
+            ])._sync_brand_attribute_from_legacy()
 
     @api.depends('product_tmpl_id.attribute_line_ids.value_ids')
     def _compute_condition_grade_value(self):
