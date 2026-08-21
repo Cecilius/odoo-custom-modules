@@ -9,12 +9,14 @@ class ResaleAILookupInputWizard(models.TransientModel):
     parent_wizard_id = fields.Many2one('resale.ai.intake.wizard', required=True)
     ean = fields.Char(string='EAN / UPC')
     asin = fields.Char(string='ASIN')
+    search_text = fields.Char(string='Product Description')
 
     def action_lookup(self):
         self.ensure_one()
-        if not self.ean and not self.asin:
-            raise UserError(_('Enter an EAN/UPC, an ASIN, or both.'))
+        if not self.ean and not self.asin and not self.search_text:
+            raise UserError(_('Enter an EAN/UPC, an ASIN, product text, or any combination.'))
         return self.parent_wizard_id.action_lookup_from_identifiers(
             self.ean.strip() if self.ean else False,
             self.asin.strip() if self.asin else False,
+            self.search_text.strip() if self.search_text else False,
         )

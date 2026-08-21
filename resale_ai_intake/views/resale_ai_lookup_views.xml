@@ -9,6 +9,7 @@
                     <group>
                         <field name="ean" placeholder="EAN / UPC"/>
                         <field name="asin" placeholder="ASIN"/>
+                        <field name="search_text" placeholder="e.g. rose pink Galaxy Watch SM-R860"/>
                     </group>
                 </sheet>
                 <footer>

@@ -56,6 +56,9 @@ class TestResaleAIIntake(TransactionCase):
         with self.assertRaises(UserError):
             wizard.action_lookup_from_identifiers(False, False)
 
+        wizard.action_lookup_from_identifiers(False, False, 'rose pink Galaxy Watch SM-R860')
+        self.assertEqual(wizard.input_search_text, 'rose pink Galaxy Watch SM-R860')
+
     def test_lookup_popup_and_parent_targets(self):
         partner = self.env['res.partner'].create({'name': 'AI Intake Supplier 3'})
         batch = self.env['resale.acquisition.batch'].create({

@@ -13,6 +13,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
     identifier = fields.Char(string='Lookup Identifier', readonly=True)
     input_ean = fields.Char(string='Last EAN / UPC', readonly=True)
     input_asin = fields.Char(string='Last ASIN', readonly=True)
+    input_search_text = fields.Char(string='Last Product Search', readonly=True)
     identifier_type = fields.Selection([
         ('ean', 'EAN / UPC'),
         ('asin', 'ASIN'),
@@ -149,6 +150,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
 You {task} one product for an Odoo resale intake workflow.
         EAN / UPC: {self.input_ean or 'not provided'}
         ASIN: {self.input_asin or 'not provided'}
+        Product search text: {self.input_search_text or 'not provided'}
 
 Existing resale categories (return one exact category id when possible):
 {self._category_options()}
@@ -175,7 +177,9 @@ Return JSON only, with this schema:
   "reason": ""
 }}
 
-Never invent an identifier, price, source, or category id. Use null when unknown.
+If an EAN/UPC or ASIN was not supplied, use the product search text to find and
+verify them from reliable sources. Never invent an identifier, price, source, or
+category id. Use null when unknown.
 Keep the product name at 40 characters or fewer.
 Verify that the supplied identifier appears in a source. Historical price must be
 left null unless the source supports it. {"Use multiple sources and investigate disagreements." if deep else "Use concise source-backed lookup."}
@@ -277,14 +281,15 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'context': {'default_parent_wizard_id': self.id},
         }
 
-    def action_lookup_from_identifiers(self, ean=False, asin=False):
+    def action_lookup_from_identifiers(self, ean=False, asin=False, search_text=False):
         self.ensure_one()
-        if not ean and not asin:
-            raise UserError(_('Enter an EAN or ASIN before starting the lookup.'))
+        if not ean and not asin and not search_text:
+            raise UserError(_('Enter an EAN/ASIN or product search text before starting the lookup.'))
         self.write({
             'input_ean': ean or False,
             'input_asin': asin or False,
-            'identifier': asin or ean,
+            'input_search_text': search_text or False,
+            'identifier': asin or ean or search_text,
         })
         return self._run_lookup()
 
@@ -378,6 +383,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'identifier': False,
             'input_ean': False,
             'input_asin': False,
+            'input_search_text': False,
             'state': 'input',
             'result_name': False,
             'result_model': False,
