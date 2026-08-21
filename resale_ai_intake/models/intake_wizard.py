@@ -10,7 +10,9 @@ class ResaleAIIntakeWizard(models.TransientModel):
     _description = 'Resale AI Item Intake'
 
     batch_id = fields.Many2one('resale.acquisition.batch', required=True)
-    identifier = fields.Char(string='EAN / ASIN')
+    identifier = fields.Char(string='Lookup Identifier', readonly=True)
+    input_ean = fields.Char(string='Last EAN / UPC', readonly=True)
+    input_asin = fields.Char(string='Last ASIN', readonly=True)
     identifier_type = fields.Selection([
         ('ean', 'EAN / UPC'),
         ('asin', 'ASIN'),
@@ -20,17 +22,17 @@ class ResaleAIIntakeWizard(models.TransientModel):
         ('review', 'Review'),
         ('error', 'Error'),
     ], default='input')
-    result_name = fields.Char(string='Suggested Product Name', readonly=True)
-    result_model = fields.Char(string='Suggested Model', readonly=True)
-    result_brand_name = fields.Char(string='Suggested Brand', readonly=True)
+    result_name = fields.Char(string='Suggested Product Name')
+    result_model = fields.Char(string='Suggested Model')
+    result_brand_name = fields.Char(string='Suggested Brand')
     brand_id = fields.Many2one('resale.brand', string='Brand')
     category_id = fields.Many2one('product.category', string='Suggested Category')
     result_category_path = fields.Char(string='AI Category Path', readonly=True)
-    result_asin = fields.Char(string='ASIN', readonly=True)
-    result_ean = fields.Char(string='EAN / UPC', readonly=True)
-    current_price = fields.Monetary(currency_field='currency_id', readonly=True)
+    result_asin = fields.Char(string='ASIN')
+    result_ean = fields.Char(string='EAN / UPC')
+    current_price = fields.Monetary(currency_field='currency_id')
     lowest_price_180 = fields.Monetary(
-        string='Lowest Price (180 days)', currency_field='currency_id', readonly=True,
+        string='Lowest Price (180 days)', currency_field='currency_id',
     )
     currency_id = fields.Many2one(
         'res.currency', default=lambda self: self.env.company.currency_id, readonly=True,
@@ -46,11 +48,63 @@ class ResaleAIIntakeWizard(models.TransientModel):
     agent_id = fields.Many2one('ai.agent', string='Agent Used', readonly=True)
     error_message = fields.Text(readonly=True)
     item_count = fields.Integer(compute='_compute_item_count')
+    planned_rfb = fields.Char(string='Planned RFB', compute='_compute_rfb_preview')
+    last_rfb = fields.Char(string='Last Assigned RFB', readonly=True)
+    last_product_id = fields.Many2one('product.product', string='Last Created Item', readonly=True)
+    changed_fields = fields.Char(string='Changed by User', compute='_compute_changed_fields')
+    ai_suggested_name = fields.Char(copy=False)
+    ai_suggested_model = fields.Char(copy=False)
+    ai_suggested_brand_name = fields.Char(copy=False)
+    ai_suggested_brand_id = fields.Many2one('resale.brand', copy=False)
+    ai_suggested_category_id = fields.Many2one('product.category', copy=False)
+    ai_suggested_asin = fields.Char(copy=False)
+    ai_suggested_ean = fields.Char(copy=False)
+    ai_suggested_current_price = fields.Monetary(currency_field='currency_id', copy=False)
+    ai_suggested_lowest_price_180 = fields.Monetary(currency_field='currency_id', copy=False)
 
     @api.depends('batch_id.item_ids')
     def _compute_item_count(self):
         for wizard in self:
             wizard.item_count = len(wizard.batch_id.item_ids)
+
+    @api.depends('category_id')
+    def _compute_rfb_preview(self):
+        for wizard in self:
+            sequence = wizard.category_id.rfb_sequence_id
+            if wizard.category_id.rfb_prefix and sequence:
+                next_number = getattr(sequence, 'number_next_actual', sequence.number_next)
+                wizard.planned_rfb = f'RFB-{wizard.category_id.rfb_prefix}-{next_number:06d}'
+            else:
+                wizard.planned_rfb = False
+
+    @api.depends(
+        'result_name', 'result_model', 'result_brand_name', 'brand_id',
+        'category_id', 'result_asin', 'result_ean', 'current_price',
+        'lowest_price_180', 'ai_suggested_name', 'ai_suggested_model',
+        'ai_suggested_brand_name', 'ai_suggested_brand_id',
+        'ai_suggested_category_id', 'ai_suggested_asin', 'ai_suggested_ean',
+        'ai_suggested_current_price', 'ai_suggested_lowest_price_180',
+    )
+    def _compute_changed_fields(self):
+        for wizard in self:
+            changed = []
+            comparisons = [
+                ('Name', wizard.result_name, wizard.ai_suggested_name),
+                ('Model', wizard.result_model, wizard.ai_suggested_model),
+                ('Brand', wizard.brand_id, wizard.ai_suggested_brand_id),
+                ('Brand Name', wizard.result_brand_name, wizard.ai_suggested_brand_name),
+                ('Category', wizard.category_id, wizard.ai_suggested_category_id),
+                ('ASIN', wizard.result_asin, wizard.ai_suggested_asin),
+                ('EAN / UPC', wizard.result_ean, wizard.ai_suggested_ean),
+                ('Current Price', wizard.current_price, wizard.ai_suggested_current_price),
+                ('Lowest Price', wizard.lowest_price_180, wizard.ai_suggested_lowest_price_180),
+            ]
+            for label, current, original in comparisons:
+                current_id = current.id if hasattr(current, 'id') else current
+                original_id = original.id if hasattr(original, 'id') else original
+                if current_id != original_id:
+                    changed.append(label)
+            wizard.changed_fields = ', '.join(changed) or 'None'
 
     @api.model
     def _normalize(self, value):
@@ -93,8 +147,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
             task = 'normalize the brand and category match'
         return f"""
 You {task} one product for an Odoo resale intake workflow.
-Identifier type: {self.identifier_type}
-Identifier: {self.identifier}
+        EAN / UPC: {self.input_ean or 'not provided'}
+        ASIN: {self.input_asin or 'not provided'}
 
 Existing resale categories (return one exact category id when possible):
 {self._category_options()}
@@ -146,35 +200,92 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             lambda brand: self._normalize(brand.name) == normalized
         )[:1]
 
-    def _apply_result(self, result, agent):
-        category = self.env['product.category'].browse(int(result['category_id'])) if result.get('category_id') else self.env['product.category']
-        if category and not category.exists():
-            category = self.env['product.category']
+    def _apply_result(self, result, agent, fields_to_update=None):
+        fields_to_update = set(fields_to_update or {
+            'name', 'model', 'brand', 'category', 'asin', 'ean',
+            'current_price', 'lowest_price_180',
+        })
+        category = self.env['product.category']
+        if result.get('category_id'):
+            category = self.env['product.category'].browse(int(result['category_id']))
+            if not category.exists():
+                category = self.env['product.category']
+        brand = self._find_brand(result)
         sources = result.get('sources') or []
-        self.write({
+        values = {
             'state': 'review',
-            'result_name': result.get('name'),
-            'result_model': result.get('model'),
-            'result_brand_name': result.get('brand'),
-            'brand_id': self._find_brand(result).id or False,
-            'category_id': category.id or False,
-            'result_category_path': result.get('category_path'),
-            'result_asin': result.get('asin'),
-            'result_ean': result.get('ean'),
-            'current_price': result.get('current_retail_price') or 0.0,
-            'lowest_price_180': result.get('lowest_price_180_days') or 0.0,
             'confidence': result.get('confidence') or 0.0,
             'sources': json.dumps(sources, ensure_ascii=True, indent=2),
             'raw_response': json.dumps(result, ensure_ascii=True, indent=2),
             'agent_id': agent.id,
             'error_message': False,
-        })
+        }
+        field_map = {
+            'name': ('result_name', 'ai_suggested_name', result.get('name')),
+            'model': ('result_model', 'ai_suggested_model', result.get('model')),
+            'brand': ('result_brand_name', 'ai_suggested_brand_name', result.get('brand')),
+            'category': ('category_id', 'ai_suggested_category_id', category.id or False),
+            'asin': ('result_asin', 'ai_suggested_asin', result.get('asin')),
+            'ean': ('result_ean', 'ai_suggested_ean', result.get('ean')),
+            'current_price': (
+                'current_price', 'ai_suggested_current_price',
+                result.get('current_retail_price'),
+            ),
+            'lowest_price_180': (
+                'lowest_price_180', 'ai_suggested_lowest_price_180',
+                result.get('lowest_price_180_days'),
+            ),
+        }
+        for field_name in fields_to_update:
+            if field_name not in field_map:
+                continue
+            result_field, suggested_field, value = field_map[field_name]
+            if value is None:
+                continue
+            values[result_field] = value
+            values[suggested_field] = value
+        if 'brand' in fields_to_update and result.get('brand') is not None:
+            values['brand_id'] = brand.id or False
+        if 'category' in fields_to_update and result.get('category_path') is not None:
+            values['result_category_path'] = result.get('category_path')
+        self.write(values)
         return result
 
-    def action_lookup(self):
+    def action_open_identifier_popup(self):
         self.ensure_one()
-        if not self.identifier:
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'AI Product Lookup',
+            'res_model': 'resale.ai.lookup.input.wizard',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {'default_parent_wizard_id': self.id},
+        }
+
+    def action_open_research_popup(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'AI Research Fields',
+            'res_model': 'resale.ai.research.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_parent_wizard_id': self.id},
+        }
+
+    def action_lookup_from_identifiers(self, ean=False, asin=False):
+        self.ensure_one()
+        if not ean and not asin:
             raise UserError(_('Enter an EAN or ASIN before starting the lookup.'))
+        self.write({
+            'input_ean': ean or False,
+            'input_asin': asin or False,
+            'identifier': asin or ean,
+        })
+        return self._run_lookup()
+
+    def _run_lookup(self):
+        self.ensure_one()
         configuration = self.env['resale.ai.configuration'].get_default()
         try:
             result = self._call_agent(configuration.primary_agent_id)
@@ -190,6 +301,9 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             self.write({'state': 'error', 'error_message': str(error)})
         return self._reload_action()
 
+    def action_lookup(self):
+        return self.action_open_identifier_popup()
+
     def action_reset_input(self):
         self.ensure_one()
         self.write({
@@ -200,21 +314,19 @@ left null unless the source supports it. {"Use multiple sources and investigate 
         return self._reload_action()
 
     def action_deep_research(self):
-        self.ensure_one()
-        configuration = self.env['resale.ai.configuration'].get_default()
-        try:
-            result = self._call_agent(configuration.fallback_agent_id, deep=True)
-            self._apply_result(result, configuration.fallback_agent_id)
-        except Exception as error:
-            self.write({'state': 'error', 'error_message': str(error)})
-        return self._reload_action()
+        return self.action_open_research_popup()
 
     def action_secondary_review(self):
+        return self.action_open_research_popup()
+
+    def action_research_selected(self, selected_fields, role='deep'):
         self.ensure_one()
         configuration = self.env['resale.ai.configuration'].get_default()
         try:
-            result = self._call_agent(configuration.secondary_agent_id, secondary=True)
-            self._apply_result(result, configuration.secondary_agent_id)
+            secondary = role == 'secondary'
+            agent = configuration.secondary_agent_id if secondary else configuration.fallback_agent_id
+            result = self._call_agent(agent, deep=not secondary, secondary=secondary)
+            self._apply_result(result, agent, selected_fields)
         except Exception as error:
             self.write({'state': 'error', 'error_message': str(error)})
         return self._reload_action()
@@ -225,7 +337,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             raise UserError(_('Run a lookup and review the result before confirming.'))
         if not self.category_id:
             raise UserError(_('Select or confirm a resale category before creating the item.'))
-        values = {
+        created_values = {
             'name': self.result_name,
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
@@ -238,15 +350,20 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_lookup_agent_id': self.agent_id.id,
             'ai_lookup_date': fields.Datetime.now(),
             'ai_lookup_confidence': self.confidence,
-            'ai_lookup_identifier': self.identifier,
+            'ai_lookup_identifier': self.input_asin or self.input_ean or self.identifier,
             'ai_lookup_sources': self.sources,
             'ai_lookup_raw': self.raw_response,
             'ai_retail_price_current': self.current_price,
             'ai_retail_price_low_180': self.lowest_price_180,
+            'ai_user_changed_fields': self.changed_fields,
         }
-        self.env['product.product'].create(values)
+        product = self.env['product.product'].create(created_values)
         self.write({
+            'last_rfb': product.rfb,
+            'last_product_id': product.id,
             'identifier': False,
+            'input_ean': False,
+            'input_asin': False,
             'state': 'input',
             'result_name': False,
             'result_model': False,
@@ -264,6 +381,15 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'raw_agent_response': False,
             'agent_id': False,
             'error_message': False,
+            'ai_suggested_name': False,
+            'ai_suggested_model': False,
+            'ai_suggested_brand_name': False,
+            'ai_suggested_brand_id': False,
+            'ai_suggested_category_id': False,
+            'ai_suggested_asin': False,
+            'ai_suggested_ean': False,
+            'ai_suggested_current_price': 0.0,
+            'ai_suggested_lowest_price_180': 0.0,
         })
         return self._reload_action()
 

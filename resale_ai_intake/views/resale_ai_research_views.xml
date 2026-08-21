@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_ai_research_wizard_form" model="ir.ui.view">
+        <field name="name">resale.ai.research.wizard.form</field>
+        <field name="model">resale.ai.research.wizard</field>
+        <field name="arch" type="xml">
+            <form string="AI Research Fields">
+                <sheet>
+                    <group>
+                        <field name="role"/>
+                    </group>
+                    <group string="Fields to Research">
+                        <field name="research_name"/>
+                        <field name="research_model"/>
+                        <field name="research_brand"/>
+                        <field name="research_category"/>
+                        <field name="research_asin"/>
+                        <field name="research_ean"/>
+                        <field name="research_current_price"/>
+                        <field name="research_lowest_price_180"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_research" string="Research" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

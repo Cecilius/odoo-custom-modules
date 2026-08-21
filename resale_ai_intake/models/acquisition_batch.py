@@ -11,6 +11,6 @@ class AcquisitionBatch(models.Model):
             'name': 'AI Item Intake',
             'res_model': 'resale.ai.intake.wizard',
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
             'context': {'default_batch_id': self.id},
         }

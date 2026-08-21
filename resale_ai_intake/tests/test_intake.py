@@ -54,4 +54,4 @@ class TestResaleAIIntake(TransactionCase):
             'batch_id': batch.id,
         })
         with self.assertRaises(UserError):
-            wizard.action_lookup()
+            wizard.action_lookup_from_identifiers(False, False)

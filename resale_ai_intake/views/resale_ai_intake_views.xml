@@ -6,10 +6,9 @@
         <field name="arch" type="xml">
             <form string="AI Item Intake">
                 <header>
-                    <button name="action_lookup" string="Lookup" type="object" class="oe_highlight" invisible="state != 'input'"/>
+                    <button name="action_open_identifier_popup" string="AI Lookup" type="object" class="oe_highlight" invisible="state not in ('input', 'error')"/>
                     <button name="action_reset_input" string="Back to Input" type="object" invisible="state != 'error'"/>
-                    <button name="action_deep_research" string="Deep Research" type="object" invisible="state != 'review'"/>
-                    <button name="action_secondary_review" string="Improve Match" type="object" invisible="state != 'review'"/>
+                    <button name="action_open_research_popup" string="Research Selected Fields" type="object" invisible="state != 'review'"/>
                     <button name="action_confirm_next" string="Confirm &amp; Next" type="object" class="oe_highlight" invisible="state != 'review'"/>
                     <field name="state" widget="statusbar" statusbar_visible="input,review,error"/>
                 </header>
@@ -17,10 +16,13 @@
                     <group>
                         <field name="batch_id" readonly="1"/>
                         <field name="item_count" readonly="1"/>
+                        <field name="planned_rfb" readonly="1"/>
+                        <field name="last_rfb" readonly="1"/>
+                        <field name="last_product_id" readonly="1"/>
                     </group>
-                    <group string="Identifier">
-                        <field name="identifier" placeholder="EAN or ASIN"/>
-                        <field name="identifier_type"/>
+                    <group string="Last Lookup">
+                        <field name="input_ean" readonly="1"/>
+                        <field name="input_asin" readonly="1"/>
                     </group>
                     <group string="Lookup Result" invisible="state != 'review'">
                         <field name="result_name"/>
@@ -36,9 +38,11 @@
                         <field name="currency_id" readonly="1"/>
                         <field name="confidence" readonly="1"/>
                         <field name="agent_id" readonly="1"/>
+                        <field name="changed_fields" readonly="1"/>
                     </group>
                     <group string="Sources" invisible="state != 'review'">
                         <field name="sources" readonly="1" nolabel="1"/>
+                        <field name="raw_agent_response" readonly="1" nolabel="1"/>
                     </group>
                     <group string="Error" invisible="state != 'error'">
                         <field name="error_message" readonly="1" nolabel="1"/>

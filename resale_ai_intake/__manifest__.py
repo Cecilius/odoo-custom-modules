@@ -14,6 +14,8 @@
         'data/resale_ai_configuration_data.xml',
         'views/resale_ai_configuration_views.xml',
         'views/resale_ai_intake_views.xml',
+        'views/resale_ai_lookup_views.xml',
+        'views/resale_ai_research_views.xml',
         'views/acquisition_batch_views.xml',
         'views/resale_ai_menus.xml',
     ],
