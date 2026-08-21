@@ -85,6 +85,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
     @api.depends('category_id')
     def _compute_rfb_preview(self):
         for wizard in self:
+            if wizard.category_id:
+                wizard.category_id._synchronize_rfb_sequence()
             sequence = wizard.category_id.rfb_sequence_id
             if wizard.category_id.rfb_prefix and sequence:
                 next_number = getattr(sequence, 'number_next_actual', sequence.number_next)

@@ -51,7 +51,28 @@ class ProductCategory(models.Model):
             self.rfb_sequence_id = self.env['ir.sequence'].create(
                 self._prepare_rfb_sequence_vals()
             )
+        self._synchronize_rfb_sequence()
         return self.rfb_sequence_id
+
+    def _synchronize_rfb_sequence(self):
+        for category in self.filtered(lambda item: item.rfb_prefix and item.rfb_sequence_id):
+            prefix = f'RFB-{category.rfb_prefix}-'
+            max_number = 0
+            products = self.env['product.product'].search([
+                ('categ_id', '=', category.id),
+                ('rfb', '=like', f'{prefix}%'),
+            ])
+            for product in products:
+                try:
+                    max_number = max(max_number, int(product.rfb[len(prefix):]))
+                except (TypeError, ValueError):
+                    continue
+            if category.rfb_sequence_id.number_next <= max_number:
+                category.rfb_sequence_id.number_next = max_number + 1
+
+    @api.model
+    def _synchronize_all_rfb_sequences(self):
+        self.search([('rfb_prefix', '!=', False)])._synchronize_rfb_sequence()
 
     @api.model_create_multi
     def create(self, vals_list):

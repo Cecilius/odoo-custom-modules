@@ -45,6 +45,19 @@ class TestResaleProduct(TransactionCase):
         })
         self.assertTrue(p2.rfb > p1.rfb)
 
+    def test_rfb_sequence_skips_existing_numbers(self):
+        self.env['product.product'].create({
+            'name': 'Existing RFB Item',
+            'categ_id': self.category.id,
+            'rfb': 'RFB-TC-000001',
+        })
+        self.category.rfb_sequence_id.number_next = 1
+        product = self.env['product.product'].create({
+            'name': 'Next RFB Item',
+            'categ_id': self.category.id,
+        })
+        self.assertEqual(product.rfb, 'RFB-TC-000002')
+
     def test_rfb_unique(self):
         self.env['product.product'].create({
             'name': 'RFB Item 1',
