@@ -20,14 +20,12 @@ class ProductProduct(models.Model):
         ondelete='restrict', index=True,
     )
 
-    model_es = fields.Char(string='Model (Spanish)')
-    model_en = fields.Char(string='Model (English)')
     asin = fields.Char(string='ASIN')
-    upc = fields.Char(string='UPC')
+    upc = fields.Char(string='EAN / UPC')
     manufacturer_serial = fields.Char(string='Manufacturer Serial Number')
-    amazon_es_url = fields.Char(string='Amazon ES Link')
-    amazon_uk_url = fields.Char(string='Amazon UK Link')
-    camel_url = fields.Char(string='CamelCamelCamel Link')
+    amazon_es_url = fields.Char(string='Amazon ES Link', compute='_compute_marketplace_links')
+    amazon_uk_url = fields.Char(string='Amazon UK Link', compute='_compute_marketplace_links')
+    camel_url = fields.Char(string='CamelCamelCamel Link', compute='_compute_marketplace_links')
 
     # --- Lifecycle ----------------------------------------------------------
     resale_state = fields.Selection([
@@ -108,9 +106,6 @@ class ProductProduct(models.Model):
         ('legacy_estimated', 'Legacy Estimated'),
     ], string='Cost Status', default='pending')
 
-    repair_cost = fields.Monetary(string='Repair Cost', currency_field='currency_id')
-    parts_cost = fields.Monetary(string='Parts Cost', currency_field='currency_id')
-
     min_price = fields.Monetary(string='Minimum Price', currency_field='currency_id')
     recommended_price = fields.Monetary(string='Recommended Price',
                                         currency_field='currency_id')
@@ -119,26 +114,9 @@ class ProductProduct(models.Model):
     warranty_start = fields.Date(string='Warranty Start')
     warranty_end = fields.Date(string='Warranty End')
 
-    source_product_id = fields.Many2one(
-        'product.product', string='Source Item',
-        help='Original item when this product is a recovered part.',
-    )
-    component_ids = fields.One2many(
-        'product.product', 'source_product_id', string='Recovered Parts',
-    )
     detailed_test_ids = fields.One2many(
         'resale.detailed.test', 'product_id', string='Detailed Tests',
     )
-
-    migration_status = fields.Selection([
-        ('not_reviewed', 'Not Reviewed'),
-        ('migrated_unsold', 'Migrated - Unsold'),
-        ('migrated_sold', 'Migrated - Sold'),
-        ('migrated_warranty', 'Migrated - Warranty Active'),
-        ('duplicate', 'Duplicate'),
-        ('obsolete', 'Obsolete'),
-    ], string='Migration Status', default='not_reviewed')
-    legacy_reference = fields.Char(string='Legacy Reference')
 
     # --- Constraints / compute ----------------------------------------------
     @api.constrains('rfb')
@@ -158,6 +136,14 @@ class ProductProduct(models.Model):
                 * product.functional_factor
                 * product.completeness_factor
             )
+
+    @api.depends('asin')
+    def _compute_marketplace_links(self):
+        for product in self:
+            asin = (product.asin or '').strip()
+            product.amazon_es_url = f'https://www.amazon.es/dp/{asin}' if asin else False
+            product.amazon_uk_url = f'https://www.amazon.co.uk/dp/{asin}' if asin else False
+            product.camel_url = f'https://es.camelcamelcamel.com/product/{asin}' if asin else False
 
     @api.onchange('condition_id')
     def _onchange_condition_id(self):

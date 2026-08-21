@@ -58,8 +58,6 @@
                     <notebook>
                         <page string="Identification">
                             <group>
-                                <field name="model_es"/>
-                                <field name="model_en"/>
                                 <field name="asin"/>
                                 <field name="upc"/>
                                 <field name="manufacturer_serial"/>
@@ -88,8 +86,6 @@
                                 <field name="functional_factor"/>
                                 <field name="completeness_factor"/>
                                 <field name="adjusted_value"/>
-                                <field name="repair_cost"/>
-                                <field name="parts_cost"/>
                                 <field name="photos_done"/>
                             </group>
                         </page>
@@ -101,7 +97,6 @@
                             </group>
                         </page>
                         <page string="Detailed Tests">
-                            <field name="component_ids" invisible="1"/>
                             <field name="detailed_test_ids" context="{'default_product_id': id}">
                                 <list>
                                     <field name="name"/>
@@ -111,13 +106,6 @@
                                     <field name="final_disposition"/>
                                 </list>
                             </field>
-                        </page>
-                        <page string="Source / Migration">
-                            <group>
-                                <field name="source_product_id"/>
-                                <field name="migration_status"/>
-                                <field name="legacy_reference"/>
-                            </group>
                         </page>
                     </notebook>
                 </sheet>

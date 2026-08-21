@@ -5,3 +5,4 @@ access_resale_ai_intake_wizard_user,Resale AI Intake Wizard User,model_resale_ai
 access_resale_ai_intake_wizard_manager,Resale AI Intake Wizard Manager,model_resale_ai_intake_wizard,resale.group_resale_manager,1,1,1,1
 access_resale_ai_lookup_input_wizard_user,Resale AI Lookup Input Wizard User,model_resale_ai_lookup_input_wizard,resale.group_resale_user,1,1,1,1
 access_resale_ai_research_wizard_user,Resale AI Research Wizard User,model_resale_ai_research_wizard,resale.group_resale_user,1,1,1,1
+access_resale_ai_name_line_user,Resale AI Name Line User,model_resale_ai_name_line,resale.group_resale_user,1,1,1,1

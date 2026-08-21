@@ -59,6 +59,9 @@ class ResaleAIIntakeWizard(models.TransientModel):
     follow_up_questions = fields.Text(string='Additional Questions', readonly=True)
     follow_up_answers = fields.Text(string='Answers')
     identifier_verification = fields.Text(string='Identifier Verification', readonly=True)
+    name_line_ids = fields.One2many(
+        'resale.ai.name.line', 'wizard_id', string='Translated Names',
+    )
     item_count = fields.Integer(compute='_compute_item_count')
     planned_rfb = fields.Char(string='Planned RFB', compute='_compute_rfb_preview')
     last_rfb = fields.Char(string='Last Assigned RFB', readonly=True)
@@ -210,6 +213,12 @@ class ResaleAIIntakeWizard(models.TransientModel):
             ], order='name')
         )
 
+    def _active_language_options(self):
+        return '\n'.join(
+            f'{language.code}: {language.name}'
+            for language in self.env['res.lang'].search([('active', '=', True)], order='code')
+        )
+
     def _prompt(self, deep=False, secondary=False, follow_up_answers=None):
         task = 'deeply research' if deep else 'identify'
         if secondary:
@@ -226,10 +235,14 @@ Existing resale categories (return one exact category id when possible):
 Existing brands (prefer an exact existing brand id when possible):
 {self._brand_options()}
 
+Active languages for product names:
+{self._active_language_options()}
+
 Return JSON only, with this schema:
 {{
   "identifier_verified": true,
   "name": null,
+  "names": {{}},
   "model": null,
   "brand": null,
   "matched_brand_id": null,
@@ -298,6 +311,20 @@ left null unless the source supports it. {"Use multiple sources and investigate 
         brand = self._find_brand(result)
         sources = result.get('sources') or []
         result, verification_messages = self._sanitize_identifiers(result, sources)
+        names = result.get('names') or {}
+        if not isinstance(names, dict):
+            names = {}
+        base_name = (result.get('name') or '')[:40]
+        self.name_line_ids.unlink()
+        name_lines = []
+        for language in self.env['res.lang'].search([('active', '=', True)], order='code'):
+            translated = (names.get(language.code) or base_name)[:40]
+            name_lines.append((0, 0, {
+                'lang_code': language.code,
+                'language_name': language.name,
+                'name': translated,
+                'ai_name': translated,
+            }))
         values = {
             'state': 'review',
             'confidence': result.get('confidence') or 0.0,
@@ -305,6 +332,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'raw_response': json.dumps(result, ensure_ascii=True, indent=2),
             'agent_id': agent.id,
             'error_message': False,
+            'name_line_ids': name_lines,
             'identifier_verification': '\n'.join(verification_messages) or 'All returned identifiers verified or supplied by user.',
         }
         if 'follow_up_questions' in result:
@@ -474,7 +502,6 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
             'brand_value_id': brand.id or False,
-            'model_es': self.result_model,
             'asin': self.result_asin or (self.identifier if self.identifier_type == 'asin' else False),
             'upc': self.result_ean or (self.identifier if self.identifier_type == 'ean' else False),
             'recommended_price': self.lowest_price_180 or self.current_price,
@@ -493,6 +520,13 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_identifier_verification': self.identifier_verification,
         }
         product = self.env['product.product'].create(created_values)
+        translations = {}
+        for line in self.name_line_ids:
+            if line.name:
+                translations[line.lang_code] = line.name
+                product.with_context(lang=line.lang_code).write({'name': line.name})
+        if translations:
+            product.ai_name_translations = json.dumps(translations, ensure_ascii=True)
         self.write({
             'last_rfb': product.rfb,
             'last_product_id': product.id,
@@ -519,6 +553,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'error_message': False,
             'follow_up_questions': False,
             'follow_up_answers': False,
+            'name_line_ids': [(5, 0, 0)],
             'ai_suggested_name': False,
             'ai_suggested_model': False,
             'ai_suggested_brand_name': False,

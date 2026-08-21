@@ -28,6 +28,19 @@ class TestResaleAIIntake(TransactionCase):
         self.assertFalse(result['asin'])
         self.assertEqual(len(messages), 2)
 
+    def test_active_language_name_lines_are_created(self):
+        partner = self.env['res.partner'].create({'name': 'AI Intake Supplier 4'})
+        batch = self.env['resale.acquisition.batch'].create({'partner_id': partner.id})
+        wizard = self.env['resale.ai.intake.wizard'].create({'batch_id': batch.id})
+        wizard._apply_result({
+            'name': 'Test Product',
+            'names': {'en_US': 'Test Product', 'es_ES': 'Producto de Prueba'},
+            'sources': [],
+            'confidence': 0.9,
+        }, self.env['ai.agent'])
+        self.assertTrue(wizard.name_line_ids)
+        self.assertTrue(wizard.name_line_ids.filtered(lambda line: line.lang_code == 'en_US'))
+
     def test_parse_invalid_response(self):
         with self.assertRaises(UserError):
             self.env['resale.ai.intake.wizard']._parse_response(['not json'])

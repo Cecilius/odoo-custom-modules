@@ -28,6 +28,14 @@
                     </group>
                     <group string="Lookup Result" invisible="state != 'review'">
                         <field name="result_name"/>
+                        <field name="name_line_ids">
+                            <list editable="bottom">
+                                <field name="language_name"/>
+                                <field name="lang_code"/>
+                                <field name="name"/>
+                                <field name="ai_name"/>
+                            </list>
+                        </field>
                         <field name="result_model"/>
                         <field name="result_brand_name"/>
                         <field name="brand_value_id" domain="[('resale_is_brand', '=', True)]"/>
