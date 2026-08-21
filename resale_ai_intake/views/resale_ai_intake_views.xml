@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_ai_intake_wizard_form" model="ir.ui.view">
+        <field name="name">resale.ai.intake.wizard.form</field>
+        <field name="model">resale.ai.intake.wizard</field>
+        <field name="arch" type="xml">
+            <form string="AI Item Intake">
+                <header>
+                    <button name="action_lookup" string="Lookup" type="object" class="oe_highlight" invisible="state != 'input'"/>
+                    <button name="action_deep_research" string="Deep Research" type="object" invisible="state != 'review'"/>
+                    <button name="action_secondary_review" string="Improve Match" type="object" invisible="state != 'review'"/>
+                    <button name="action_confirm_next" string="Confirm &amp; Next" type="object" class="oe_highlight" invisible="state != 'review'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="input,review,error"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="batch_id" readonly="1"/>
+                        <field name="item_count" readonly="1"/>
+                    </group>
+                    <group string="Identifier">
+                        <field name="identifier" placeholder="EAN or ASIN"/>
+                        <field name="identifier_type"/>
+                    </group>
+                    <group string="Lookup Result" invisible="state != 'review'">
+                        <field name="result_name"/>
+                        <field name="result_model"/>
+                        <field name="result_brand_name" readonly="1"/>
+                        <field name="brand_id"/>
+                        <field name="result_category_path" readonly="1"/>
+                        <field name="category_id"/>
+                        <field name="result_asin" readonly="1"/>
+                        <field name="result_ean" readonly="1"/>
+                        <field name="current_price" readonly="1"/>
+                        <field name="lowest_price_180" readonly="1"/>
+                        <field name="currency_id" readonly="1"/>
+                        <field name="confidence" readonly="1"/>
+                        <field name="agent_id" readonly="1"/>
+                    </group>
+                    <group string="Sources" invisible="state != 'review'">
+                        <field name="sources" readonly="1" nolabel="1"/>
+                    </group>
+                    <group string="Error" invisible="state != 'error'">
+                        <field name="error_message" readonly="1" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
