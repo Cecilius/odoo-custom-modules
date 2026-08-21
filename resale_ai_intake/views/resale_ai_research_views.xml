@@ -16,6 +16,7 @@
                         <field name="research_category"/>
                         <field name="research_asin"/>
                         <field name="research_ean"/>
+                        <field name="research_upc"/>
                         <field name="research_current_price"/>
                         <field name="research_lowest_price_180"/>
                     </group>

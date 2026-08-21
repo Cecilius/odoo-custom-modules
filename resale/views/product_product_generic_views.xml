@@ -12,7 +12,8 @@
                             <field name="brand_value_id" domain="[('resale_is_brand', '=', True)]"/>
                             <field name="condition_grade_value_id" domain="[('resale_is_condition_grade', '=', True)]"/>
                             <field name="asin"/>
-                            <field name="upc" string="EAN / UPC"/>
+                            <field name="ean"/>
+                            <field name="upc"/>
                             <field name="manufacturer_serial"/>
                         </group>
                         <group string="Warranty">

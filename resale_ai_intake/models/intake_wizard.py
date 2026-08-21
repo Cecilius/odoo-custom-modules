@@ -15,7 +15,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
 
     batch_id = fields.Many2one('resale.acquisition.batch', required=True)
     identifier = fields.Char(string='Lookup Identifier', readonly=True)
-    input_ean = fields.Char(string='Last EAN / UPC', readonly=True)
+    input_ean = fields.Char(string='Last EAN', readonly=True)
+    input_upc = fields.Char(string='Last UPC', readonly=True)
     input_asin = fields.Char(string='Last ASIN', readonly=True)
     input_search_text = fields.Char(string='Last Product Search', readonly=True)
     identifier_type = fields.Selection([
@@ -38,7 +39,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
     category_id = fields.Many2one('product.category', string='Suggested Category')
     result_category_path = fields.Char(string='AI Category Path', readonly=True)
     result_asin = fields.Char(string='ASIN')
-    result_ean = fields.Char(string='EAN / UPC')
+    result_ean = fields.Char(string='EAN')
+    result_upc = fields.Char(string='UPC')
     current_price = fields.Monetary(currency_field='currency_id')
     lowest_price_180 = fields.Monetary(
         string='Lowest Price (180 days)', currency_field='currency_id',
@@ -74,6 +76,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
     ai_suggested_category_id = fields.Many2one('product.category', copy=False)
     ai_suggested_asin = fields.Char(copy=False)
     ai_suggested_ean = fields.Char(copy=False)
+    ai_suggested_upc = fields.Char(copy=False)
     ai_suggested_current_price = fields.Monetary(currency_field='currency_id', copy=False)
     ai_suggested_lowest_price_180 = fields.Monetary(currency_field='currency_id', copy=False)
 
@@ -100,6 +103,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
         'lowest_price_180', 'ai_suggested_name', 'ai_suggested_model',
         'ai_suggested_brand_name', 'ai_suggested_brand_value_id',
         'ai_suggested_category_id', 'ai_suggested_asin', 'ai_suggested_ean',
+        'ai_suggested_upc',
         'ai_suggested_current_price', 'ai_suggested_lowest_price_180',
     )
     def _compute_changed_fields(self):
@@ -113,6 +117,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
                 ('Category', wizard.category_id, wizard.ai_suggested_category_id),
                 ('ASIN', wizard.result_asin, wizard.ai_suggested_asin),
                 ('EAN / UPC', wizard.result_ean, wizard.ai_suggested_ean),
+                ('UPC', wizard.result_upc, wizard.ai_suggested_upc),
                 ('Current Price', wizard.current_price, wizard.ai_suggested_current_price),
                 ('Lowest Price', wizard.lowest_price_180, wizard.ai_suggested_lowest_price_180),
             ]
@@ -179,18 +184,33 @@ class ResaleAIIntakeWizard(models.TransientModel):
                 return True
         return False
 
+    @api.model
+    def _identifier_format_is_valid(self, field_name, value):
+        normalized = self._normalize_identifier(value)
+        if field_name == 'ean':
+            return normalized.isdigit() and len(normalized) in (8, 13)
+        if field_name == 'upc':
+            return normalized.isdigit() and len(normalized) == 12
+        if field_name == 'asin':
+            return bool(re.fullmatch(r'[A-Z0-9]{10}', normalized.upper()))
+        return False
+
     def _sanitize_identifiers(self, result, sources):
         result = dict(result)
         messages = []
         for field_name, supplied in (
             ('ean', self.input_ean),
+            ('upc', self.input_upc),
             ('asin', self.input_asin),
         ):
             candidate = result.get(field_name)
             if supplied:
                 result[field_name] = supplied
                 continue
-            if candidate and not self._identifier_has_source_evidence(candidate, sources):
+            if candidate and not self._identifier_format_is_valid(field_name, candidate):
+                result[field_name] = None
+                messages.append(f'{field_name.upper()} returned by AI has the wrong format.')
+            elif candidate and not self._identifier_has_source_evidence(candidate, sources):
                 result[field_name] = None
                 messages.append(
                     f'{field_name.upper()} returned by AI but not verified in a source page.'
@@ -227,7 +247,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
             task = 'normalize the brand and category match'
         return f"""
 You {task} one product for an Odoo resale intake workflow.
-        EAN / UPC: {self.input_ean or 'not provided'}
+        EAN: {self.input_ean or 'not provided'}
+        UPC: {self.input_upc or 'not provided'}
         ASIN: {self.input_asin or 'not provided'}
         Product search text: {self.input_search_text or 'not provided'}
 
@@ -250,6 +271,7 @@ Return JSON only, with this schema:
   "matched_brand_id": null,
   "asin": null,
   "ean": null,
+  "upc": null,
   "category_id": null,
   "category_path": null,
   "current_retail_price": null,
@@ -261,8 +283,12 @@ Return JSON only, with this schema:
   "reason": ""
 }}
 
-If an EAN/UPC or ASIN was not supplied, use the product search text to find and
-verify them from reliable sources. Never invent an identifier, price, source, or
+EAN is normally 13 digits; UPC-A is normally 12 digits. Keep them in their
+correct fields and never use a UPC as an EAN. If an EAN, UPC, or ASIN was not
+supplied, use the product search text to find and verify it from reliable sources.
+For ASIN searches, check Amazon Spain and other European marketplaces including
+amazon.es, amazon.co.uk, amazon.de, amazon.fr, amazon.it, and amazon.nl.
+Never invent an identifier, price, source, or
 category id. Use null when unknown.
 Keep the product name at 40 characters or fewer.
 If the product is still ambiguous, return up to three concise follow_up_questions
@@ -354,6 +380,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'category': ('category_id', 'ai_suggested_category_id', category.id or False),
             'asin': ('result_asin', 'ai_suggested_asin', result.get('asin')),
             'ean': ('result_ean', 'ai_suggested_ean', result.get('ean')),
+            'upc': ('result_upc', 'ai_suggested_upc', result.get('upc')),
             'current_price': (
                 'current_price', 'ai_suggested_current_price',
                 result.get('current_retail_price'),
@@ -400,15 +427,16 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'context': {'default_parent_wizard_id': self.id},
         }
 
-    def action_lookup_from_identifiers(self, ean=False, asin=False, search_text=False):
+    def action_lookup_from_identifiers(self, ean=False, upc=False, asin=False, search_text=False):
         self.ensure_one()
-        if not ean and not asin and not search_text:
-            raise UserError(_('Enter an EAN/ASIN or product search text before starting the lookup.'))
+        if not ean and not upc and not asin and not search_text:
+            raise UserError(_('Enter an EAN, UPC, ASIN, or product search text before starting the lookup.'))
         self.write({
             'input_ean': ean or False,
+            'input_upc': upc or False,
             'input_asin': asin or False,
             'input_search_text': search_text or False,
-            'identifier': asin or ean or search_text,
+            'identifier': asin or ean or upc or search_text,
         })
         return self._run_lookup()
 
@@ -504,14 +532,15 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
             'brand_value_id': brand.id or False,
-            'asin': self.result_asin or (self.identifier if self.identifier_type == 'asin' else False),
-            'upc': self.result_ean or (self.identifier if self.identifier_type == 'ean' else False),
+            'asin': self.result_asin or self.input_asin,
+            'ean': self.result_ean or self.input_ean,
+            'upc': self.result_upc or self.input_upc,
             'recommended_price': self.lowest_price_180 or self.current_price,
             'initial_value': self.lowest_price_180 or self.current_price,
             'ai_lookup_agent_id': self.agent_id.id,
             'ai_lookup_date': fields.Datetime.now(),
             'ai_lookup_confidence': self.confidence,
-            'ai_lookup_identifier': self.input_asin or self.input_ean or self.identifier,
+            'ai_lookup_identifier': self.input_asin or self.input_ean or self.input_upc or self.identifier,
             'ai_lookup_sources': self.sources,
             'ai_lookup_raw': self.raw_response,
             'ai_retail_price_current': self.current_price,
@@ -534,6 +563,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'last_product_id': product.id,
             'identifier': False,
             'input_ean': False,
+            'input_upc': False,
             'input_asin': False,
             'input_search_text': False,
             'state': 'input',
@@ -545,6 +575,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'result_category_path': False,
             'result_asin': False,
             'result_ean': False,
+            'result_upc': False,
             'current_price': 0.0,
             'lowest_price_180': 0.0,
             'confidence': 0.0,
@@ -563,6 +594,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_suggested_category_id': False,
             'ai_suggested_asin': False,
             'ai_suggested_ean': False,
+            'ai_suggested_upc': False,
             'ai_suggested_current_price': 0.0,
             'ai_suggested_lowest_price_180': 0.0,
         })

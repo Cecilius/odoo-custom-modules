@@ -21,7 +21,8 @@ class ProductProduct(models.Model):
     )
 
     asin = fields.Char(string='ASIN')
-    upc = fields.Char(string='EAN / UPC')
+    ean = fields.Char(string='EAN')
+    upc = fields.Char(string='UPC')
     manufacturer_serial = fields.Char(string='Manufacturer Serial Number')
     amazon_es_url = fields.Char(string='Amazon ES Link', compute='_compute_marketplace_links')
     amazon_uk_url = fields.Char(string='Amazon UK Link', compute='_compute_marketplace_links')

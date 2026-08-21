@@ -23,6 +23,7 @@
                     </group>
                     <group string="Last Lookup">
                         <field name="input_ean" readonly="1"/>
+                        <field name="input_upc" readonly="1"/>
                         <field name="input_asin" readonly="1"/>
                         <field name="input_search_text" readonly="1"/>
                     </group>
@@ -41,8 +42,9 @@
                         <field name="brand_value_id" domain="[('resale_is_brand', '=', True)]"/>
                         <field name="result_category_path" readonly="1"/>
                         <field name="category_id" domain="[('rfb_prefix', '!=', False)]"/>
-                        <field name="result_asin" readonly="1"/>
-                        <field name="result_ean" readonly="1"/>
+                        <field name="result_asin"/>
+                        <field name="result_ean"/>
+                        <field name="result_upc"/>
                         <field name="current_price"/>
                         <field name="lowest_price_180"/>
                         <field name="currency_id" readonly="1"/>

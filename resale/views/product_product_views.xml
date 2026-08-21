@@ -59,6 +59,7 @@
                         <page string="Identification">
                             <group>
                                 <field name="asin"/>
+                                <field name="ean"/>
                                 <field name="upc"/>
                                 <field name="manufacturer_serial"/>
                                 <field name="amazon_es_url" widget="url"/>

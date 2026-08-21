@@ -16,7 +16,8 @@ class ResaleAIResearchWizard(models.TransientModel):
     research_brand = fields.Boolean(string='Brand')
     research_category = fields.Boolean(string='Category')
     research_asin = fields.Boolean(string='ASIN')
-    research_ean = fields.Boolean(string='EAN / UPC')
+    research_ean = fields.Boolean(string='EAN')
+    research_upc = fields.Boolean(string='UPC')
     research_current_price = fields.Boolean(string='Current Price')
     research_lowest_price_180 = fields.Boolean(string='Lowest Price (180 days)')
 
@@ -30,6 +31,7 @@ class ResaleAIResearchWizard(models.TransientModel):
                 ('category', self.research_category),
                 ('asin', self.research_asin),
                 ('ean', self.research_ean),
+                ('upc', self.research_upc),
                 ('current_price', self.research_current_price),
                 ('lowest_price_180', self.research_lowest_price_180),
             ) if enabled
