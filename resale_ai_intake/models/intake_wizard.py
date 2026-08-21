@@ -48,6 +48,8 @@ class ResaleAIIntakeWizard(models.TransientModel):
     )
     agent_id = fields.Many2one('ai.agent', string='Agent Used', readonly=True)
     error_message = fields.Text(readonly=True)
+    follow_up_questions = fields.Text(string='Additional Questions', readonly=True)
+    follow_up_answers = fields.Text(string='Answers')
     item_count = fields.Integer(compute='_compute_item_count')
     planned_rfb = fields.Char(string='Planned RFB', compute='_compute_rfb_preview')
     last_rfb = fields.Char(string='Last Assigned RFB', readonly=True)
@@ -142,7 +144,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
             for brand in self.env['resale.brand'].search([], order='name')
         )
 
-    def _prompt(self, deep=False, secondary=False):
+    def _prompt(self, deep=False, secondary=False, follow_up_answers=None):
         task = 'deeply research' if deep else 'identify'
         if secondary:
             task = 'normalize the brand and category match'
@@ -174,6 +176,7 @@ Return JSON only, with this schema:
   "currency": "EUR",
   "confidence": 0.0,
   "sources": [{{"url": "", "claim": ""}}],
+  "follow_up_questions": [],
   "reason": ""
 }}
 
@@ -181,15 +184,24 @@ If an EAN/UPC or ASIN was not supplied, use the product search text to find and
 verify them from reliable sources. Never invent an identifier, price, source, or
 category id. Use null when unknown.
 Keep the product name at 40 characters or fewer.
+If the product is still ambiguous, return up to three concise follow_up_questions
+that would help distinguish it. If it is sufficiently identified, return an empty
+array. Questions must be answerable from packaging, photos, or the operator.
+Follow-up answers from the operator:
+{follow_up_answers or 'none'}
 Verify that the supplied identifier appears in a source. Historical price must be
 left null unless the source supports it. {"Use multiple sources and investigate disagreements." if deep else "Use concise source-backed lookup."}
 """
 
-    def _call_agent(self, agent, deep=False, secondary=False):
+    def _call_agent(self, agent, deep=False, secondary=False, follow_up_answers=None):
         if not agent:
             raise UserError(_('No AI agent is configured for this task.'))
         response = agent.get_direct_response(
-            self._prompt(deep=deep, secondary=secondary),
+            self._prompt(
+                deep=deep,
+                secondary=secondary,
+                follow_up_answers=follow_up_answers,
+            ),
             context_message='Return strict JSON only. Do not use markdown.',
         )
         self.raw_agent_response = '\n'.join(response or [])
@@ -225,6 +237,11 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'agent_id': agent.id,
             'error_message': False,
         }
+        if 'follow_up_questions' in result:
+            values['follow_up_questions'] = '\n'.join(
+                f'- {question}'
+                for question in (result.get('follow_up_questions') or [])
+            )
         field_map = {
             'name': (
                 'result_name', 'ai_suggested_name',
@@ -340,6 +357,22 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             self.write({'state': 'error', 'error_message': str(error)})
         return self._reload_action()
 
+    def action_research_with_answers(self):
+        self.ensure_one()
+        if not self.follow_up_answers:
+            raise UserError(_('Enter at least one answer before researching again.'))
+        configuration = self.env['resale.ai.configuration'].get_default()
+        try:
+            result = self._call_agent(
+                configuration.fallback_agent_id,
+                deep=True,
+                follow_up_answers=self.follow_up_answers,
+            )
+            self._apply_result(result, configuration.fallback_agent_id)
+        except Exception as error:
+            self.write({'state': 'error', 'error_message': str(error)})
+        return self._reload_action()
+
     def action_confirm_next(self):
         self.ensure_one()
         if self.state != 'review' or not self.result_name:
@@ -375,6 +408,8 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_retail_price_current': self.current_price,
             'ai_retail_price_low_180': self.lowest_price_180,
             'ai_user_changed_fields': self.changed_fields,
+            'ai_follow_up_questions': self.follow_up_questions,
+            'ai_follow_up_answers': self.follow_up_answers,
         }
         product = self.env['product.product'].create(created_values)
         self.write({
@@ -401,6 +436,8 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'raw_agent_response': False,
             'agent_id': False,
             'error_message': False,
+            'follow_up_questions': False,
+            'follow_up_answers': False,
             'ai_suggested_name': False,
             'ai_suggested_model': False,
             'ai_suggested_brand_name': False,

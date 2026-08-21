@@ -9,6 +9,7 @@
                     <button name="action_open_identifier_popup" string="AI Lookup" type="object" class="oe_highlight" invisible="state not in ('input', 'error')"/>
                     <button name="action_reset_input" string="Back to Input" type="object" invisible="state != 'error'"/>
                     <button name="action_open_research_popup" string="Research Selected Fields" type="object" invisible="state != 'review'"/>
+                    <button name="action_research_with_answers" string="Research with Answers" type="object" invisible="state != 'review' or not follow_up_questions"/>
                     <button name="action_confirm_next" string="Confirm &amp; Next" type="object" class="oe_highlight" invisible="state != 'review'"/>
                     <field name="state" widget="statusbar" statusbar_visible="input,review,error"/>
                 </header>
@@ -44,6 +45,10 @@
                     <group string="Sources" invisible="state != 'review'">
                         <field name="sources" readonly="1" nolabel="1"/>
                         <field name="raw_agent_response" readonly="1" nolabel="1"/>
+                    </group>
+                    <group string="Additional Identification Questions" invisible="state != 'review' or not follow_up_questions">
+                        <field name="follow_up_questions" readonly="1" nolabel="1"/>
+                        <field name="follow_up_answers" placeholder="Answer one question per line" nolabel="1"/>
                     </group>
                     <group string="Error" invisible="state != 'error'">
                         <field name="error_message" readonly="1" nolabel="1"/>

@@ -11,6 +11,8 @@ class ProductProduct(models.Model):
     ai_lookup_sources = fields.Text(string='AI Lookup Sources', copy=False)
     ai_lookup_raw = fields.Text(string='AI Lookup Raw Response', copy=False)
     ai_user_changed_fields = fields.Char(string='AI Fields Changed by User', copy=False)
+    ai_follow_up_questions = fields.Text(string='AI Identification Questions', copy=False)
+    ai_follow_up_answers = fields.Text(string='AI Identification Answers', copy=False)
     ai_retail_price_current = fields.Monetary(
         string='AI Current Retail Price', currency_field='currency_id', copy=False,
     )
