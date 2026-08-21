@@ -47,6 +47,7 @@
                         <field name="raw_agent_response" readonly="1" nolabel="1"/>
                     </group>
                     <group string="Additional Identification Questions" invisible="state != 'review' or not follow_up_questions">
+                        <field name="identifier_verification" readonly="1" nolabel="1"/>
                         <field name="follow_up_questions" readonly="1" nolabel="1"/>
                         <field name="follow_up_answers" placeholder="Answer one question per line" nolabel="1"/>
                     </group>

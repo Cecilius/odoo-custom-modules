@@ -13,6 +13,7 @@ class ProductProduct(models.Model):
     ai_user_changed_fields = fields.Char(string='AI Fields Changed by User', copy=False)
     ai_follow_up_questions = fields.Text(string='AI Identification Questions', copy=False)
     ai_follow_up_answers = fields.Text(string='AI Identification Answers', copy=False)
+    ai_identifier_verification = fields.Text(string='AI Identifier Verification', copy=False)
     ai_retail_price_current = fields.Monetary(
         string='AI Current Retail Price', currency_field='currency_id', copy=False,
     )

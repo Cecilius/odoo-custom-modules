@@ -1,5 +1,9 @@
 import json
+import ipaddress
 import re
+import socket
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -50,6 +54,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
     error_message = fields.Text(readonly=True)
     follow_up_questions = fields.Text(string='Additional Questions', readonly=True)
     follow_up_answers = fields.Text(string='Answers')
+    identifier_verification = fields.Text(string='Identifier Verification', readonly=True)
     item_count = fields.Integer(compute='_compute_item_count')
     planned_rfb = fields.Char(string='Planned RFB', compute='_compute_rfb_preview')
     last_rfb = fields.Char(string='Last Assigned RFB', readonly=True)
@@ -128,6 +133,60 @@ class ResaleAIIntakeWizard(models.TransientModel):
         if not isinstance(result, dict):
             raise UserError(_('The AI response must be a JSON object.'))
         return result
+
+    @api.model
+    def _normalize_identifier(self, value):
+        return re.sub(r'[^a-z0-9]', '', (value or '').lower())
+
+    @api.model
+    def _safe_source_text(self, url):
+        parsed = urlparse(url or '')
+        if parsed.scheme not in ('http', 'https') or not parsed.hostname:
+            return ''
+        try:
+            addresses = {
+                info[4][0]
+                for info in socket.getaddrinfo(parsed.hostname, None)
+            }
+            if any(ipaddress.ip_address(address).is_private for address in addresses):
+                return ''
+            request = Request(
+                url,
+                headers={'User-Agent': 'Odoo Resale AI Intake/1.0'},
+            )
+            with urlopen(request, timeout=8) as response:
+                return response.read(2_000_000).decode('utf-8', errors='ignore')
+        except Exception:
+            return ''
+
+    def _identifier_has_source_evidence(self, identifier, sources):
+        normalized = self._normalize_identifier(identifier)
+        if not normalized:
+            return False
+        for source in sources or []:
+            url = source.get('url') if isinstance(source, dict) else False
+            page = self._safe_source_text(url)
+            if self._normalize_identifier(normalized) in self._normalize_identifier(page):
+                return True
+        return False
+
+    def _sanitize_identifiers(self, result, sources):
+        result = dict(result)
+        messages = []
+        for field_name, supplied in (
+            ('ean', self.input_ean),
+            ('asin', self.input_asin),
+        ):
+            candidate = result.get(field_name)
+            if supplied:
+                result[field_name] = supplied
+                continue
+            if candidate and not self._identifier_has_source_evidence(candidate, sources):
+                result[field_name] = None
+                messages.append(
+                    f'{field_name.upper()} returned by AI but not verified in a source page.'
+                )
+        return result, messages
 
     def _category_options(self):
         root = self.env.ref('resale.product_category_resale')
@@ -229,6 +288,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
                 category = self.env['product.category']
         brand = self._find_brand(result)
         sources = result.get('sources') or []
+        result, verification_messages = self._sanitize_identifiers(result, sources)
         values = {
             'state': 'review',
             'confidence': result.get('confidence') or 0.0,
@@ -236,11 +296,14 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'raw_response': json.dumps(result, ensure_ascii=True, indent=2),
             'agent_id': agent.id,
             'error_message': False,
+            'identifier_verification': '\n'.join(verification_messages) or 'All returned identifiers verified or supplied by user.',
         }
         if 'follow_up_questions' in result:
+            questions = list(result.get('follow_up_questions') or [])
+            questions.extend(verification_messages)
             values['follow_up_questions'] = '\n'.join(
                 f'- {question}'
-                for question in (result.get('follow_up_questions') or [])
+                for question in questions
             )
         field_map = {
             'name': (
@@ -410,6 +473,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_user_changed_fields': self.changed_fields,
             'ai_follow_up_questions': self.follow_up_questions,
             'ai_follow_up_answers': self.follow_up_answers,
+            'ai_identifier_verification': self.identifier_verification,
         }
         product = self.env['product.product'].create(created_values)
         self.write({

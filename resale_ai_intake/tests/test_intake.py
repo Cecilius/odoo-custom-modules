@@ -16,6 +16,18 @@ class TestResaleAIIntake(TransactionCase):
         ])
         self.assertEqual(result['name'], 'Test Product')
 
+    def test_unverified_identifier_is_not_accepted(self):
+        wizard = self.env['resale.ai.intake.wizard'].new({
+            'input_search_text': 'rose pink Galaxy Watch SM-R860',
+        })
+        result, messages = wizard._sanitize_identifiers({
+            'ean': '1234567890123',
+            'asin': 'B000000000',
+        }, [])
+        self.assertFalse(result['ean'])
+        self.assertFalse(result['asin'])
+        self.assertEqual(len(messages), 2)
+
     def test_parse_invalid_response(self):
         with self.assertRaises(UserError):
             self.env['resale.ai.intake.wizard']._parse_response(['not json'])
