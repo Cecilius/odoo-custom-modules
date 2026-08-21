@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Extend Product Category Form View to add category_code -->
+    <!-- Extend Product Category Form View -->
     <record id="product_category_form_view_inherit_rfb" model="ir.ui.view">
         <field name="name">product.category.form.inherit.rfb</field>
         <field name="model">product.category</field>
@@ -12,13 +12,13 @@
         </field>
     </record>
 
-    <!-- Extend Product Category List View to show category_code column -->
+    <!-- Extend Product Category List View by appending to the view root -->
     <record id="product_category_list_view_inherit_rfb" model="ir.ui.view">
         <field name="name">product.category.list.inherit.rfb</field>
         <field name="model">product.category</field>
         <field name="inherit_id" ref="product.product_category_list_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
+            <xpath expr="/*[self::tree or self::list]" position="inside">
                 <field name="category_code" optional="show"/>
             </xpath>
         </field>
