@@ -8,7 +8,6 @@
     'depends': ['ai_provider_catalog'],
     'data': [
         'security/ir.model.access.csv',
-        'views/ai_agent_views.xml',
         'views/openrouter_model_views.xml',
         'views/openrouter_model_menus.xml',
         'views/res_config_settings_views.xml',

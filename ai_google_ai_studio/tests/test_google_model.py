@@ -4,6 +4,7 @@ from odoo.tests import TransactionCase, tagged
 from unittest.mock import patch
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.ai.utils.llm_providers import get_provider
 
 
 @tagged('-at_install', 'post_install')
@@ -42,6 +43,7 @@ class TestGoogleModel(TransactionCase):
         ])
         self.assertEqual(model.input_token_limit, 100000)
         self.assertFalse(model.allowed)
+        self.assertEqual(get_provider(self.env, 'gemini-3.0-flash'), 'google')
         model.allowed = True
         self.assertIn(
             ('gemini-3.0-flash', 'Gemini 3.0 Flash'),

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="ai_agent_view_form" model="ir.ui.view">
-        <field name="name">ai.agent.form.inherit.openrouter</field>
+        <field name="name">ai.agent.form.inherit.provider.catalog</field>
         <field name="model">ai.agent</field>
         <field name="inherit_id" ref="ai_app.ai_agent_view_form"/>
         <field name="arch" type="xml">

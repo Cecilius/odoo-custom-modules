@@ -1,5 +1,6 @@
 from odoo.addons.ai.models import ai_agent
 from odoo.addons.ai.utils import llm_providers
+from odoo.exceptions import UserError
 
 
 _original_get_provider = llm_providers.get_provider
@@ -8,17 +9,17 @@ _original_get_provider = llm_providers.get_provider
 def _get_provider(env, llm_model):
     try:
         provider = _original_get_provider(env, llm_model)
-    except Exception:
+    except UserError:
         provider = None
 
     if provider == 'google' and 'ai.google.model' in env and env['ai.google.model'].sudo().search_count([
         ('model_id', '=', llm_model),
     ]):
         if env['ai.google.model'].sudo().search_count([
-            ('model_id', '=', llm_model), ('active', '=', True), ('allowed', '=', True),
+            ('model_id', '=', llm_model), ('active', '=', True),
         ]):
             return 'google'
-        raise ValueError('The selected Google Gemini model is not allowed.')
+        raise UserError('The selected Google Gemini model is no longer available.')
 
     if provider:
         return provider
@@ -30,7 +31,6 @@ def _get_provider(env, llm_model):
         if model_name in env and env[model_name].sudo().search_count([
             ('model_id', '=', llm_model),
             ('active', '=', True),
-            ('allowed', '=', True),
         ]):
             return provider_name
     return _original_get_provider(env, llm_model)

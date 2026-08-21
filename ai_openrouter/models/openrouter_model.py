@@ -75,7 +75,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def action_sync_models(self):
-        """Synchronize the key-visible OpenRouter catalog into Odoo."""
+        """Synchronize the OpenRouter catalog into Odoo."""
         model_data = self._fetch_models()
         supported_models = [model for model in model_data if self._is_supported_model(model)]
         now = fields.Datetime.now()

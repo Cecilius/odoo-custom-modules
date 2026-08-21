@@ -1,6 +1,7 @@
 # AI OpenRouter Provider
 
-Adds OpenRouter support to the Odoo 19 Enterprise `ai` module.
+Adds OpenRouter support to the Odoo 19 Enterprise `ai` module. Shared model
+approval and agent behavior are provided by `ai_provider_catalog`.
 
 Initial test models:
 
@@ -12,6 +13,6 @@ API key in the AI integration settings. The optional `ODOO_AI_OPENROUTER_TOKEN`
 environment variable can be used for deployments that do not store the key in
 the database.
 
-The adapter currently supports text chat, tool calls, structured outputs,
-images, and OpenRouter embeddings. OpenRouter web grounding and arbitrary PDF
-uploads are intentionally not enabled yet.
+The adapter supports text chat, tool calls, structured outputs, images,
+OpenRouter embeddings, and bounded web search. Arbitrary PDF uploads are not
+enabled yet.

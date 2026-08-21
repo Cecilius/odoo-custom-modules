@@ -10,7 +10,7 @@ class TestAIAgentCatalog(TransactionCase):
             'llm_model': 'gpt-4o',
             'web_search': True,
         })
-        agent.llm_model = 'gpt-4o'
+        agent.llm_model = 'gpt-4.1'
         agent._onchange_llm_model_reset_web_search()
         self.assertFalse(agent.web_search)
 
