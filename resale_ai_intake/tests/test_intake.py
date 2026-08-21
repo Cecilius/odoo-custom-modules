@@ -44,3 +44,14 @@ class TestResaleAIIntake(TransactionCase):
         self.assertEqual(wizard.identifier, 'TEST-EAN')
         self.assertFalse(wizard.error_message)
         self.assertFalse(wizard.raw_agent_response)
+
+    def test_lookup_requires_identifier(self):
+        partner = self.env['res.partner'].create({'name': 'AI Intake Supplier 2'})
+        batch = self.env['resale.acquisition.batch'].create({
+            'partner_id': partner.id,
+        })
+        wizard = self.env['resale.ai.intake.wizard'].create({
+            'batch_id': batch.id,
+        })
+        with self.assertRaises(UserError):
+            wizard.action_lookup()

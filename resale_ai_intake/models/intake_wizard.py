@@ -10,7 +10,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
     _description = 'Resale AI Item Intake'
 
     batch_id = fields.Many2one('resale.acquisition.batch', required=True)
-    identifier = fields.Char(string='EAN / ASIN', required=True)
+    identifier = fields.Char(string='EAN / ASIN')
     identifier_type = fields.Selection([
         ('ean', 'EAN / UPC'),
         ('asin', 'ASIN'),
@@ -173,6 +173,8 @@ left null unless the source supports it. {"Use multiple sources and investigate 
 
     def action_lookup(self):
         self.ensure_one()
+        if not self.identifier:
+            raise UserError(_('Enter an EAN or ASIN before starting the lookup.'))
         configuration = self.env['resale.ai.configuration'].get_default()
         try:
             result = self._call_agent(configuration.primary_agent_id)
