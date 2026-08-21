@@ -188,6 +188,15 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             self.write({'state': 'error', 'error_message': str(error)})
         return self._reload_action()
 
+    def action_reset_input(self):
+        self.ensure_one()
+        self.write({
+            'state': 'input',
+            'error_message': False,
+            'raw_agent_response': False,
+        })
+        return self._reload_action()
+
     def action_deep_research(self):
         self.ensure_one()
         configuration = self.env['resale.ai.configuration'].get_default()

@@ -24,3 +24,23 @@ class TestResaleAIIntake(TransactionCase):
         configuration = self.env['resale.ai.configuration'].get_default()
         self.assertEqual(configuration.name, 'Default')
         self.assertTrue(configuration.automatic_fallback)
+
+    def test_error_can_return_to_input(self):
+        partner = self.env['res.partner'].create({'name': 'AI Intake Supplier'})
+        batch = self.env['resale.acquisition.batch'].create({
+            'partner_id': partner.id,
+        })
+        wizard = self.env['resale.ai.intake.wizard'].create({
+            'batch_id': batch.id,
+            'identifier': 'TEST-EAN',
+            'state': 'error',
+            'error_message': 'Temporary provider error',
+            'raw_agent_response': 'not json',
+        })
+
+        wizard.action_reset_input()
+
+        self.assertEqual(wizard.state, 'input')
+        self.assertEqual(wizard.identifier, 'TEST-EAN')
+        self.assertFalse(wizard.error_message)
+        self.assertFalse(wizard.raw_agent_response)

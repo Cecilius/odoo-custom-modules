@@ -7,6 +7,7 @@
             <form string="AI Item Intake">
                 <header>
                     <button name="action_lookup" string="Lookup" type="object" class="oe_highlight" invisible="state != 'input'"/>
+                    <button name="action_reset_input" string="Back to Input" type="object" invisible="state != 'error'"/>
                     <button name="action_deep_research" string="Deep Research" type="object" invisible="state != 'review'"/>
                     <button name="action_secondary_review" string="Improve Match" type="object" invisible="state != 'review'"/>
                     <button name="action_confirm_next" string="Confirm &amp; Next" type="object" class="oe_highlight" invisible="state != 'review'"/>
