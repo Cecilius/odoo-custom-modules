@@ -38,6 +38,10 @@
               parent="menu_resale_configuration"
               action="action_resale_brand"
               sequence="20"/>
+
+    <record id="menu_resale_brands" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
     <menuitem id="menu_resale_conditions"
               name="Conditions"
               parent="menu_resale_configuration"

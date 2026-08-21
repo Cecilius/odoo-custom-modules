@@ -63,7 +63,7 @@
                                     <field name="name"/>
                                     <field name="categ_id"/>
                                     <field name="rfb" optional="show" readonly="1"/>
-                                    <field name="resale_brand_id" optional="show"/>
+                                    <field name="brand_value_id" optional="show" domain="[('resale_is_brand', '=', True)]"/>
                                     <field name="model_es" optional="show"/>
                                     <field name="initial_value" optional="show"/>
                                     <field name="resale_state" optional="show"/>

@@ -30,7 +30,11 @@ class ResaleAIIntakeWizard(models.TransientModel):
     result_name = fields.Char(string='Suggested Product Name')
     result_model = fields.Char(string='Suggested Model')
     result_brand_name = fields.Char(string='Suggested Brand')
-    brand_id = fields.Many2one('resale.brand', string='Brand')
+    brand_value_id = fields.Many2one(
+        'product.attribute.value',
+        string='Brand',
+        domain="[('resale_is_brand', '=', True)]",
+    )
     category_id = fields.Many2one('product.category', string='Suggested Category')
     result_category_path = fields.Char(string='AI Category Path', readonly=True)
     result_asin = fields.Char(string='ASIN')
@@ -63,7 +67,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
     ai_suggested_name = fields.Char(copy=False)
     ai_suggested_model = fields.Char(copy=False)
     ai_suggested_brand_name = fields.Char(copy=False)
-    ai_suggested_brand_id = fields.Many2one('resale.brand', copy=False)
+    ai_suggested_brand_value_id = fields.Many2one('product.attribute.value', copy=False)
     ai_suggested_category_id = fields.Many2one('product.category', copy=False)
     ai_suggested_asin = fields.Char(copy=False)
     ai_suggested_ean = fields.Char(copy=False)
@@ -86,10 +90,10 @@ class ResaleAIIntakeWizard(models.TransientModel):
                 wizard.planned_rfb = False
 
     @api.depends(
-        'result_name', 'result_model', 'result_brand_name', 'brand_id',
+        'result_name', 'result_model', 'result_brand_name', 'brand_value_id',
         'category_id', 'result_asin', 'result_ean', 'current_price',
         'lowest_price_180', 'ai_suggested_name', 'ai_suggested_model',
-        'ai_suggested_brand_name', 'ai_suggested_brand_id',
+        'ai_suggested_brand_name', 'ai_suggested_brand_value_id',
         'ai_suggested_category_id', 'ai_suggested_asin', 'ai_suggested_ean',
         'ai_suggested_current_price', 'ai_suggested_lowest_price_180',
     )
@@ -99,7 +103,7 @@ class ResaleAIIntakeWizard(models.TransientModel):
             comparisons = [
                 ('Name', wizard.result_name, wizard.ai_suggested_name),
                 ('Model', wizard.result_model, wizard.ai_suggested_model),
-                ('Brand', wizard.brand_id, wizard.ai_suggested_brand_id),
+                ('Brand', wizard.brand_value_id, wizard.ai_suggested_brand_value_id),
                 ('Brand Name', wizard.result_brand_name, wizard.ai_suggested_brand_name),
                 ('Category', wizard.category_id, wizard.ai_suggested_category_id),
                 ('ASIN', wizard.result_asin, wizard.ai_suggested_asin),
@@ -201,7 +205,9 @@ class ResaleAIIntakeWizard(models.TransientModel):
     def _brand_options(self):
         return '\n'.join(
             f'{brand.id}: {brand.name}'
-            for brand in self.env['resale.brand'].search([], order='name')
+            for brand in self.env['product.attribute.value'].search([
+                ('resale_is_brand', '=', True),
+            ], order='name')
         )
 
     def _prompt(self, deep=False, secondary=False, follow_up_answers=None):
@@ -269,11 +275,13 @@ left null unless the source supports it. {"Use multiple sources and investigate 
 
     def _find_brand(self, result):
         if result.get('matched_brand_id'):
-            brand = self.env['resale.brand'].browse(int(result['matched_brand_id']))
-            if brand.exists():
+            brand = self.env['product.attribute.value'].browse(int(result['matched_brand_id']))
+            if brand.exists() and brand.resale_is_brand:
                 return brand
         normalized = self._normalize(result.get('brand'))
-        return self.env['resale.brand'].search([], order='name').filtered(
+        return self.env['product.attribute.value'].search([
+            ('resale_is_brand', '=', True),
+        ], order='name').filtered(
             lambda brand: self._normalize(brand.name) == normalized
         )[:1]
 
@@ -334,7 +342,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             values[result_field] = value
             values[suggested_field] = value
         if 'brand' in fields_to_update and result.get('brand') is not None:
-            values['brand_id'] = brand.id or False
+            values['brand_value_id'] = brand.id or False
         if 'category' in fields_to_update and result.get('category_path') is not None:
             values['result_category_path'] = result.get('category_path')
         self.write(values)
@@ -445,21 +453,27 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             raise UserError(_('Select or confirm a resale category before creating the item.'))
         if not self.category_id.rfb_prefix:
             raise UserError(_('Select a leaf resale category with an RFB prefix.'))
-        brand = self.brand_id
+        brand = self.brand_value_id
         if self.result_brand_name and (
             not brand
             or self._normalize(brand.name) != self._normalize(self.result_brand_name)
         ):
-            brand = self.env['resale.brand'].search([], order='name').filtered(
+            brand = self.env['product.attribute.value'].search([
+                ('resale_is_brand', '=', True),
+            ], order='name').filtered(
                 lambda item: self._normalize(item.name) == self._normalize(self.result_brand_name)
             )[:1]
             if not brand:
-                brand = self.env['resale.brand'].create({'name': self.result_brand_name})
+                brand = self.env['product.attribute.value'].create({
+                    'name': self.result_brand_name,
+                    'attribute_id': self.env.ref('resale.product_attribute_brand').id,
+                    'resale_is_brand': True,
+                })
         created_values = {
             'name': self.result_name,
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
-            'resale_brand_id': brand.id or False,
+            'brand_value_id': brand.id or False,
             'model_es': self.result_model,
             'asin': self.result_asin or (self.identifier if self.identifier_type == 'asin' else False),
             'upc': self.result_ean or (self.identifier if self.identifier_type == 'ean' else False),
@@ -490,7 +504,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'result_name': False,
             'result_model': False,
             'result_brand_name': False,
-            'brand_id': False,
+            'brand_value_id': False,
             'category_id': False,
             'result_category_path': False,
             'result_asin': False,
@@ -508,7 +522,7 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_suggested_name': False,
             'ai_suggested_model': False,
             'ai_suggested_brand_name': False,
-            'ai_suggested_brand_id': False,
+            'ai_suggested_brand_value_id': False,
             'ai_suggested_category_id': False,
             'ai_suggested_asin': False,
             'ai_suggested_ean': False,

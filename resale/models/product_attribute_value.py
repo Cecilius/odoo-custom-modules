@@ -22,3 +22,4 @@ class ProductAttributeValue(models.Model):
     )
     resale_is_for_parts = fields.Boolean(string='For Spare Parts', copy=False)
     resale_is_condition_grade = fields.Boolean(string='Condition Grade', copy=False)
+    resale_is_brand = fields.Boolean(string='Brand', copy=False)

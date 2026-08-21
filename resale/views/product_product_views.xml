@@ -40,7 +40,7 @@
                     <group>
                         <group string="Identity">
                             <field name="categ_id" required="1"/>
-                            <field name="resale_brand_id"/>
+                            <field name="brand_value_id" domain="[('resale_is_brand', '=', True)]"/>
                             <field name="barcode" readonly="1"/>
                             <field name="default_code" readonly="1"/>
                             <field name="batch_id"/>

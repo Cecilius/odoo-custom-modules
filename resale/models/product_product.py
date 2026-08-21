@@ -9,6 +9,12 @@ class ProductProduct(models.Model):
     # --- Resale identity ---------------------------------------------------
     rfb = fields.Char(string='RFB', copy=False, index=True)
     resale_brand_id = fields.Many2one('resale.brand', string='Resale Brand')
+    brand_value_id = fields.Many2one(
+        'product.attribute.value',
+        string='Brand',
+        compute='_compute_brand_value',
+        inverse='_inverse_brand_value',
+    )
     batch_id = fields.Many2one(
         'resale.acquisition.batch', string='Acquisition Batch',
         ondelete='restrict', index=True,
@@ -166,6 +172,64 @@ class ProductProduct(models.Model):
             raise_if_not_found=False,
         )
 
+    def _brand_attribute(self):
+        return self.env.ref('resale.product_attribute_brand', raise_if_not_found=False)
+
+    @api.depends('product_tmpl_id.attribute_line_ids.value_ids')
+    def _compute_brand_value(self):
+        attribute = self._brand_attribute()
+        for product in self:
+            line = product.product_tmpl_id.attribute_line_ids.filtered(
+                lambda item: attribute and item.attribute_id == attribute
+            )[:1]
+            product.brand_value_id = line.value_ids[:1] if line else False
+
+    def _set_brand_value(self, value):
+        self.ensure_one()
+        attribute = self._brand_attribute()
+        if not attribute or not value or value.attribute_id != attribute:
+            return
+        line = self.product_tmpl_id.attribute_line_ids.filtered(
+            lambda item: item.attribute_id == attribute
+        )[:1]
+        if line:
+            line.value_ids = [Command.set([value.id])]
+        else:
+            self.env['product.template.attribute.line'].create({
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'attribute_id': attribute.id,
+                'value_ids': [Command.link(value.id)],
+            })
+        legacy_brand = self.env['resale.brand'].search([
+            ('name', '=ilike', value.name),
+        ], limit=1)
+        if legacy_brand:
+            self.with_context(skip_brand_sync=True).write({
+                'resale_brand_id': legacy_brand.id,
+            })
+
+    def _sync_brand_attribute_from_legacy(self):
+        BrandValue = self.env['product.attribute.value']
+        attribute = self._brand_attribute()
+        if not attribute:
+            return
+        for product in self.filtered('resale_brand_id'):
+            value = BrandValue.search([
+                ('attribute_id', '=', attribute.id),
+                ('name', '=ilike', product.resale_brand_id.name),
+            ], limit=1)
+            if not value:
+                value = BrandValue.create({
+                    'name': product.resale_brand_id.name,
+                    'attribute_id': attribute.id,
+                    'resale_is_brand': True,
+                })
+            product._set_brand_value(value)
+
+    @api.model
+    def _migrate_brand_attribute_all(self):
+        self.search([('resale_brand_id', '!=', False)])._sync_brand_attribute_from_legacy()
+
     @api.depends('product_tmpl_id.attribute_line_ids.value_ids')
     def _compute_condition_grade_value(self):
         attribute = self._condition_grade_attribute()
@@ -249,6 +313,10 @@ class ProductProduct(models.Model):
         for product in self:
             product._set_condition_grade_value(product.condition_grade_value_id)
 
+    def _inverse_brand_value(self):
+        for product in self:
+            product._set_brand_value(product.brand_value_id)
+
     @api.model_create_multi
     def create(self, vals_list):
         explicit_policies = [vals.get('warranty_policy_id') for vals in vals_list]
@@ -270,6 +338,8 @@ class ProductProduct(models.Model):
         )
         # Products created without explicit categ_id may still get a resale default category.
         for product, explicit_policy in zip(products, explicit_policies):
+            if product.resale_brand_id:
+                product._sync_brand_attribute_from_legacy()
             if not product.rfb and product.categ_id.rfb_prefix:
                 sequence = product.categ_id._get_or_create_rfb_sequence()
                 if sequence:
