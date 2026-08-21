@@ -5,6 +5,7 @@
             <field name="name">Default</field>
             <field name="confidence_threshold">0.75</field>
             <field name="automatic_fallback" eval="True"/>
+            <field name="fallback_brand_value_id" ref="resale.product_attribute_value_brand_other"/>
         </record>
     </data>
 </odoo>

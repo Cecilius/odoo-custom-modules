@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_category_mapping_user,Resale Category Mapping User,model_resale_category_mapping,group_resale_user,1,0,0,0
+access_resale_category_mapping_manager,Resale Category Mapping Manager,model_resale_category_mapping,group_resale_manager,1,1,1,1
 access_product_category_manager,Resale Product Category Manager,product.model_product_category,group_resale_manager,1,1,1,0
 access_resale_brand_user,Resale Brand User,model_resale_brand,group_resale_user,1,0,0,0
 access_resale_brand_manager,Resale Brand Manager,model_resale_brand,group_resale_manager,1,1,1,0

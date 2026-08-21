@@ -16,17 +16,15 @@ class TestResaleAIIntake(TransactionCase):
         ])
         self.assertEqual(result['name'], 'Test Product')
 
-    def test_unverified_identifier_is_not_accepted(self):
+    def test_identifier_format_validation(self):
         wizard = self.env['resale.ai.intake.wizard'].new({
             'input_search_text': 'rose pink Galaxy Watch SM-R860',
         })
-        result, messages = wizard._sanitize_identifiers({
-            'ean': '1234567890123',
-            'asin': 'B000000000',
-        }, [])
-        self.assertFalse(result['ean'])
-        self.assertFalse(result['asin'])
-        self.assertEqual(len(messages), 2)
+        self.assertEqual(wizard._clean_identifier('ean', ' 1234567890123 '), '1234567890123')
+        self.assertEqual(wizard._clean_identifier('upc', '123-456-789-012'), '123456789012')
+        self.assertEqual(wizard._clean_identifier('asin', 'b000000000'), 'B000000000')
+        with self.assertRaises(UserError):
+            wizard._clean_identifier('upc', '1234567890123')
 
     def test_active_language_name_lines_are_created(self):
         partner = self.env['res.partner'].create({'name': 'AI Intake Supplier 4'})

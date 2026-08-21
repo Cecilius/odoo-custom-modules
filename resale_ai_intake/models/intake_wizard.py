@@ -1,9 +1,5 @@
 import json
-import ipaddress
 import re
-import socket
-from urllib.parse import urlparse
-from urllib.request import Request, urlopen
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -19,10 +15,6 @@ class ResaleAIIntakeWizard(models.TransientModel):
     input_upc = fields.Char(string='Last UPC', readonly=True)
     input_asin = fields.Char(string='Last ASIN', readonly=True)
     input_search_text = fields.Char(string='Last Product Search', readonly=True)
-    identifier_type = fields.Selection([
-        ('ean', 'EAN / UPC'),
-        ('asin', 'ASIN'),
-    ], default='ean', required=True)
     state = fields.Selection([
         ('input', 'Input'),
         ('review', 'Review'),
@@ -37,6 +29,9 @@ class ResaleAIIntakeWizard(models.TransientModel):
         domain="[('resale_is_brand', '=', True)]",
     )
     category_id = fields.Many2one('product.category', string='Suggested Category')
+    mapped_category_ids = fields.Many2many(
+        'product.category', compute='_compute_mapped_categories', string='Mapped Categories',
+    )
     result_category_path = fields.Char(string='AI Category Path', readonly=True)
     result_asin = fields.Char(string='ASIN')
     result_ean = fields.Char(string='EAN')
@@ -60,7 +55,6 @@ class ResaleAIIntakeWizard(models.TransientModel):
     error_message = fields.Text(readonly=True)
     follow_up_questions = fields.Text(string='Additional Questions', readonly=True)
     follow_up_answers = fields.Text(string='Answers')
-    identifier_verification = fields.Text(string='Identifier Verification', readonly=True)
     name_line_ids = fields.One2many(
         'resale.ai.name.line', 'wizard_id', string='Translated Names',
     )
@@ -85,15 +79,24 @@ class ResaleAIIntakeWizard(models.TransientModel):
         for wizard in self:
             wizard.item_count = len(wizard.batch_id.item_ids)
 
+    @api.depends('batch_id')
+    def _compute_mapped_categories(self):
+        categories = self.env['resale.category.mapping'].search([
+            ('active', '=', True),
+        ]).mapped('category_id')
+        for wizard in self:
+            wizard.mapped_category_ids = categories
+
     @api.depends('category_id')
     def _compute_rfb_preview(self):
         for wizard in self:
-            if wizard.category_id:
-                wizard.category_id._synchronize_rfb_sequence()
-            sequence = wizard.category_id.rfb_sequence_id
-            if wizard.category_id.rfb_prefix and sequence:
+            mapping = self.env['resale.category.mapping'].get_for_category(wizard.category_id)
+            if mapping:
+                mapping._synchronize_sequence()
+            sequence = mapping.sequence_id if mapping else False
+            if mapping and sequence:
                 next_number = getattr(sequence, 'number_next_actual', sequence.number_next)
-                wizard.planned_rfb = f'RFB-{wizard.category_id.rfb_prefix}-{next_number:06d}'
+                wizard.planned_rfb = f'RFB-{mapping.rfb_code}-{next_number:06d}'
             else:
                 wizard.planned_rfb = False
 
@@ -153,38 +156,6 @@ class ResaleAIIntakeWizard(models.TransientModel):
         return re.sub(r'[^a-z0-9]', '', (value or '').lower())
 
     @api.model
-    def _safe_source_text(self, url):
-        parsed = urlparse(url or '')
-        if parsed.scheme not in ('http', 'https') or not parsed.hostname:
-            return ''
-        try:
-            addresses = {
-                info[4][0]
-                for info in socket.getaddrinfo(parsed.hostname, None)
-            }
-            if any(ipaddress.ip_address(address).is_private for address in addresses):
-                return ''
-            request = Request(
-                url,
-                headers={'User-Agent': 'Odoo Resale AI Intake/1.0'},
-            )
-            with urlopen(request, timeout=8) as response:
-                return response.read(2_000_000).decode('utf-8', errors='ignore')
-        except Exception:
-            return ''
-
-    def _identifier_has_source_evidence(self, identifier, sources):
-        normalized = self._normalize_identifier(identifier)
-        if not normalized:
-            return False
-        for source in sources or []:
-            url = source.get('url') if isinstance(source, dict) else False
-            page = self._safe_source_text(url)
-            if self._normalize_identifier(normalized) in self._normalize_identifier(page):
-                return True
-        return False
-
-    @api.model
     def _identifier_format_is_valid(self, field_name, value):
         normalized = self._normalize_identifier(value)
         if field_name == 'ean':
@@ -195,36 +166,22 @@ class ResaleAIIntakeWizard(models.TransientModel):
             return bool(re.fullmatch(r'[A-Z0-9]{10}', normalized.upper()))
         return False
 
-    def _sanitize_identifiers(self, result, sources):
-        result = dict(result)
-        messages = []
-        for field_name, supplied in (
-            ('ean', self.input_ean),
-            ('upc', self.input_upc),
-            ('asin', self.input_asin),
-        ):
-            candidate = result.get(field_name)
-            if supplied:
-                result[field_name] = supplied
-                continue
-            if candidate and not self._identifier_format_is_valid(field_name, candidate):
-                result[field_name] = None
-                messages.append(f'{field_name.upper()} returned by AI has the wrong format.')
-            elif candidate and not self._identifier_has_source_evidence(candidate, sources):
-                result[field_name] = None
-                messages.append(
-                    f'{field_name.upper()} returned by AI but not verified in a source page.'
-                )
-        return result, messages
+    @api.model
+    def _clean_identifier(self, field_name, value):
+        if not value:
+            return False
+        cleaned = re.sub(r'[\s-]+', '', value.strip())
+        if not self._identifier_format_is_valid(field_name, cleaned):
+            labels = {'ean': 'EAN', 'upc': 'UPC', 'asin': 'ASIN'}
+            raise UserError(_('%s has an invalid format.') % labels[field_name])
+        return cleaned.upper() if field_name == 'asin' else cleaned
 
     def _category_options(self):
-        root = self.env.ref('resale.product_category_resale')
         return '\n'.join(
-            f'{category.id}: {category.complete_name}'
-            for category in self.env['product.category'].search([
-                ('id', 'child_of', root.id),
-                ('rfb_prefix', '!=', False),
-            ], order='complete_name')
+            f'{mapping.category_id.id}: RFB-{mapping.rfb_code} - {mapping.category_id.complete_name}'
+            for mapping in self.env['resale.category.mapping'].search([
+                ('active', '=', True),
+            ], order='rfb_code')
         )
 
     def _brand_options(self):
@@ -257,6 +214,8 @@ Existing resale categories (return one exact category id when possible):
 
 Existing brands (prefer an exact existing brand id when possible):
 {self._brand_options()}
+If the brand is well known but missing, suggest adding a new Brand value. If the
+brand is unknown, use fallback Brand value id {self.env['resale.ai.configuration'].get_default().fallback_brand_value_id.id or 'not configured'}.
 
 Active languages for product names:
 {self._active_language_options()}
@@ -290,7 +249,11 @@ For ASIN searches, check Amazon Spain and other European marketplaces including
 amazon.es, amazon.co.uk, amazon.de, amazon.fr, amazon.it, and amazon.nl.
 Never invent an identifier, price, source, or
 category id. Use null when unknown.
-Keep the product name at 40 characters or fewer.
+Keep the product name at 50 characters or fewer.
+If the product has meaningful variations, include them in the name: color, RAM,
+storage capacity, size, connectivity version, or similar identifying variant.
+For phones, include color, RAM, and storage when available. For smart watches,
+include color, case size, and connectivity when available.
 If the product is still ambiguous, return up to three concise follow_up_questions
 that would help distinguish it. If it is sufficiently identified, return an empty
 array. Questions must be answerable from packaging, photos, or the operator.
@@ -334,11 +297,12 @@ left null unless the source supports it. {"Use multiple sources and investigate 
         category = self.env['product.category']
         if result.get('category_id'):
             category = self.env['product.category'].browse(int(result['category_id']))
-            if not category.exists() or not category.rfb_prefix:
+            if not category.exists() or not self.env['resale.category.mapping'].get_for_category(category):
                 category = self.env['product.category']
         brand = self._find_brand(result)
+        if not brand:
+            brand = self.env['resale.ai.configuration'].get_default().fallback_brand_value_id
         sources = result.get('sources') or []
-        result, verification_messages = self._sanitize_identifiers(result, sources)
         names = result.get('names') or {}
         if not isinstance(names, dict):
             names = {}
@@ -361,11 +325,9 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'agent_id': agent.id,
             'error_message': False,
             'name_line_ids': name_lines,
-            'identifier_verification': '\n'.join(verification_messages) or 'All returned identifiers verified or supplied by user.',
         }
         if 'follow_up_questions' in result:
             questions = list(result.get('follow_up_questions') or [])
-            questions.extend(verification_messages)
             values['follow_up_questions'] = '\n'.join(
                 f'- {question}'
                 for question in questions
@@ -431,10 +393,13 @@ left null unless the source supports it. {"Use multiple sources and investigate 
         self.ensure_one()
         if not ean and not upc and not asin and not search_text:
             raise UserError(_('Enter an EAN, UPC, ASIN, or product search text before starting the lookup.'))
+        ean = self._clean_identifier('ean', ean)
+        upc = self._clean_identifier('upc', upc)
+        asin = self._clean_identifier('asin', asin)
         self.write({
-            'input_ean': ean or False,
-            'input_upc': upc or False,
-            'input_asin': asin or False,
+            'input_ean': ean,
+            'input_upc': upc,
+            'input_asin': asin,
             'input_search_text': search_text or False,
             'identifier': asin or ean or upc or search_text,
         })
@@ -454,8 +419,31 @@ left null unless the source supports it. {"Use multiple sources and investigate 
                 result = self._call_agent(configuration.fallback_agent_id, deep=True)
                 self._apply_result(result, configuration.fallback_agent_id)
         except Exception as error:
-            self.write({'state': 'error', 'error_message': str(error)})
+            if configuration.fallback_agent_id and self._is_high_demand_error(error):
+                try:
+                    result = self._call_agent(configuration.fallback_agent_id)
+                    self._apply_result(result, configuration.fallback_agent_id)
+                except Exception as fallback_error:
+                    self.write({
+                        'state': 'error',
+                        'error_message': _('Primary agent failed: %s\nFallback agent failed: %s') % (
+                            error, fallback_error,
+                        ),
+                    })
+            else:
+                self.write({'state': 'error', 'error_message': str(error)})
         return self._reload_action()
+
+    @api.model
+    def _is_high_demand_error(self, error):
+        message = str(error).lower()
+        return any(term in message for term in (
+            'high demand',
+            'resource exhausted',
+            'rate limit',
+            'quota',
+            '429',
+        ))
 
     def action_lookup(self):
         return self.action_open_identifier_popup()
@@ -509,8 +497,12 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             raise UserError(_('Run a lookup and review the result before confirming.'))
         if not self.category_id:
             raise UserError(_('Select or confirm a resale category before creating the item.'))
-        if not self.category_id.rfb_prefix:
-            raise UserError(_('Select a leaf resale category with an RFB prefix.'))
+        mapping = self.env['resale.category.mapping'].get_for_category(self.category_id)
+        if not mapping:
+            raise UserError(_('Select a product category with an active resale mapping.'))
+        result_asin = self._clean_identifier('asin', self.result_asin)
+        result_ean = self._clean_identifier('ean', self.result_ean)
+        result_upc = self._clean_identifier('upc', self.result_upc)
         brand = self.brand_value_id
         if self.result_brand_name and (
             not brand
@@ -532,9 +524,9 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
             'brand_value_id': brand.id or False,
-            'asin': self.result_asin or self.input_asin,
-            'ean': self.result_ean or self.input_ean,
-            'upc': self.result_upc or self.input_upc,
+            'asin': result_asin or self.input_asin,
+            'ean': result_ean or self.input_ean,
+            'upc': result_upc or self.input_upc,
             'recommended_price': self.lowest_price_180 or self.current_price,
             'initial_value': self.lowest_price_180 or self.current_price,
             'ai_lookup_agent_id': self.agent_id.id,
@@ -548,9 +540,8 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'ai_user_changed_fields': self.changed_fields,
             'ai_follow_up_questions': self.follow_up_questions,
             'ai_follow_up_answers': self.follow_up_answers,
-            'ai_identifier_verification': self.identifier_verification,
         }
-        product = self.env['product.product'].create(created_values)
+        product = self.env['product.product'].with_context(resale_item=True).create(created_values)
         translations = {}
         for line in self.name_line_ids:
             if line.name:

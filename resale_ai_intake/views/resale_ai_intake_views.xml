@@ -41,7 +41,8 @@
                         <field name="result_brand_name"/>
                         <field name="brand_value_id" domain="[('resale_is_brand', '=', True)]"/>
                         <field name="result_category_path" readonly="1"/>
-                        <field name="category_id" domain="[('rfb_prefix', '!=', False)]"/>
+                        <field name="mapped_category_ids" invisible="1"/>
+                        <field name="category_id" domain="[('id', 'in', mapped_category_ids)]"/>
                         <field name="result_asin"/>
                         <field name="result_ean"/>
                         <field name="result_upc"/>
@@ -57,7 +58,6 @@
                         <field name="raw_agent_response" readonly="1" nolabel="1"/>
                     </group>
                     <group string="Additional Identification Questions" invisible="state != 'review' or not follow_up_questions">
-                        <field name="identifier_verification" readonly="1" nolabel="1"/>
                         <field name="follow_up_questions" readonly="1" nolabel="1"/>
                         <field name="follow_up_answers" placeholder="Answer one question per line" nolabel="1"/>
                     </group>

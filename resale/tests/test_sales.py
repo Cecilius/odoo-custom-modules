@@ -11,7 +11,7 @@ class TestResaleSales(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True, resale_item=True))
         cls.partner = cls.env['res.partner'].create({'name': 'Customer'})
         cls.category = cls.env['product.category'].create({
             'name': 'Test Category',

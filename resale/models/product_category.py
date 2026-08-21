@@ -86,6 +86,13 @@ class ProductCategory(models.Model):
                     category._prepare_rfb_sequence_vals()
                 )
                 category.rfb_sequence_id = sequence.id
+            if category.rfb_prefix and 'resale.category.mapping' in self.env:
+                mapping_model = self.env['resale.category.mapping']
+                if not mapping_model.get_for_category(category):
+                    mapping_model.create({
+                        'category_id': category.id,
+                        'rfb_code': category.rfb_prefix,
+                    })
         return categories
 
     def write(self, vals):
@@ -107,6 +114,17 @@ class ProductCategory(models.Model):
                     update_vals['name'] = f'RFB {category.name}'
                 if update_vals:
                     category.rfb_sequence_id.write(update_vals)
+        if 'rfb_prefix' in vals and 'resale.category.mapping' in self.env:
+            mapping_model = self.env['resale.category.mapping']
+            for category in self:
+                mapping = mapping_model.get_for_category(category)
+                if category.rfb_prefix and not mapping:
+                    mapping_model.create({
+                        'category_id': category.id,
+                        'rfb_code': category.rfb_prefix,
+                    })
+                elif mapping and not category.rfb_prefix:
+                    mapping.active = False
         return res
 
     def unlink(self):

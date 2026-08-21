@@ -327,11 +327,22 @@ class ProductProduct(models.Model):
     def create(self, vals_list):
         explicit_policies = [vals.get('warranty_policy_id') for vals in vals_list]
         for vals in vals_list:
-            if vals.get('categ_id') and not vals.get('rfb'):
+            is_resale = bool(
+                self.env.context.get('resale_item')
+                or vals.get('batch_id')
+                or vals.get('resale_state')
+                or vals.get('rfb')
+            )
+            if is_resale and vals.get('categ_id'):
                 category = self.env['product.category'].browse(vals['categ_id'])
-                sequence = category._get_or_create_rfb_sequence()
-                if sequence:
-                    vals['rfb'] = sequence.next_by_id()
+                mapping = self.env['resale.category.mapping'].get_for_category(category)
+                if not mapping:
+                    raise UserError(_(
+                        'Resale items must use a product category with an active RFB mapping.'
+                    ))
+                if not vals.get('rfb'):
+                    mapping._synchronize_sequence()
+                    vals['rfb'] = mapping.sequence_id.next_by_id()
             if vals.get('rfb'):
                 vals['default_code'] = vals['rfb']
                 vals['barcode'] = vals['rfb']
@@ -346,10 +357,15 @@ class ProductProduct(models.Model):
         for product, explicit_policy in zip(products, explicit_policies):
             if product.resale_brand_id:
                 product._sync_brand_attribute_from_legacy()
-            if not product.rfb and product.categ_id.rfb_prefix:
-                sequence = product.categ_id._get_or_create_rfb_sequence()
-                if sequence:
-                    rfb = sequence.next_by_id()
+            if not product.rfb and product.batch_id:
+                mapping = self.env['resale.category.mapping'].get_for_category(product.categ_id)
+                if not mapping:
+                    raise UserError(_(
+                        'Resale items must use a product category with an active RFB mapping.'
+                    ))
+                mapping._synchronize_sequence()
+                if mapping.sequence_id:
+                    rfb = mapping.sequence_id.next_by_id()
                     product.write({'rfb': rfb, 'default_code': rfb, 'barcode': rfb})
             if product.condition_grade_value_id:
                 if explicit_policy:
@@ -365,6 +381,16 @@ class ProductProduct(models.Model):
         return products
 
     def write(self, vals):
+        if vals.get('categ_id'):
+            resale_products = self.filtered('rfb')
+            if resale_products:
+                mapping = self.env['resale.category.mapping'].get_for_category(
+                    self.env['product.category'].browse(vals['categ_id'])
+                )
+                if not mapping:
+                    raise UserError(_(
+                        'Resale items must use a product category with an active RFB mapping.'
+                    ))
         locked = self.filtered(
             lambda p: p.cost_status in ('locked', 'legacy_locked')
         )

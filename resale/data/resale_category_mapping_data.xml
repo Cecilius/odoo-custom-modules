@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <function model="resale.category.mapping" name="_migrate_from_product_categories"/>
+</odoo>

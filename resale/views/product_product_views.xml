@@ -130,6 +130,7 @@
             'default_is_storable': True,
             'default_resale_state': 'received',
             'default_categ_id': ref('product_category_other'),
+            'resale_item': True,
         }"/>
     </record>
 </odoo>

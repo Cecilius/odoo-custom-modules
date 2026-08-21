@@ -57,7 +57,7 @@
                     </group>
                     <notebook>
                         <page string="Items">
-                            <field name="item_ids" context="{'default_type': 'consu', 'default_is_storable': True, 'default_resale_state': 'received'}">
+                            <field name="item_ids" context="{'default_type': 'consu', 'default_is_storable': True, 'default_resale_state': 'received', 'resale_item': True}">
                                 <list editable="bottom">
                                     <button name="action_open_resale_item" type="object" icon="fa-external-link" title="Open item"/>
                                     <field name="name"/>

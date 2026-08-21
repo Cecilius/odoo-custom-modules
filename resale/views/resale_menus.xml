@@ -33,6 +33,11 @@
               parent="menu_resale_configuration"
               action="action_resale_category"
               sequence="10"/>
+    <menuitem id="menu_resale_category_mappings"
+              name="Category Mappings"
+              parent="menu_resale_configuration"
+              action="action_resale_category_mapping"
+              sequence="15"/>
     <menuitem id="menu_resale_brands"
               name="Brands"
               parent="menu_resale_configuration"

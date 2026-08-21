@@ -26,6 +26,7 @@
                         <field name="primary_agent_id"/>
                         <field name="fallback_agent_id"/>
                         <field name="secondary_agent_id"/>
+                        <field name="fallback_brand_value_id"/>
                     </group>
                     <group string="Routing">
                         <field name="confidence_threshold"/>

@@ -10,7 +10,7 @@ class TestResaleInspection(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True, resale_item=True))
         cls.category = cls.env['product.category'].create({
             'name': 'Test Category',
             'rfb_prefix': 'TC',
@@ -38,5 +38,4 @@ class TestResaleInspection(TransactionCase):
         self.assertEqual(product.resale_state, 'ready')
         self.assertEqual(product.condition_id, self.condition)
         self.assertEqual(product.functional_status, 'working')
-
 

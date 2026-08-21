@@ -21,6 +21,12 @@ class ResaleAIConfiguration(models.Model):
         string='Secondary Task Agent',
         help='Agent used for local brand/category matching and normalization.',
     )
+    fallback_brand_value_id = fields.Many2one(
+        'product.attribute.value',
+        string='Fallback Brand Value',
+        domain="[('resale_is_brand', '=', True)]",
+        help='Brand value used when the AI cannot confidently identify a brand.',
+    )
     confidence_threshold = fields.Float(default=0.75, required=True)
     automatic_fallback = fields.Boolean(
         default=True,
