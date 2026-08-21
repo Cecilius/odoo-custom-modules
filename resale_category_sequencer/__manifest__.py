@@ -14,7 +14,7 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'product_rfb_sequence/static/src/js/product_form_controller.js',
+            'resale_category_sequencer/static/src/js/product_form_controller.js',
         ],
     },
     'installable': True,
