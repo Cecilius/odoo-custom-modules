@@ -27,14 +27,14 @@
                     <group string="Lookup Result" invisible="state != 'review'">
                         <field name="result_name"/>
                         <field name="result_model"/>
-                        <field name="result_brand_name" readonly="1"/>
+                        <field name="result_brand_name"/>
                         <field name="brand_id"/>
                         <field name="result_category_path" readonly="1"/>
                         <field name="category_id"/>
                         <field name="result_asin" readonly="1"/>
                         <field name="result_ean" readonly="1"/>
-                        <field name="current_price" readonly="1"/>
-                        <field name="lowest_price_180" readonly="1"/>
+                        <field name="current_price"/>
+                        <field name="lowest_price_180"/>
                         <field name="currency_id" readonly="1"/>
                         <field name="confidence" readonly="1"/>
                         <field name="agent_id" readonly="1"/>

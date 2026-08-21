@@ -176,6 +176,7 @@ Return JSON only, with this schema:
 }}
 
 Never invent an identifier, price, source, or category id. Use null when unknown.
+Keep the product name at 40 characters or fewer.
 Verify that the supplied identifier appears in a source. Historical price must be
 left null unless the source supports it. {"Use multiple sources and investigate disagreements." if deep else "Use concise source-backed lookup."}
 """
@@ -221,7 +222,10 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             'error_message': False,
         }
         field_map = {
-            'name': ('result_name', 'ai_suggested_name', result.get('name')),
+            'name': (
+                'result_name', 'ai_suggested_name',
+                (result.get('name') or '')[:40],
+            ),
             'model': ('result_model', 'ai_suggested_model', result.get('model')),
             'brand': ('result_brand_name', 'ai_suggested_brand_name', result.get('brand')),
             'category': ('category_id', 'ai_suggested_category_id', category.id or False),
@@ -337,11 +341,21 @@ left null unless the source supports it. {"Use multiple sources and investigate 
             raise UserError(_('Run a lookup and review the result before confirming.'))
         if not self.category_id:
             raise UserError(_('Select or confirm a resale category before creating the item.'))
+        brand = self.brand_id
+        if self.result_brand_name and (
+            not brand
+            or self._normalize(brand.name) != self._normalize(self.result_brand_name)
+        ):
+            brand = self.env['resale.brand'].search([], order='name').filtered(
+                lambda item: self._normalize(item.name) == self._normalize(self.result_brand_name)
+            )[:1]
+            if not brand:
+                brand = self.env['resale.brand'].create({'name': self.result_brand_name})
         created_values = {
             'name': self.result_name,
             'categ_id': self.category_id.id,
             'batch_id': self.batch_id.id,
-            'resale_brand_id': self.brand_id.id or False,
+            'resale_brand_id': brand.id or False,
             'model_es': self.result_model,
             'asin': self.result_asin or (self.identifier if self.identifier_type == 'asin' else False),
             'upc': self.result_ean or (self.identifier if self.identifier_type == 'ean' else False),
