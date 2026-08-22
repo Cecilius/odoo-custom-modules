@@ -9,6 +9,7 @@
     'data': [
         'data/brand_attribute.xml',
         'views/product_template_views.xml',
+        'views/res_config_settings_views.xml',
     ],
     'installable': True,
     'application': False,

@@ -4,6 +4,18 @@ from odoo import api, fields, models, Command
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    @api.model
+    def _get_brand_attribute(self):
+        configured_id = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_brand_map.brand_attribute_id'
+        )
+        attribute = self.env['product.attribute'].browse(int(configured_id)).exists() \
+            if configured_id and configured_id.isdigit() else self.env['product.attribute']
+        return attribute or self.env.ref(
+            'resale_brand_map.product_attribute_brand',
+            raise_if_not_found=False,
+        )
+
     brand_attribute_id = fields.Many2one(
         'product.attribute',
         string='Brand Attribute',
@@ -18,29 +30,19 @@ class ProductTemplate(models.Model):
 
     @api.depends('attribute_line_ids.value_ids')
     def _compute_brand_attribute_id(self):
-        attribute = self.env.ref(
-            'resale_brand_map.product_attribute_brand',
-            raise_if_not_found=False,
-        )
-        self.brand_attribute_id = attribute
+        self.brand_attribute_id = self._get_brand_attribute()
 
     @api.depends('attribute_line_ids.value_ids')
     def _compute_brand_value_id(self):
-        attribute = self.env.ref(
-            'resale_brand_map.product_attribute_brand',
-            raise_if_not_found=False,
-        )
         for template in self:
+            attribute = template._get_brand_attribute()
             line = template.attribute_line_ids.filtered(
                 lambda item: attribute and item.attribute_id == attribute
             )[:1]
             template.brand_value_id = line.value_ids[:1] if line else False
 
     def _inverse_brand_value_id(self):
-        attribute = self.env.ref(
-            'resale_brand_map.product_attribute_brand',
-            raise_if_not_found=False,
-        )
+        attribute = self._get_brand_attribute()
         if not attribute:
             return
         for template in self:
