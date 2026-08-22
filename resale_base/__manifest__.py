@@ -1,14 +1,12 @@
 {
-    'name': 'Resale Brand Map',
+    'name': 'Resale Base',
     'version': '19.0.1.0.0',
-    'summary': 'Expose a non-variant Brand attribute as a product template dropdown',
+    'summary': 'Shared foundation and settings area for resale modules',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['product', 'resale_base'],
+    'depends': ['base'],
     'data': [
-        'data/brand_attribute.xml',
-        'views/product_template_views.xml',
         'views/res_config_settings_views.xml',
     ],
     'installable': True,
