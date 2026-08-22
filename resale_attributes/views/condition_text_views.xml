@@ -44,8 +44,4 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_resale_condition_text"
-              name="Condition Texts"
-              action="action_resale_condition_text"
-              sequence="50"/>
 </odoo>
