@@ -12,7 +12,7 @@ class SimplifiedInvoicePostWizard(models.TransientModel):
         self.ensure_one()
         if not self.move_id or self.move_id.state != "draft":
             raise UserError(_("You can only change the journal and simplified flag while the invoice is still in draft."))
-    
+
     def action_set_simplified(self):
         self._ensure_draft_move()
         move = self.move_id

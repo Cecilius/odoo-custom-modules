@@ -20,6 +20,30 @@ class AccountMove(models.Model):
             return _("This invoice is classified as simplified by the Spanish localization, but it is not using the configured simplified sales journal.")
         return _("This invoice is classified as full by the Spanish localization, but it is not using the configured full sales journal.")
 
+    @api.depends("partner_id", "line_ids.balance", "reversed_entry_id")
+    def _compute_l10n_es_is_simplified(self):
+        """Keep Odoo's rule, but limit its generic EU branch to Spain."""
+        super()._compute_l10n_es_is_simplified()
+
+        simplified_partner = self.env.ref(
+            "l10n_es.partner_simplified", raise_if_not_found=False
+        )
+        european_countries = self.env.ref("base.europe").country_ids
+
+        for move in self:
+            generic_eu_rule = (
+                move.l10n_es_is_simplified
+                and move.country_code == "ES"
+                and move.move_type in ("out_invoice", "out_refund")
+                and not move.commercial_partner_id.vat
+                and move.commercial_partner_id.country_id in european_countries
+                and move.commercial_partner_id.country_id.code != "ES"
+                and move.partner_id != simplified_partner
+                and not move.reversed_entry_id.l10n_es_is_simplified
+            )
+            if generic_eu_rule:
+                move.l10n_es_is_simplified = False
+
     def _needs_confirmation_wizard(self):
         self.ensure_one()
         if self.move_type != "out_invoice":
@@ -36,6 +60,8 @@ class AccountMove(models.Model):
 
     def action_post(self):
         if self.env.context.get("allow_invoice_exception"):
+            return super().action_post()
+        if not self or any(move.move_type != "out_invoice" for move in self):
             return super().action_post()
         self.ensure_one()
 

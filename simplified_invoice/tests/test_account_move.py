@@ -70,6 +70,45 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         # This should not be blocked by the Spanish VAT rule.
         move.action_post()
 
+    def test_empty_move_set_can_be_posted(self):
+        self.env["account.move"].browse([]).action_post()
+
+    def test_simplified_invoice_cannot_be_rendered_as_proforma(self):
+        move = self._make_invoice(
+            self.journal_simplified,
+            vat=False,
+            price_unit=10.0,
+            simplified=True,
+        )
+
+        with self.assertRaises(UserError):
+            self.env["ir.actions.report"]._pre_render_qweb_pdf(
+                "account.account_invoices",
+                move.ids,
+                data={"proforma": True},
+            )
+
+    def test_under_limit_non_spanish_eu_customer_is_not_simplified(self):
+        non_spanish_partner = self.env["res.partner"].create({
+            "name": "French Customer",
+            "country_id": self.env.ref("base.fr").id,
+            "vat": False,
+        })
+        move = self.env["account.move"].create({
+            "move_type": "out_invoice",
+            "partner_id": non_spanish_partner.id,
+            "currency_id": self.company.currency_id.id,
+            "journal_id": self.journal_full.id,
+            "invoice_line_ids": [(0, 0, {
+                "name": "Line",
+                "quantity": 1.0,
+                "price_unit": 10.0,
+                "product_id": self.product.id,
+            })],
+        })
+
+        self.assertFalse(move.l10n_es_is_simplified)
+
     def test_simplified_invoice_for_non_spanish_customer_raises_usererror(self):
         non_spanish_partner = self.env["res.partner"].create({
             "name": "Non ES Customer",
@@ -114,7 +153,7 @@ class TestSimplifiedInvoiceWorkflow(TransactionCase):
         move.l10n_es_is_simplified = True
         with self.assertRaises(UserError):
             move.action_post()
-            
+
     def test_over_limit_simplified_invoice_raises_usererror(self):
         move = self._make_invoice(
             self.journal_simplified,
