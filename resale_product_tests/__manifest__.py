@@ -1,6 +1,6 @@
 {
     'name': 'Resale Product Tests',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'summary': 'Record product testing results and notes',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
@@ -8,8 +8,12 @@
     'depends': ['product', 'resale_base'],
     'data': [
         'security/ir.model.access.csv',
+        'data/test_result_data.xml',
         'views/resale_product_test_views.xml',
+        'views/resale_product_test_result_views.xml',
+        'views/res_config_settings_views.xml',
         'views/product_template_views.xml',
+        'views/product_product_views.xml',
     ],
     'installable': True,
     'application': False,

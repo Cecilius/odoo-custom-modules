@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_product_test_result_user,resale.product.test.result user,model_resale_product_test_result,base.group_user,1,1,1,1
 access_resale_product_test_user,resale.product.test user,model_resale_product_test,base.group_user,1,1,1,1

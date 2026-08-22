@@ -11,7 +11,7 @@
                         <list string="Product Tests" editable="bottom">
                             <field name="test_date"/>
                             <field name="tested_by_id"/>
-                            <field name="result"/>
+                            <field name="result_id"/>
                             <field name="notes"/>
                         </list>
                         <form string="Product Test">
@@ -20,7 +20,7 @@
                                     <field name="product_template_id"/>
                                     <field name="test_date"/>
                                     <field name="tested_by_id"/>
-                                    <field name="result"/>
+                                    <field name="result_id"/>
                                 </group>
                                 <field name="notes"/>
                             </sheet>
