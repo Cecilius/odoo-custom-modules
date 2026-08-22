@@ -21,7 +21,6 @@ class ProductTemplate(models.Model):
         """Triggered by the Generate RFB Code button."""
         self.ensure_one()
         
-        # If default_code already exists, open confirmation dialog wizard
         if self.default_code:
             return {
                 'name': _('Overwrite Internal Reference?'),
@@ -35,7 +34,6 @@ class ProductTemplate(models.Model):
                 }
             }
         
-        # Otherwise generate directly
         self._generate_and_assign_rfb_code()
 
     def _generate_and_assign_rfb_code(self):
