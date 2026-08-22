@@ -18,6 +18,9 @@
                        widget="selection"
                        domain="[('attribute_id', '=', condition_attribute_id)]"
                        options="{'no_create': True}"/>
+                <field name="condition_operator_text" readonly="1"/>
+                <field name="condition_listing_text" readonly="1"/>
+                <field name="condition_followup_text" readonly="1"/>
                 <field name="box_value_id"
                        widget="selection"
                        domain="[('attribute_id', '=', box_attribute_id)]"

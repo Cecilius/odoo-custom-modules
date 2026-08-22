@@ -7,8 +7,10 @@
     'license': 'LGPL-3',
     'depends': ['product', 'resale_base'],
     'data': [
+        'security/ir.model.access.csv',
         'data/brand_attribute.xml',
         'views/product_template_views.xml',
+        'views/condition_text_views.xml',
         'views/res_config_settings_views.xml',
     ],
     'installable': True,

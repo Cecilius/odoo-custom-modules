@@ -46,6 +46,31 @@ class ProductTemplate(models.Model):
         'product.attribute.value', string='Condition',
         compute='_compute_condition_value_id', inverse='_inverse_condition_value_id',
     )
+    condition_text_id = fields.Many2one(
+        'resale.condition.text',
+        string='Condition Text Mapping',
+        compute='_compute_condition_text_id',
+        store=True,
+        index=True,
+    )
+    condition_operator_text = fields.Text(
+        related='condition_text_id.operator_text',
+        string='Operator Text',
+        readonly=True,
+        store=True,
+    )
+    condition_listing_text = fields.Html(
+        related='condition_text_id.listing_text',
+        string='Listing Text',
+        readonly=True,
+        store=True,
+    )
+    condition_followup_text = fields.Text(
+        related='condition_text_id.followup_text',
+        string='Follow-up Text',
+        readonly=True,
+        store=True,
+    )
     box_value_id = fields.Many2one(
         'product.attribute.value', string='Box',
         compute='_compute_box_value_id', inverse='_inverse_box_value_id',
@@ -87,6 +112,15 @@ class ProductTemplate(models.Model):
 
     def _compute_warranty_value_id(self):
         self._compute_mapped_value('warranty')
+
+    @api.depends('condition_value_id')
+    def _compute_condition_text_id(self):
+        Mapping = self.env['resale.condition.text']
+        for template in self:
+            template.condition_text_id = Mapping.search([
+                ('condition_value_id', '=', template.condition_value_id.id),
+                ('active', '=', True),
+            ], limit=1)
 
     def _compute_mapped_value(self, key):
         for template in self:
