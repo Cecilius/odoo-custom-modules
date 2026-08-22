@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="product_attribute_brand" model="product.attribute">
+        <field name="name">Brand</field>
+        <field name="create_variant">no_variant</field>
+        <field name="display_type">select</field>
+    </record>
+    <record id="product_attribute_value_brand_other" model="product.attribute.value">
+        <field name="name">Other</field>
+        <field name="attribute_id" ref="product_attribute_brand"/>
+        <field name="sequence">999</field>
+    </record>
+</odoo>
