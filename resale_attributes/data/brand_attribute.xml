@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="product_attribute_brand" model="product.attribute">
+            <field name="name">Brand</field>
+            <field name="create_variant">no_variant</field>
+            <field name="display_type">select</field>
+        </record>
+        <record id="product_attribute_value_brand_other" model="product.attribute.value">
+            <field name="name">Other</field>
+            <field name="attribute_id" ref="product_attribute_brand"/>
+            <field name="sequence">999</field>
+        </record>
+        <record id="brand_attribute_config_parameter" model="ir.config_parameter">
+            <field name="key">resale_attributes.brand_attribute_id</field>
+            <field name="value" eval="str(ref('product_attribute_brand'))"/>
+        </record>
+        <record id="product_attribute_condition" model="product.attribute">
+            <field name="name">Condition</field>
+            <field name="create_variant">no_variant</field>
+            <field name="display_type">select</field>
+        </record>
+        <record id="product_attribute_value_condition_unknown" model="product.attribute.value">
+            <field name="name">Unknown</field>
+            <field name="attribute_id" ref="product_attribute_condition"/>
+        </record>
+        <record id="product_attribute_box" model="product.attribute">
+            <field name="name">Box</field>
+            <field name="create_variant">no_variant</field>
+            <field name="display_type">select</field>
+        </record>
+        <record id="product_attribute_value_box_unknown" model="product.attribute.value">
+            <field name="name">Unknown</field>
+            <field name="attribute_id" ref="product_attribute_box"/>
+        </record>
+        <record id="product_attribute_warranty" model="product.attribute">
+            <field name="name">Warranty</field>
+            <field name="create_variant">no_variant</field>
+            <field name="display_type">select</field>
+        </record>
+        <record id="product_attribute_value_warranty_unknown" model="product.attribute.value">
+            <field name="name">Unknown</field>
+            <field name="attribute_id" ref="product_attribute_warranty"/>
+        </record>
+        <record id="condition_attribute_config_parameter" model="ir.config_parameter">
+            <field name="key">resale_attributes.condition_attribute_id</field>
+            <field name="value" eval="str(ref('product_attribute_condition'))"/>
+        </record>
+        <record id="box_attribute_config_parameter" model="ir.config_parameter">
+            <field name="key">resale_attributes.box_attribute_id</field>
+            <field name="value" eval="str(ref('product_attribute_box'))"/>
+        </record>
+        <record id="warranty_attribute_config_parameter" model="ir.config_parameter">
+            <field name="key">resale_attributes.warranty_attribute_id</field>
+            <field name="value" eval="str(ref('product_attribute_warranty'))"/>
+        </record>
+    </data>
+</odoo>
