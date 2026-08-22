@@ -18,13 +18,11 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='categ_id']" position="after">
+        <xpath expr="//field[@name='categ_id']" position="before">
                 <field name="has_category_code" invisible="1"/>
-                <div class="mt-1" invisible="not has_category_code">
-                    <button name="action_generate_rfb_code" 
-                            type="object" 
-                            string="Generate RFB Code" 
-                            class="btn btn-sm btn-secondary"/>
+                <label for="action_generate_rfb_code" string="RFB Sequence" invisible="not has_category_code"/>
+                <div invisible="not has_category_code">
+                    <button name="action_generate_rfb_code" type="object" string="Generate" class="btn btn-sm btn-outline-primary"/>
                 </div>
             </xpath>
         </field>
