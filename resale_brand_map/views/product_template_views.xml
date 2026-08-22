@@ -9,6 +9,7 @@
                 <field name="brand_value_id"
                        widget="selection"
                        domain="[('attribute_id', '=', brand_attribute_id)]"
+                       context="{'show_attribute': False}"
                        options="{'no_create': True}"/>
             </field>
         </field>
