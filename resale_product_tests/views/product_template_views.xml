@@ -28,6 +28,9 @@
                     </field>
                 </page>
             </xpath>
+            <field name="categ_id" position="after">
+                <field name="resale_last_test_result_id" readonly="1"/>
+            </field>
         </field>
     </record>
 </odoo>
