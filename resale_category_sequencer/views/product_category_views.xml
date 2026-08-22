@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add category_code to Product Category form -->
+    <record id="product_category_form_view_inherit_rfb" model="ir.ui.view">
+        <field name="name">product.category.form.inherit.rfb</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="category_code" placeholder="e.g. 01"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add button under Category field on Product Template view -->
+    <record id="product_template_form_view_inherit_rfb_btn" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.rfb.btn</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+        <xpath expr="//field[@name='categ_id']" position="before">
+                <field name="has_category_code" invisible="1"/>
+                <label for="action_generate_rfb_code" string="RFB Sequence" invisible="not has_category_code"/>
+                <div invisible="not has_category_code">
+                    <button name="action_generate_rfb_code" type="object" string="Generate" class="btn btn-sm btn-outline-primary"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Wizard Form View for Overwrite Warning -->
+    <record id="view_product_rfb_overwrite_wizard" model="ir.ui.view">
+        <field name="name">product.rfb.overwrite.wizard.form</field>
+        <field name="model">product.rfb.overwrite.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Overwrite Warning">
+                <field name="product_id" invisible="1"/>
+                <p class="text-warning font-weight-bold">
+                    Warning: An internal reference already exists for this product:
+                </p>
+                <div class="mb-3">
+                    <strong><field name="existing_code" class="text-primary"/></strong>
+                </div>
+                <p>
+                    Are you sure you want to overwrite it with a new category sequence number?
+                </p>
+                <footer>
+                    <button name="action_confirm_overwrite" string="Yes, Overwrite" type="object" class="btn-danger"/>
+                    <button string="No, Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
