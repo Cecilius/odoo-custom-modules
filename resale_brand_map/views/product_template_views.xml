@@ -11,12 +11,6 @@
                        domain="[('attribute_id', '=', brand_attribute_id)]"
                        options="{'no_create': True}"/>
             </field>
-            <xpath expr="//page[@name='variants']//field[@name='attribute_line_ids']" position="before">
-                <field name="brand_attribute_id" invisible="1"/>
-            </xpath>
-            <xpath expr="//page[@name='variants']//field[@name='attribute_line_ids']" position="attributes">
-                <attribute name="domain">[('attribute_id', '!=', brand_attribute_id)]</attribute>
-            </xpath>
         </field>
     </record>
 </odoo>
