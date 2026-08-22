@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="result_no_issue" model="resale.product.test.result">
+        <field name="name">No Issue Found</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="result_issues_found" model="resale.product.test.result">
+        <field name="name">Issues Found</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="result_not_working" model="resale.product.test.result">
+        <field name="name">Not Working</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="result_needs_repair" model="resale.product.test.result">
+        <field name="name">Needs Repair</field>
+        <field name="sequence">40</field>
+    </record>
+</odoo>

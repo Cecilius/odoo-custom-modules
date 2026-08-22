@@ -25,14 +25,11 @@ class ResaleProductTest(models.Model):
         default=lambda self: self.env.user,
         ondelete='restrict',
     )
-    result = fields.Selection(
-        [
-            ('no_issue', 'No Issue Found'),
-            ('issues_found', 'Issues Found'),
-            ('not_working', 'Not Working'),
-            ('needs_repair', 'Needs Repair'),
-        ],
+    result_id = fields.Many2one(
+        'resale.product.test.result',
         string='Result',
         required=True,
+        ondelete='restrict',
+        domain=[('active', '=', True)],
     )
     notes = fields.Text(string='Notes')

@@ -7,7 +7,7 @@
             <list string="Product Tests">
                 <field name="test_date"/>
                 <field name="tested_by_id"/>
-                <field name="result"/>
+                <field name="result_id"/>
                 <field name="notes" optional="hide"/>
                 <field name="product_template_id" optional="hide"/>
             </list>
@@ -24,7 +24,7 @@
                         <field name="product_template_id"/>
                         <field name="test_date"/>
                         <field name="tested_by_id"/>
-                        <field name="result"/>
+                        <field name="result_id"/>
                     </group>
                     <group>
                         <field name="notes" placeholder="Describe the test or any issues found..."/>

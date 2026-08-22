@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.resale.product.tests</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="resale_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="inside">
+                <setting id="product_test_results" string="Product Test Results"
+                         help="Add, rename, reorder, archive, or remove available product test results.">
+                    <button name="%(action_resale_product_test_result)d" type="action"
+                            string="Manage Test Results" class="btn-link"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
