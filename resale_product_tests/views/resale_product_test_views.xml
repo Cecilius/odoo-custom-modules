@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="resale_product_test_view_list" model="ir.ui.view">
+        <field name="name">resale.product.test.list</field>
+        <field name="model">resale.product.test</field>
+        <field name="arch" type="xml">
+            <list string="Product Tests">
+                <field name="test_date"/>
+                <field name="tested_by_id"/>
+                <field name="result"/>
+                <field name="notes" optional="hide"/>
+                <field name="product_template_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="resale_product_test_view_form" model="ir.ui.view">
+        <field name="name">resale.product.test.form</field>
+        <field name="model">resale.product.test</field>
+        <field name="arch" type="xml">
+            <form string="Product Test">
+                <sheet>
+                    <group>
+                        <field name="product_template_id"/>
+                        <field name="test_date"/>
+                        <field name="tested_by_id"/>
+                        <field name="result"/>
+                    </group>
+                    <group>
+                        <field name="notes" placeholder="Describe the test or any issues found..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
