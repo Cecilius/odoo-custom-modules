@@ -12,11 +12,6 @@ class ResConfigSettings(models.TransientModel):
             'resale_brand_map.product_attribute_brand',
             raise_if_not_found=False,
         ),
+        domain=[('create_variant', '=', 'no_variant')],
         help='Attribute whose values are used as Brand on product templates.',
     )
-
-    def set_values(self):
-        result = super().set_values()
-        if self.brand_attribute_id:
-            self.brand_attribute_id.write({'create_variant': 'no_variant'})
-        return result
