@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class ProductCategory(models.Model):
     _inherit = 'product.category'
 
@@ -24,7 +25,9 @@ class ProductCategory(models.Model):
         for rec in self:
             if rec.category_code:
                 if not rec.category_code.isdigit() or len(rec.category_code) != 2:
-                    raise ValidationError(_("Category Code must be exactly 2 numeric digits (00-99)."))
+                    raise ValidationError(
+                        _("Category Code must be exactly 2 numeric digits (00-99).")
+                    )
 
     def _get_or_create_sequence(self):
         self.ensure_one()

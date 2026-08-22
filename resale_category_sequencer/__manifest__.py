@@ -3,7 +3,7 @@
     'name': 'Product RFB Sequence by Category',
     'version': '19.0.1.0.0',
     'category': 'Inventory/Inventory',
-    'summary': 'Generates RFB-XX-YYYYYY internal references based on 2-digit category codes.',
+    'summary': 'Generates RFB-XX-YYYYYY internal reference via button action.',
     'author': 'Reparero',
     'website': 'https://reparero.es',
     'license': 'LGPL-3',
