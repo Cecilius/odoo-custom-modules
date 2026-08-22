@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--
+        base.user_admin is noupdate, so a plain <record> override is ignored
+        on upgrades. A <function> is executed every update instead.
+    -->
+    <function model="res.users" name="write">
+        <value eval="[ref('base.user_admin')]"/>
+        <value eval="{'group_ids': [(4, ref('resale.group_resale_manager'))]}"/>
+    </function>
+</odoo>

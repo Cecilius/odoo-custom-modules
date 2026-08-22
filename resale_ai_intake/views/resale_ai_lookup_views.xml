@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_ai_lookup_input_wizard_form" model="ir.ui.view">
+        <field name="name">resale.ai.lookup.input.wizard.form</field>
+        <field name="model">resale.ai.lookup.input.wizard</field>
+        <field name="arch" type="xml">
+            <form string="AI Product Lookup">
+                <sheet>
+                    <group>
+                        <field name="ean" placeholder="EAN (13 digits)"/>
+                        <field name="upc" placeholder="UPC-A (12 digits)"/>
+                        <field name="asin" placeholder="ASIN"/>
+                        <field name="search_text" placeholder="e.g. rose pink Galaxy Watch SM-R860"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_lookup" string="Lookup" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

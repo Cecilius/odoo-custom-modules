@@ -7,3 +7,5 @@
 /es(8).po
 .DS_Store
 *.zip
+__pycache__/
+*.pyc

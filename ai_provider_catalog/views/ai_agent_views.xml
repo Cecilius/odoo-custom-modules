@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ai_agent_view_form" model="ir.ui.view">
+        <field name="name">ai.agent.form.inherit.provider.catalog</field>
+        <field name="model">ai.agent</field>
+        <field name="inherit_id" ref="ai_app.ai_agent_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='llm_model']" position="after">
+                <field name="web_search"/>
+                <field name="web_search_max_results" invisible="not web_search"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

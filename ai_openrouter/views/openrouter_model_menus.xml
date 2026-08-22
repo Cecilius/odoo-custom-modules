@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="openrouter_model_menu"
+              name="OpenRouter Models"
+              parent="ai_app.ai_config_menu"
+              action="openrouter_model_action"
+              groups="base.group_system"
+              sequence="30"/>
+</odoo>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="openrouter_model_view_list" model="ir.ui.view">
+        <field name="name">ai.openrouter.model.view.list</field>
+        <field name="model">ai.openrouter.model</field>
+        <field name="arch" type="xml">
+            <list string="Allowed OpenRouter Models" editable="bottom">
+                <field name="allowed" widget="boolean_toggle"/>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="context_length"/>
+                <field name="prompt_cost_per_million"/>
+                <field name="completion_cost_per_million"/>
+                <field name="web_search_cost" optional="hide"/>
+                <field name="supported_parameters" optional="hide"/>
+                <field name="last_seen" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="openrouter_model_view_form" model="ir.ui.view">
+        <field name="name">ai.openrouter.model.view.form</field>
+        <field name="model">ai.openrouter.model</field>
+        <field name="arch" type="xml">
+            <form string="OpenRouter Model">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <field name="allowed"/>
+                        <field name="model_id" readonly="1"/>
+                        <field name="context_length" readonly="1"/>
+                        <field name="prompt_cost_per_million" readonly="1"/>
+                        <field name="completion_cost_per_million" readonly="1"/>
+                        <field name="request_cost" readonly="1"/>
+                        <field name="web_search_cost" readonly="1"/>
+                        <field name="last_seen" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="description" readonly="1"/>
+                        <field name="input_modalities" readonly="1"/>
+                        <field name="output_modalities" readonly="1"/>
+                        <field name="supported_parameters" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="openrouter_model_action" model="ir.actions.act_window">
+        <field name="name">OpenRouter Models</field>
+        <field name="res_model">ai.openrouter.model</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>

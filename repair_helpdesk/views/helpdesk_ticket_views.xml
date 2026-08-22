@@ -1,0 +1,77 @@
+<odoo>
+    <record id="view_helpdesk_ticket_form_repair_buttons" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.repair.buttons</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Smart buttons in the native button box.
+                 They appear only for repair tickets and only when linked records exist. -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_sale_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="not x_is_repair_ticket or sale_order_count == 0">
+                    <field name="sale_order_count" string="Quotations" widget="statinfo"/>
+                </button>
+                <button name="action_view_repair_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-wrench"
+                        invisible="not x_is_repair_ticket or repair_order_count == 0">
+                    <field name="repair_order_count" string="Repair Orders" widget="statinfo"/>
+                </button>
+                <button name="action_view_shipments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="not x_is_repair_ticket or picking_count == 0">
+                    <field name="picking_count" string="Shipments" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <!-- Header buttons used only to create the next business document. -->
+            <xpath expr="//header" position="inside">
+                <button name="action_create_quotation"
+                        type="object"
+                        string="Create Quotation"
+                        class="btn-primary"
+                        invisible="not x_can_create_quotation"/>
+                <button name="action_create_repair_order"
+                        type="object"
+                        string="Create Repair Order"
+                        invisible="not x_can_create_repair_order"/>
+                <button name="action_create_incoming_picking"
+                        type="object"
+                        string="Create Incoming Shipment"
+                        invisible="not x_can_create_incoming_picking"/>
+                <button name="action_create_outgoing_picking"
+                        type="object"
+                        string="Create Outgoing Shipment"
+                        invisible="not x_can_create_outgoing_picking"/>
+            </xpath>
+
+            <!-- Extra ticket fields used by the repair workflow. -->
+            <xpath expr="//sheet" position="inside">
+                <group string="Repair Details" invisible="not x_is_repair_ticket">
+                    <group>
+                        <!-- Hidden counters kept on the form so client logic can read them if needed. -->
+                        <field name="sale_order_count" invisible="1"/>
+                        <field name="repair_order_count" invisible="1"/>
+                        <field name="picking_count" invisible="1"/>
+                        <field name="incoming_picking_count" invisible="1"/>
+                        <field name="outgoing_picking_count" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="x_device_description"/>
+                        <field name="x_serial_number"/>
+                        <field name="x_reported_issue"/>
+                        <field name="x_carrier_name"/>
+                        <field name="x_tracking_reference"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

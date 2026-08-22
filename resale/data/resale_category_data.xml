@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <function model="product.category" name="_ensure_resale_category_tree"/>
+        <function model="product.category" name="_synchronize_all_rfb_sequences"/>
+    </data>
+</odoo>
