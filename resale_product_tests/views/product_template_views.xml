@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="product_template_form_product_tests" model="ir.ui.view">
+        <field name="name">product.template.form.resale.product.tests</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Product Tests" name="resale_product_tests">
+                    <field name="resale_product_test_ids" context="{'default_product_template_id': id}">
+                        <list string="Product Tests" editable="bottom">
+                            <field name="test_date"/>
+                            <field name="tested_by_id"/>
+                            <field name="result"/>
+                            <field name="notes"/>
+                        </list>
+                        <form string="Product Test">
+                            <sheet>
+                                <group>
+                                    <field name="product_template_id"/>
+                                    <field name="test_date"/>
+                                    <field name="tested_by_id"/>
+                                    <field name="result"/>
+                                </group>
+                                <field name="notes"/>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
