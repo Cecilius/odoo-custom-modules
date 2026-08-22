@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
-    <function model="product.attribute.value" name="_ensure_brand_values_all"/>
-    <function model="product.product" name="_migrate_brand_attribute_all"/>
-</odoo>
