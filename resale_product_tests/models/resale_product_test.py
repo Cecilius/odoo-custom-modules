@@ -17,6 +17,7 @@ class ResaleProductTest(models.Model):
         string='Test Date',
         required=True,
         default=fields.Date.context_today,
+        readonly=True,
     )
     tested_by_id = fields.Many2one(
         'res.users',
