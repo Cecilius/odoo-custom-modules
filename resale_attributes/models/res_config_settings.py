@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -36,3 +36,42 @@ class ResConfigSettings(models.TransientModel):
         ),
         domain=[('create_variant', '=', 'no_variant')],
     )
+
+    @api.onchange('condition_attribute_id')
+    def _onchange_condition_attribute_id(self):
+        configured_id = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_attributes.condition_attribute_id'
+        )
+        old_id = int(configured_id) if configured_id and configured_id.isdigit() else False
+        if not old_id or old_id == self.condition_attribute_id.id:
+            return
+        mapping_count = self.env['resale.condition.text'].search_count([
+            ('condition_value_id.attribute_id', '=', old_id),
+            ('active', '=', True),
+        ])
+        old_attribute = self.env['product.attribute'].browse(old_id)
+        return {
+            'warning': {
+                'title': 'Condition attribute changed',
+                'message': (
+                    f'Changing from {old_attribute.display_name} to '
+                    f'{self.condition_attribute_id.display_name} will archive '
+                    f'{mapping_count} existing condition text mapping(s). '
+                    'They will not be deleted.'
+                ),
+            }
+        }
+
+    def set_values(self):
+        configured_id = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_attributes.condition_attribute_id'
+        )
+        old_id = int(configured_id) if configured_id and configured_id.isdigit() else False
+        new_id = self.condition_attribute_id.id
+        result = super().set_values()
+        if old_id and new_id and old_id != new_id:
+            self.env['resale.condition.text'].search([
+                ('condition_value_id.attribute_id', '=', old_id),
+                ('active', '=', True),
+            ]).write({'active': False})
+        return result
