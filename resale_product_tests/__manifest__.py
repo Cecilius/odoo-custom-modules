@@ -1,6 +1,6 @@
 {
     'name': 'Resale Product Tests',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'summary': 'Record product testing results and notes',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',

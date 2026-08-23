@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_resale_product_wizard,resale.product.wizard,model_resale_product_wizard,base.group_user,1,1,1,1
+access_resale_product_wizard_match,resale.product.wizard.match,model_resale_product_wizard_match,base.group_user,1,1,1,1
+access_resale_product_wizard_comparison,resale.product.wizard.comparison,model_resale_product_wizard_comparison,base.group_user,1,1,1,1

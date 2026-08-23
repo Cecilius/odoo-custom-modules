@@ -5,7 +5,7 @@
         <field name="model">resale.product.test</field>
         <field name="arch" type="xml">
             <list string="Product Tests">
-                <field name="test_date"/>
+                <field name="test_date" readonly="1"/>
                 <field name="tested_by_id"/>
                 <field name="result_id"/>
                 <field name="notes" optional="hide"/>
@@ -22,7 +22,7 @@
                 <sheet>
                     <group>
                         <field name="product_template_id"/>
-                        <field name="test_date"/>
+                        <field name="test_date" readonly="1"/>
                         <field name="tested_by_id"/>
                         <field name="result_id"/>
                     </group>

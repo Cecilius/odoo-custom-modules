@@ -9,7 +9,7 @@
                 <page string="Product Tests" name="resale_product_tests">
                     <field name="resale_product_test_ids" context="{'default_product_template_id': id}">
                         <list string="Product Tests" editable="bottom">
-                            <field name="test_date"/>
+                            <field name="test_date" readonly="1"/>
                             <field name="tested_by_id"/>
                             <field name="result_id"/>
                             <field name="notes"/>
@@ -18,7 +18,7 @@
                             <sheet>
                                 <group>
                                     <field name="product_template_id"/>
-                                    <field name="test_date"/>
+                                    <field name="test_date" readonly="1"/>
                                     <field name="tested_by_id"/>
                                     <field name="result_id"/>
                                 </group>
@@ -29,7 +29,7 @@
                 </page>
             </xpath>
             <field name="categ_id" position="after">
-                <field name="resale_last_test_result_id" readonly="1"/>
+                <field name="resale_last_test_result_id" readonly="1" options="{'no_open': True}"/>
             </field>
         </field>
     </record>
