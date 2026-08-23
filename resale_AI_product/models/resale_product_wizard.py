@@ -15,6 +15,18 @@ class ResaleProductWizardMatch(models.TransientModel):
     product_id = fields.Many2one('resale.product', string='Existing product', readonly=True)
 
 
+class ResaleProductWizardComparison(models.TransientModel):
+    _name = 'resale.product.wizard.comparison'
+    _description = 'Resale Product AI Comparison'
+
+    wizard_id = fields.Many2one('resale.product.wizard', required=True, ondelete='cascade')
+    field_label = fields.Char(string='Field', readonly=True)
+    ai_value = fields.Char(string='AI proposal', readonly=True)
+    product_a_value = fields.Char(string='Product A value', readonly=True)
+    product_b_value = fields.Char(string='Product B value', readonly=True)
+    product_c_value = fields.Char(string='Product C value', readonly=True)
+
+
 class ResaleProductWizard(models.TransientModel):
     _name = 'resale.product.wizard'
     _description = 'AI Resale Product Research'
@@ -24,7 +36,7 @@ class ResaleProductWizard(models.TransientModel):
     asin = fields.Char(string='ASIN')
     description = fields.Text(string='Product description')
     additional_question = fields.Text(string='Answer to AI question')
-    state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('conflict', 'Identifier conflict'), ('error', 'Research failed')], default='draft', required=True)
+    state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('conflict', 'Identifier conflict'), ('comparison', 'AI comparison'), ('error', 'Research failed')], default='draft', required=True)
     result_name = fields.Char(string='Product name', translate=True)
     result_category_id = fields.Many2one(
         'product.category', string='Product category',
@@ -49,6 +61,16 @@ class ResaleProductWizard(models.TransientModel):
         'resale.product.wizard.match', 'wizard_id', string='Identifier matches', readonly=True,
     )
     match_conflict_message = fields.Text(string='Matching conflict', readonly=True)
+    comparison_ids = fields.One2many(
+        'resale.product.wizard.comparison', 'wizard_id', string='AI comparison', readonly=True,
+    )
+    comparison_product_ids = fields.Many2many(
+        'resale.product', string='Products in comparison', readonly=True,
+    )
+    comparison_target_product_id = fields.Many2one(
+        'resale.product', string='Apply proposal to',
+        domain="[('id', 'in', comparison_product_ids)]",
+    )
     conflict_product_id = fields.Many2one('resale.product', readonly=True)
     conflict_field = fields.Selection(
         [('ean', 'EAN'), ('upc', 'UPC'), ('asin', 'ASIN')], readonly=True,
@@ -143,12 +165,18 @@ class ResaleProductWizard(models.TransientModel):
                 raise UserError(_('The product research agent failed: %s') % error) from error
             result = self._ask_agent(backup)
         self._apply_result(result)
+        if self.state == 'researched' and self._prepare_ai_comparison():
+            return self._reload()
         return self._reload()
 
     def action_create_product(self):
         self.ensure_one()
         if not self.result_name:
             raise UserError(_('Research a product and review the result before creating it.'))
+        conflicts = self._identifier_conflicts(self._result_identifiers())
+        if conflicts:
+            self._set_database_conflict(conflicts)
+            return self._reload()
         resale_product = self.env['resale.product'].create({
             'name': self.result_name,
             'category_id': self.result_category_id.id or self._default_category().id,
@@ -162,9 +190,117 @@ class ResaleProductWizard(models.TransientModel):
                 resale_product.with_context(lang=lang).write({'name': name})
         return resale_product.action_create_product()
 
+    def action_apply_ai_to_existing(self):
+        self.ensure_one()
+        if not self.comparison_target_product_id:
+            raise UserError(_('Select an existing product before applying the AI proposal.'))
+        conflicts = self._identifier_conflicts(
+            self._result_identifiers(), exclude_product=self.comparison_target_product_id,
+        )
+        if conflicts:
+            self._set_database_conflict(conflicts)
+            return self._reload()
+        target = self.comparison_target_product_id
+        values = {
+            'name': self.result_name,
+            'category_id': self.result_category_id.id,
+            'brand_value_id': self.result_brand_value_id.id,
+            'ean': self.result_ean,
+            'upc': self.result_upc,
+            'asin': self.result_asin,
+            'reference_retail_price': self.result_retail_price,
+            'launch_year': self.result_launch_year,
+        }
+        values = {
+            field_name: value for field_name, value in values.items()
+            if value not in (False, None, '', 0)
+        }
+        target.write(values)
+        for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code'):
+            name = self.with_context(lang=lang).result_name
+            if name:
+                target.with_context(lang=lang).write({'name': name})
+        return self._open_existing_product(target)
+
     def _get_agent(self, key):
         value = self.env['ir.config_parameter'].sudo().get_param(key)
         return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+
+    def _result_identifiers(self):
+        return {
+            field_name: (getattr(self, 'result_%s' % field_name) or '').strip().upper()
+            for field_name in ('ean', 'upc', 'asin')
+        }
+
+    def _identifier_conflicts(self, identifiers, exclude_product=None):
+        conflicts = self.env['resale.product']
+        for field_name, value in identifiers.items():
+            if not value:
+                continue
+            matches = self.env['resale.product'].search([(field_name, '=', value)])
+            conflicts |= matches.filtered(lambda product: not exclude_product or product != exclude_product)
+        return conflicts
+
+    def _prepare_ai_comparison(self):
+        matches = []
+        for field_name, value in self._result_identifiers().items():
+            if value:
+                product = self.env['resale.product'].search([(field_name, '=', value)], limit=1)
+                if product:
+                    matches.append(product)
+        products = self.env['resale.product'].browse({product.id for product in matches})
+        if not products:
+            return False
+        values = [
+            ('Name (%s)' % lang, self.with_context(lang=lang).result_name, 'name', lang)
+            for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code')
+        ] + [
+            ('Category', self.result_category_id.display_name, 'category_id', False),
+            ('Brand', self.result_brand_value_id.display_name, 'brand_value_id', False),
+            ('EAN', self.result_ean, 'ean', False),
+            ('UPC', self.result_upc, 'upc', False),
+            ('ASIN', self.result_asin, 'asin', False),
+            ('Reference price', self.result_retail_price, 'reference_retail_price', False),
+            ('Launch year', self.result_launch_year, 'launch_year', False),
+        ]
+        lines = [Command.clear()]
+        for field_label, ai_value, field_name, lang in values:
+            line_values = {
+                'field_label': field_label,
+                'ai_value': str(ai_value or ''),
+            }
+            for index, product in enumerate(products[:3]):
+                suffix = chr(ord('a') + index)
+                product_values = {
+                    'name': product.with_context(lang=lang).name if lang else product.name,
+                    'category_id': product.category_id.display_name,
+                    'brand_value_id': product.brand_value_id.display_name,
+                    'ean': product.ean,
+                    'upc': product.upc,
+                    'asin': product.asin,
+                    'reference_retail_price': product.reference_retail_price,
+                    'launch_year': product.launch_year,
+                }
+                line_values['product_%s_value' % suffix] = str(product_values[field_name] or '')
+            lines.append(Command.create(line_values))
+        self.comparison_ids = lines
+        self.comparison_product_ids = [Command.set(products.ids)]
+        if len(products) == 1:
+            self.comparison_target_product_id = products
+        self.match_conflict_message = _(
+            'The AI proposal contains an identifier already present in the database. Review the read-only comparison and edit the AI proposal before creating or applying it.'
+        )
+        self.state = 'comparison'
+        return True
+
+    def _set_database_conflict(self, products):
+        self._prepare_ai_comparison()
+        self.comparison_product_ids = [Command.set(products.ids)]
+        self.comparison_target_product_id = products if len(products) == 1 else False
+        self.match_conflict_message = _(
+            'The edited identifiers are still used by existing products. Review the comparison and remove or change the conflicting values.'
+        )
+        self.state = 'comparison'
 
     def _set_partial_conflict(self, product, field, supplied_value, existing_value, conflict_type, identifier_label, detail):
         self.match_line_ids = [Command.clear(), Command.create({
