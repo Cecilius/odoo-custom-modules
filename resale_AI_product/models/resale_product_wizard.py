@@ -6,6 +6,20 @@ from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.exceptions import UserError, ValidationError
 
 
+class ResearchLLMApiService(LLMApiService):
+    """Give grounded research requests a configurable timeout."""
+
+    def _request(self, *args, timeout=30, **kwargs):
+        configured_timeout = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_ai_product.request_timeout', '90'
+        )
+        try:
+            configured_timeout = max(int(configured_timeout), 30)
+        except (TypeError, ValueError):
+            configured_timeout = 90
+        return super()._request(*args, timeout=max(timeout, configured_timeout), **kwargs)
+
+
 class ResaleProductWizardMatch(models.TransientModel):
     _name = 'resale.product.wizard.match'
     _description = 'Resale Product Identifier Match'
@@ -34,10 +48,15 @@ class ResaleProductWizard(models.TransientModel):
     ean = fields.Char(string='EAN')
     upc = fields.Char(string='UPC')
     asin = fields.Char(string='ASIN')
-    description = fields.Text(string='Product description')
+    description = fields.Text(string='Product identification details')
+    exclude_description = fields.Boolean(
+        string='Exclude description from AI response',
+        help='When enabled, the agent will not research or return a product description. The identification details above are still sent.',
+    )
     additional_question = fields.Text(string='Answer to AI question')
     state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('conflict', 'Identifier conflict'), ('comparison', 'AI comparison'), ('error', 'Research failed')], default='draft', required=True)
     result_name = fields.Char(string='Product name', translate=True)
+    result_description = fields.Text(string='AI product description', translate=True)
     result_category_id = fields.Many2one(
         'product.category', string='Product category',
         domain="[('category_code', '!=', False)]",
@@ -55,8 +74,12 @@ class ResaleProductWizard(models.TransientModel):
     result_retail_price = fields.Float(string='Reference price')
     result_launch_year = fields.Char(string='Launch year')
     translation_preview = fields.Text(string='Names in installed languages', readonly=True)
+    description_translation_preview = fields.Text(
+        string='Descriptions in installed languages', readonly=True,
+    )
     ai_question = fields.Text(string='AI question', readonly=True)
     ai_response = fields.Text(string='AI response', readonly=True)
+    research_notice = fields.Text(string='Research status', readonly=True)
     match_line_ids = fields.One2many(
         'resale.product.wizard.match', 'wizard_id', string='Identifier matches', readonly=True,
     )
@@ -156,14 +179,34 @@ class ResaleProductWizard(models.TransientModel):
         if not agent:
             raise UserError(_('Configure a product research agent in Settings first.'))
         try:
-            result = self._ask_agent(agent)
-        except Exception as error:
+            with self.env.cr.savepoint():
+                result = self._ask_agent(agent)
+        except Exception as primary_error:
             backup = self._get_agent('resale_ai_product.backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
-                self.ai_response = str(error)
-                raise UserError(_('The product research agent failed: %s') % error) from error
-            result = self._ask_agent(backup)
+                self.research_notice = _(
+                    'Research agent %(agent)s (%(model)s) failed: %(error)s'
+                ) % {'agent': agent.name, 'model': agent.llm_model, 'error': primary_error}
+                self.ai_response = self.research_notice
+                raise UserError(self.research_notice) from primary_error
+            try:
+                with self.env.cr.savepoint():
+                    result = self._ask_agent(backup)
+            except Exception as backup_error:
+                self.state = 'error'
+                self.research_notice = _(
+                    'Both research agents failed. Primary %(primary_agent)s (%(primary_model)s): %(primary)s. Backup %(backup_agent)s (%(backup_model)s): %(backup)s.'
+                ) % {
+                    'primary_agent': agent.name, 'primary_model': agent.llm_model,
+                    'primary': primary_error, 'backup_agent': backup.name,
+                    'backup_model': backup.llm_model, 'backup': backup_error,
+                }
+                self.ai_response = self.research_notice
+                raise UserError(self.research_notice) from backup_error
+            self.research_notice = _(
+                'The primary research agent was unavailable. The backup research agent response is shown below.'
+            )
         self._apply_result(result)
         if self.state == 'researched' and self._prepare_ai_comparison():
             return self._reload()
@@ -179,6 +222,7 @@ class ResaleProductWizard(models.TransientModel):
             return self._reload()
         resale_product = self.env['resale.product'].create({
             'name': self.result_name,
+            'description': self.result_description,
             'category_id': self.result_category_id.id or self._default_category().id,
             'ean': self.result_ean or False, 'upc': self.result_upc or False, 'asin': self.result_asin or False,
             'reference_retail_price': self.result_retail_price, 'launch_year': self.result_launch_year or False,
@@ -186,8 +230,15 @@ class ResaleProductWizard(models.TransientModel):
         })
         for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code'):
             name = self.with_context(lang=lang).result_name
-            if name:
-                resale_product.with_context(lang=lang).write({'name': name})
+            description = self.with_context(lang=lang).result_description
+            translated_values = {
+                field_name: value for field_name, value in {
+                    'name': name,
+                    'description': description,
+                }.items() if value
+            }
+            if translated_values:
+                resale_product.with_context(lang=lang).write(translated_values)
         return resale_product.action_create_product()
 
     def action_apply_ai_to_existing(self):
@@ -203,6 +254,7 @@ class ResaleProductWizard(models.TransientModel):
         target = self.comparison_target_product_id
         values = {
             'name': self.result_name,
+            'description': self.result_description,
             'category_id': self.result_category_id.id,
             'brand_value_id': self.result_brand_value_id.id,
             'ean': self.result_ean,
@@ -218,8 +270,15 @@ class ResaleProductWizard(models.TransientModel):
         target.write(values)
         for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code'):
             name = self.with_context(lang=lang).result_name
-            if name:
-                target.with_context(lang=lang).write({'name': name})
+            description = self.with_context(lang=lang).result_description
+            translated_values = {
+                field_name: value for field_name, value in {
+                    'name': name,
+                    'description': description,
+                }.items() if value
+            }
+            if translated_values:
+                target.with_context(lang=lang).write(translated_values)
         return self._open_existing_product(target)
 
     def _get_agent(self, key):
@@ -255,6 +314,9 @@ class ResaleProductWizard(models.TransientModel):
             ('Name (%s)' % lang, self.with_context(lang=lang).result_name, 'name', lang)
             for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code')
         ] + [
+            ('Description (%s)' % lang, self.with_context(lang=lang).result_description, 'description', lang)
+            for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code')
+        ] + [
             ('Category', self.result_category_id.display_name, 'category_id', False),
             ('Brand', self.result_brand_value_id.display_name, 'brand_value_id', False),
             ('EAN', self.result_ean, 'ean', False),
@@ -273,6 +335,7 @@ class ResaleProductWizard(models.TransientModel):
                 suffix = chr(ord('a') + index)
                 product_values = {
                     'name': product.with_context(lang=lang).name if lang else product.name,
+                    'description': product.with_context(lang=lang).description if lang else product.description,
                     'category_id': product.category_id.display_name,
                     'brand_value_id': product.brand_value_id.display_name,
                     'ean': product.ean,
@@ -360,6 +423,14 @@ class ResaleProductWizard(models.TransientModel):
             'category_code': {'type': 'string'}, 'brand': {'type': 'string'}, 'ean': {'type': 'string'}, 'upc': {'type': 'string'}, 'asin': {'type': 'string'},
             'retail_price': {'type': 'number'}, 'launch_year': {'type': 'integer'},
         }, 'required': ['needs_details', 'question', 'names', 'category_code', 'brand', 'ean', 'upc', 'asin', 'retail_price', 'launch_year']}
+        if not self.exclude_description:
+            schema['properties']['descriptions'] = {'type': 'object', 'additionalProperties': {'type': 'string'}}
+            schema['required'].insert(3, 'descriptions')
+        description_template = '' if self.exclude_description else '  "descriptions": {"en_US": "Concise product description in English"},\n'
+        description_rule = (
+            'Do not return a descriptions field.' if self.exclude_description else
+            'Descriptions must contain every installed language code and should be accurate and concise.'
+        )
         prompt = _('''Research this product using web search. Never invent identifiers or prices. If input is insufficient, set needs_details=true and ask one concise question. Otherwise return all fields.
 Return ONLY one valid JSON object. Do not return Markdown fences, comments, explanations, or any other text.
 Use this exact response template and key names:
@@ -367,7 +438,7 @@ Use this exact response template and key names:
   "needs_details": false,
   "question": "",
   "names": {"en_US": "Product name in English"},
-  "category_code": "01",
+%(description_template)s  "category_code": "01",
   "brand": "Apple",
   "ean": "0190199098534",
   "upc": "190199098534",
@@ -375,7 +446,7 @@ Use this exact response template and key names:
   "retail_price": 0.0,
   "launch_year": null
 }
-Rules: names must contain every installed language code and each name must be 50 characters or fewer. Use only an allowed category_code. Use only an allowed brand, or an empty string when unknown. Use null for an unknown identifier, price, or launch year. When needs_details is true, put the single clarification question in question and still include every other template key.
+Rules: names must contain every installed language code and each name must be 50 characters or fewer. %(description_rule)s Use only an allowed category_code. Use only an allowed brand, or an empty string when unknown. Use null for an unknown identifier, price, or launch year. When needs_details is true, put the single clarification question in question and still include every other template key.
 EAN: %(ean)s
 UPC: %(upc)s
 ASIN: %(asin)s
@@ -384,10 +455,13 @@ Additional answer: %(answer)s
 Allowed categories (code: name): %(categories)s
 Allowed brands: %(brands)s
 Installed language codes: %(languages)s''') % {
-            'ean': self.ean or '', 'upc': self.upc or '', 'asin': self.asin or '', 'description': self.description or '', 'answer': self.additional_question or '',
-            'categories': ', '.join('%s: %s' % (c.category_code, c.display_name) for c in categories), 'brands': ', '.join(brands.mapped('name')), 'languages': ', '.join(languages)}
+            'ean': self.ean or '', 'upc': self.upc or '', 'asin': self.asin or '',
+            'description': self.description or '',
+            'answer': self.additional_question or '',
+            'categories': ', '.join('%s: %s' % (c.category_code, c.display_name) for c in categories), 'brands': ', '.join(brands.mapped('name')), 'languages': ', '.join(languages),
+            'description_template': description_template, 'description_rule': description_rule}
         provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
+        service = ResearchLLMApiService(self.env, provider=provider)
         response = service.request_llm(
             agent.llm_model,
             [agent.system_prompt or 'You are a careful product research agent.'],
@@ -431,6 +505,17 @@ Installed language codes: %(languages)s''') % {
                 self.with_context(lang=lang).result_name = name
                 preview.append('%s: %s' % (lang, name))
         self.translation_preview = '\n'.join(preview)
+        descriptions = {} if self.exclude_description else result.get('descriptions') or result.get('description') or {}
+        if isinstance(descriptions, str):
+            descriptions = {self.env.lang or 'en_US': descriptions}
+        description_fallback = next((str(value).strip() for value in descriptions.values() if value), '')
+        description_preview = []
+        for lang in languages:
+            description = (descriptions.get(lang) or descriptions.get(lang.split('_')[0]) or description_fallback).strip()
+            if description:
+                self.with_context(lang=lang).result_description = description
+                description_preview.append('%s: %s' % (lang, description))
+        self.description_translation_preview = '\n'.join(description_preview)
         if fallback_name and not self.result_name:
             self.result_name = fallback_name
         if not self.result_name:

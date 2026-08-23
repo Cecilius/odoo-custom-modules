@@ -16,3 +16,9 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='resale_ai_product.default_brand_value_id',
         domain="[('attribute_id', '=', brand_attribute_id)]",
     )
+    resale_ai_request_timeout = fields.Integer(
+        string='AI request timeout (seconds)',
+        config_parameter='resale_ai_product.request_timeout',
+        default=90,
+        help='Minimum timeout used for each AI research request. The minimum allowed value is 30 seconds.',
+    )

@@ -18,6 +18,9 @@
                 <setting string="Default brand">
                     <field name="resale_ai_default_brand_value_id"/>
                 </setting>
+                <setting string="AI request timeout">
+                    <field name="resale_ai_request_timeout"/>
+                </setting>
             </xpath>
         </field>
     </record>
