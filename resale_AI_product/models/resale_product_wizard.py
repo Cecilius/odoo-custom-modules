@@ -1,9 +1,18 @@
 import json
 import re
 
-from odoo import _, api, fields, models
+from odoo import _, api, Command, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.exceptions import UserError, ValidationError
+
+
+class ResaleProductWizardMatch(models.TransientModel):
+    _name = 'resale.product.wizard.match'
+    _description = 'Resale Product Identifier Match'
+
+    wizard_id = fields.Many2one('resale.product.wizard', required=True, ondelete='cascade')
+    identifier = fields.Char(string='Identifier', readonly=True)
+    product_id = fields.Many2one('resale.product', string='Existing product', readonly=True)
 
 
 class ResaleProductWizard(models.TransientModel):
@@ -15,7 +24,7 @@ class ResaleProductWizard(models.TransientModel):
     asin = fields.Char(string='ASIN')
     description = fields.Text(string='Product description')
     additional_question = fields.Text(string='Answer to AI question')
-    state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('error', 'Research failed')], default='draft', required=True)
+    state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('conflict', 'Identifier conflict'), ('error', 'Research failed')], default='draft', required=True)
     result_name = fields.Char(string='Product name', translate=True)
     result_category_id = fields.Many2one(
         'product.category', string='Product category',
@@ -31,11 +40,24 @@ class ResaleProductWizard(models.TransientModel):
     result_ean = fields.Char(string='Result EAN')
     result_upc = fields.Char(string='Result UPC')
     result_asin = fields.Char(string='Result ASIN')
-    result_retail_price = fields.Float(string='Reference retail price')
-    result_launch_year = fields.Integer(string='Launch year')
+    result_retail_price = fields.Float(string='Reference price')
+    result_launch_year = fields.Char(string='Launch year')
+    translation_preview = fields.Text(string='Names in installed languages', readonly=True)
     ai_question = fields.Text(string='AI question', readonly=True)
     ai_response = fields.Text(string='AI response', readonly=True)
-    matched_product_id = fields.Many2one('product.template', readonly=True)
+    match_line_ids = fields.One2many(
+        'resale.product.wizard.match', 'wizard_id', string='Identifier matches', readonly=True,
+    )
+    match_conflict_message = fields.Text(string='Matching conflict', readonly=True)
+    conflict_product_id = fields.Many2one('resale.product', readonly=True)
+    conflict_field = fields.Selection(
+        [('ean', 'EAN'), ('upc', 'UPC'), ('asin', 'ASIN')], readonly=True,
+    )
+    conflict_type = fields.Selection(
+        [('mismatch', 'Existing value differs'), ('missing', 'Value is missing')], readonly=True,
+    )
+    conflict_supplied_value = fields.Char(readonly=True)
+    conflict_existing_value = fields.Char(readonly=True)
 
     @api.depends()
     def _compute_brand_attribute_id(self):
@@ -55,17 +77,59 @@ class ResaleProductWizard(models.TransientModel):
     def action_research(self):
         self.ensure_one()
         self._check_input()
-        product_model = self.env['product.template']
-        domains = []
+        product_model = self.env['resale.product']
+        matches = []
+        provided_identifiers = []
         for field_name in ('ean', 'upc', 'asin'):
             value = (getattr(self, field_name) or '').strip().upper()
             if value:
-                domains.append((field_name, '=', value))
-        match = product_model.search(['|'] * (len(domains) - 1) + domains) if domains else product_model
-        if match:
-            self._fill_from_product(match[0])
-            self.state = 'matched'
+                provided_identifiers.append((field_name.upper(), value))
+                product = product_model.search([(field_name, '=', value)], limit=1)
+                if product:
+                    matches.append((field_name.upper(), value, product))
+        unique_products = {product.id: product for _, _, product in matches}
+        if len(unique_products) > 1:
+            found_identifiers = {(field_name, value) for field_name, value, _ in matches}
+            lines = [Command.clear()]
+            for field_name, value in provided_identifiers:
+                product = next(
+                    (item for match_field, match_value, item in matches
+                     if (match_field, match_value) == (field_name, value)),
+                    False,
+                )
+                lines.append(Command.create({
+                    'identifier': '%s: %s%s' % (
+                        field_name, value,
+                        '' if (field_name, value) in found_identifiers else ' (not found)',
+                    ),
+                    'product_id': product.id if product else False,
+                }))
+            self.match_line_ids = lines
+            self.match_conflict_message = _(
+                'The supplied identifiers do not consistently identify one existing product. Review the matches below.'
+            )
+            self.state = 'conflict'
             return self._reload()
+        if len(unique_products) == 1 and len(matches) != len(provided_identifiers):
+            product = next(iter(unique_products.values()))
+            for field_name, value in provided_identifiers:
+                if any((match_field, match_value) == (field_name, value) for match_field, match_value, _ in matches):
+                    continue
+                field = field_name.lower()
+                existing_value = product[field]
+                conflict_type = 'mismatch' if existing_value else 'missing'
+                identifier_label = '%s: %s' % (field_name, value)
+                detail = (
+                    _('Existing value: %s') % existing_value
+                    if existing_value else _('The existing product has no %s assigned.') % field_name
+                )
+                self._set_partial_conflict(
+                    product, field, value, existing_value, conflict_type,
+                    identifier_label, detail,
+                )
+                return self._reload()
+        if unique_products:
+            return self._open_existing_product(next(iter(unique_products.values())))
         agent = self._get_agent('resale_ai_product.research_agent_id')
         if not agent:
             raise UserError(_('Configure a product research agent in Settings first.'))
@@ -85,27 +149,64 @@ class ResaleProductWizard(models.TransientModel):
         self.ensure_one()
         if not self.result_name:
             raise UserError(_('Research a product and review the result before creating it.'))
-        if self.matched_product_id:
-            return {'type': 'ir.actions.act_window', 'res_model': 'product.template', 'res_id': self.matched_product_id.id, 'view_mode': 'form', 'target': 'current'}
-        product = self.env['product.template'].create({
+        resale_product = self.env['resale.product'].create({
             'name': self.result_name,
-            'categ_id': self.result_category_id.id or self._default_category().id,
+            'category_id': self.result_category_id.id or self._default_category().id,
             'ean': self.result_ean or False, 'upc': self.result_upc or False, 'asin': self.result_asin or False,
             'reference_retail_price': self.result_retail_price, 'launch_year': self.result_launch_year or False,
+            'brand_value_id': self.result_brand_value_id.id or False,
         })
-        if self.result_brand_value_id:
-            product.brand_value_id = self.result_brand_value_id
-        return {'type': 'ir.actions.act_window', 'res_model': 'product.template', 'res_id': product.id, 'view_mode': 'form', 'target': 'current'}
-
-    def _fill_from_product(self, product):
-        self.matched_product_id = product
-        self.result_name, self.result_category_id, self.result_brand_value_id = product.name, product.categ_id, product.brand_value_id
-        self.result_ean, self.result_upc, self.result_asin = product.ean, product.upc, product.asin
-        self.result_retail_price, self.result_launch_year = product.reference_retail_price, product.launch_year
+        for lang in self.env['res.lang'].search([('active', '=', True)]).mapped('code'):
+            name = self.with_context(lang=lang).result_name
+            if name:
+                resale_product.with_context(lang=lang).write({'name': name})
+        return resale_product.action_create_product()
 
     def _get_agent(self, key):
         value = self.env['ir.config_parameter'].sudo().get_param(key)
         return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+
+    def _set_partial_conflict(self, product, field, supplied_value, existing_value, conflict_type, identifier_label, detail):
+        self.match_line_ids = [Command.clear(), Command.create({
+            'identifier': '%s (%s)' % (identifier_label, detail), 'product_id': product.id,
+        })]
+        self.conflict_product_id = product
+        self.conflict_field = field
+        self.conflict_supplied_value = supplied_value
+        self.conflict_existing_value = existing_value or False
+        self.conflict_type = conflict_type
+        self.match_conflict_message = _(
+            'The supplied %(identifier)s does not match the existing product. Choose how to handle it.'
+        ) % {'identifier': identifier_label}
+        self.state = 'conflict'
+
+    def _resolve_partial_conflict(self, replace):
+        self.ensure_one()
+        if replace:
+            self.conflict_product_id.write({self.conflict_field: self.conflict_supplied_value})
+        return self._open_existing_product(self.conflict_product_id)
+
+    def action_keep_existing_identifier(self):
+        return self._resolve_partial_conflict(False)
+
+    def action_replace_identifier(self):
+        return self._resolve_partial_conflict(True)
+
+    def action_save_identifier(self):
+        return self._resolve_partial_conflict(True)
+
+    def action_skip_identifier(self):
+        return self._resolve_partial_conflict(False)
+
+    def _open_existing_product(self, product):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Resale Product'),
+            'res_model': 'resale.product',
+            'res_id': product.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     def _default_category(self):
         value = self.env['ir.config_parameter'].sudo().get_param('resale_ai_product.default_category_id')
@@ -187,10 +288,13 @@ Installed language codes: %(languages)s''') % {
             names = {self.env.lang or 'en_US': names}
         languages = self.env['res.lang'].search([('active', '=', True)]).mapped('code')
         fallback_name = next((str(name).strip()[:50] for name in names.values() if name), '')
+        preview = []
         for lang in languages:
             name = (names.get(lang) or names.get(lang.split('_')[0]) or fallback_name).strip()[:50]
             if name:
                 self.with_context(lang=lang).result_name = name
+                preview.append('%s: %s' % (lang, name))
+        self.translation_preview = '\n'.join(preview)
         if fallback_name and not self.result_name:
             self.result_name = fallback_name
         if not self.result_name:

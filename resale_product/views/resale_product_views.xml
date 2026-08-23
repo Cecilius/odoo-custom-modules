@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="resale_product_view_list" model="ir.ui.view">
+        <field name="name">resale.product.list</field>
+        <field name="model">resale.product</field>
+        <field name="arch" type="xml">
+            <list string="Resale Products">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="brand_value_id"/>
+                <field name="ean"/>
+                <field name="reference_retail_price"/>
+                <field name="manufacturer_id"/>
+                <field name="eu_responsible_person_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="resale_product_view_form" model="ir.ui.view">
+        <field name="name">resale.product.form</field>
+        <field name="model">resale.product</field>
+        <field name="arch" type="xml">
+            <form string="Resale Product">
+                <header>
+                    <button name="action_create_product" type="object"
+                            string="Create Product" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Resale Product"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brand_value_id"/>
+                        </group>
+                        <group>
+                            <field name="category_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Identifiers">
+                            <field name="ean"/>
+                            <field name="upc"/>
+                            <field name="asin"/>
+                        </group>
+                        <group string="Reference Price">
+                            <field name="reference_retail_price"/>
+                            <field name="reference_retail_price_updated"/>
+                            <field name="launch_year"/>
+                        </group>
+                    </group>
+                    <group string="Responsible Parties">
+                        <group>
+                            <field name="manufacturer_id"/>
+                        </group>
+                        <group>
+                            <field name="eu_responsible_person_id"/>
+                        </group>
+                    </group>
+                    <group string="Products">
+                        <field name="product_template_ids">
+                            <list>
+                                <field name="name"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Documentation" col="3">
+                        <group>
+                            <field name="description" placeholder="Describe the product..."/>
+                        </group>
+                        <group>
+                            <field name="ce_compliance" placeholder="Record CE compliance information..."/>
+                        </group>
+                        <group>
+                            <field name="safety_record" placeholder="Record safety information..."/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resale_product" model="ir.actions.act_window">
+        <field name="name">Resale Products</field>
+        <field name="res_model">resale.product</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_resale_product_root" name="Resale Products" sequence="35"/>
+    <menuitem id="menu_resale_product" name="Resale Products"
+              parent="menu_resale_product_root" action="action_resale_product" sequence="10"/>
+</odoo>
