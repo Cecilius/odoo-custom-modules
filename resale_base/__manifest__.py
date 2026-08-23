@@ -5,7 +5,7 @@
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['base', 'product'],
+    'depends': ['base', 'product', 'GPSR_product_compliance'],
     'data': [
         'views/res_config_settings_views.xml',
     ],
