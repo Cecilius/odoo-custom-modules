@@ -7,6 +7,23 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Product Tests" name="resale_product_tests">
+                    <xpath expr="//page[@name='resale_product_tests']/field[@name='resale_product_test_ids']" position="before">
+                        <group string="Condition / Box" col="2">
+                            <group>
+                                <field name="condition_value_id"
+                                    widget="selection"
+                                    domain="[('attribute_id', '=', condition_attribute_id)]"
+                                    options="{'no_create': True}"/>
+                                <field name="condition_operator_text" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="box_value_id"
+                                    widget="selection"
+                                    domain="[('attribute_id', '=', box_attribute_id)]"
+                                    options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                    </xpath>
                     <field name="resale_product_test_ids" context="{'default_product_template_id': id}">
                         <list string="Product Tests" editable="bottom">
                             <field name="test_date" readonly="1"/>

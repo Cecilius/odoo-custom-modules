@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="product_template_form_resale_product" model="ir.ui.view">
-        <field name="name">product.template.form.product.compliance</field>
+        <field name="name">product.template.form.resale.product</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
@@ -26,19 +26,21 @@
 
                 <xpath expr="//notebook" position="inside">
                     <page string="Resale Product" name="resale_product">
-                        <field name="resale_product_id" context="{'default_product_template_ids': [(4, id)]}"/>
-                        <group string="Classification" invisible="not resale_product_id">
-                            <field name="resale_product_category_id"/>
-                            <field name="resale_product_brand_value_id"/>
-                        </group>
-                        <group string="Identifiers" invisible="not resale_product_id">
-                            <field name="resale_product_ean"/>
-                            <field name="resale_product_upc"/>
-                            <field name="resale_product_asin"/>
-                        </group>
-                        <group string="Reference Retail Price" invisible="not resale_product_id">
-                            <field name="resale_product_reference_price"/>
-                            <field name="resale_product_launch_year"/>
+                        <group>
+                            <group string="Classification" name="classification" invisible="not resale_product_id">
+                                <field name="resale_product_id" context="{'default_product_template_ids': [(4, id)]}"/>
+                                <field name="resale_product_category_id"/>
+                                <field name="resale_product_brand_value_id"/>
+                            </group>
+                            <group string="Identifiers" name="identifiers" invisible="not resale_product_id">
+                                <field name="resale_product_ean"/>
+                                <field name="resale_product_upc"/>
+                                <field name="resale_product_asin"/>
+                            </group>
+                            <group string="Reference Retail Price" name="reference_retail_price" invisible="not resale_product_id">
+                                <field name="resale_product_reference_price"/>
+                                <field name="resale_product_launch_year"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>
