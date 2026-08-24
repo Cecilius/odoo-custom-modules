@@ -6,15 +6,16 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='sales']//group[@name='description']" position="after">
-                <button
-                    name="action_generate_long_listing"
-                    type="object"
-                    string="Generate Long Listing (AI)"
-                    class="oe_highlight"
-                    icon="fa-magic"
-                    help="Use the configured AI research agents to generate long listing proposals."
-                />
                 <group string="Long Listing" name="long_listing">
+                    <button
+                        colspan="2"
+                        name="action_generate_long_listing"
+                        type="object"
+                        string="Generate Long Listing (AI)"
+                        class="oe_highlight"
+                        icon="fa-magic"
+                        help="Use the configured AI research agents to generate long listing proposals."
+                    />
                     <field
                         colspan="2"
                         name="long_listing"
@@ -22,15 +23,16 @@
                         placeholder="A detailed listing description to promote your product on resale channels. Use '/' to discover more features."
                     />
                 </group>
-                <button
-                    name="action_generate_short_listing"
-                    type="object"
-                    string="Generate Short Listing (AI)"
-                    class="oe_highlight"
-                    icon="fa-magic"
-                    help="Use the configured AI agents to shorten the long listing into short listing proposals."
-                />
                 <group string="Short Listing" name="short_listing">
+                    <button
+                        colspan="2"
+                        name="action_generate_short_listing"
+                        type="object"
+                        string="Generate Short Listing (AI)"
+                        class="oe_highlight"
+                        icon="fa-magic"
+                        help="Use the configured AI agents to shorten the long listing into short listing proposals."
+                    />
                     <field
                         colspan="2"
                         name="short_listing"

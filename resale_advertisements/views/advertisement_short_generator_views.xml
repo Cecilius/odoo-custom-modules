@@ -9,23 +9,45 @@
                     <field name="product_template_id" readonly="1"/>
                     <field name="max_characters"/>
                 </group>
-                <group string="Long listing used as source">
-                    <field name="source_info" readonly="1" widget="text" nolabel="1"/>
-                </group>
-                <group string="Status" invisible="not error_message">
-                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-danger"/>
-                </group>
-                <group string="AI Proposals" invisible="state != 'proposals'">
-                    <field name="proposal_1" widget="text"/>
-                    <button name="action_use_proposal_1" type="object" string="Use Proposal 1" class="btn-primary"/>
-                    <field name="proposal_2" widget="text"/>
-                    <button name="action_use_proposal_2" type="object" string="Use Proposal 2" class="btn-primary"/>
-                    <field name="proposal_3" widget="text"/>
-                    <button name="action_use_proposal_3" type="object" string="Use Proposal 3" class="btn-primary"/>
-                </group>
+
+                <!-- Source Info -->
+                <separator string="Long listing used as source"/>
+                <field name="source_info" readonly="1" widget="text" nolabel="1" class="w-100 mb-3"/>
+
+                <!-- Status -->
+                <div invisible="not error_message" class="mb-3">
+                    <separator string="Status"/>
+                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-danger w-100"/>
+                </div>
+
+                <!-- AI Proposals (100% Full Width Stacked) -->
+                <div invisible="state != 'proposals'" class="w-100">
+                    <separator string="AI Proposals"/>
+
+                    <!-- Proposal 1 -->
+                    <separator string="Proposal 1"/>
+                    <field name="proposal_1" widget="text" nolabel="1" class="w-100 mb-2"/>
+                    <div class="mb-4">
+                        <button name="action_use_proposal_1" type="object" string="Use Proposal 1" class="btn-primary"/>
+                    </div>
+
+                    <!-- Proposal 2 -->
+                    <separator string="Proposal 2"/>
+                    <field name="proposal_2" widget="text" nolabel="1" class="w-100 mb-2"/>
+                    <div class="mb-4">
+                        <button name="action_use_proposal_2" type="object" string="Use Proposal 2" class="btn-primary"/>
+                    </div>
+
+                    <!-- Proposal 3 -->
+                    <separator string="Proposal 3"/>
+                    <field name="proposal_3" widget="text" nolabel="1" class="w-100 mb-2"/>
+                    <div class="mb-4">
+                        <button name="action_use_proposal_3" type="object" string="Use Proposal 3" class="btn-primary"/>
+                    </div>
+                </div>
+
                 <footer>
-                    <button name="action_generate" type="object" string="Generate 3 Proposals"
-                            class="btn-primary" invisible="state == 'error'"/>
+                    <button name="action_generate" type="object" string="Generate 3 Proposals" class="btn-primary" invisible="state == 'error'"/>
                     <button string="Cancel" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>
