@@ -98,6 +98,12 @@ class ResaleProductWizard(models.TransientModel):
     conflict_field = fields.Selection(
         [('ean', 'EAN'), ('upc', 'UPC'), ('asin', 'ASIN')], readonly=True,
     )
+    match_existing_product_id = fields.Many2one('resale.product', readonly=True)
+    from_template = fields.Boolean(
+        string='Launched from product template',
+        default=lambda self: self.env.context.get('from_template', False),
+        help='Set when the wizard is opened from a product.template, so a linked product.template is also created.',
+    )
     conflict_type = fields.Selection(
         [('mismatch', 'Existing value differs'), ('missing', 'Value is missing')], readonly=True,
     )
@@ -174,7 +180,9 @@ class ResaleProductWizard(models.TransientModel):
                 )
                 return self._reload()
         if unique_products:
-            return self._open_existing_product(next(iter(unique_products.values())))
+            self.match_existing_product_id = next(iter(unique_products.values()))
+            self.state = 'matched'
+            return self._reload()
         agent = self._get_agent('resale_ai_product.research_agent_id')
         if not agent:
             raise UserError(_('Configure a product research agent in Settings first.'))
@@ -239,7 +247,18 @@ class ResaleProductWizard(models.TransientModel):
             }
             if translated_values:
                 resale_product.with_context(lang=lang).write(translated_values)
-        return resale_product.action_create_product()
+        return self._open_or_create_template(resale_product)
+
+    def action_open_existing(self):
+        self.ensure_one()
+        if not self.match_existing_product_id:
+            raise UserError(_('No existing product was matched.'))
+        return self._open_or_create_template(self.match_existing_product_id)
+
+    def _open_or_create_template(self, resale_product):
+        if self.from_template:
+            return resale_product.action_create_product()
+        return self._open_existing_product(resale_product)
 
     def action_apply_ai_to_existing(self):
         self.ensure_one()
@@ -279,7 +298,7 @@ class ResaleProductWizard(models.TransientModel):
             }
             if translated_values:
                 target.with_context(lang=lang).write(translated_values)
-        return self._open_existing_product(target)
+        return self._open_or_create_template(target)
 
     def _get_agent(self, key):
         value = self.env['ir.config_parameter'].sudo().get_param(key)
