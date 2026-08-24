@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="resale_advertisement_generator_form" model="ir.ui.view">
+        <field name="name">resale.advertisement.generator.form</field>
+        <field name="model">resale.advertisement.generator</field>
+        <field name="arch" type="xml">
+            <form string="Generate Long Listing">
+                <group>
+                    <field name="product_template_id" readonly="1"/>
+                    <field name="max_characters"/>
+                </group>
+                <group string="Information sent to AI">
+                    <field name="research_info" readonly="1" widget="text" nolabel="1"/>
+                </group>
+                <group string="Status" invisible="state != 'error'">
+                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-danger"/>
+                </group>
+                <group string="Confirmation required" invisible="state != 'confirm_overwrite'">
+                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-warning"/>
+                    <button name="action_confirm_generate" type="object"
+                            string="Overwrite and Generate" class="btn-primary"/>
+                </group>
+                <group string="AI Proposals" invisible="state != 'proposals'">
+                    <field name="proposal_1" widget="text"/>
+                    <button name="action_use_proposal_1" type="object" string="Use Proposal 1" class="btn-primary"/>
+                    <field name="proposal_2" widget="text"/>
+                    <button name="action_use_proposal_2" type="object" string="Use Proposal 2" class="btn-primary"/>
+                    <field name="proposal_3" widget="text"/>
+                    <button name="action_use_proposal_3" type="object" string="Use Proposal 3" class="btn-primary"/>
+                </group>
+                <footer>
+                    <button name="action_generate" type="object" string="Generate 3 Proposals"
+                            class="btn-primary" invisible="state in ('error', 'confirm_overwrite')"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

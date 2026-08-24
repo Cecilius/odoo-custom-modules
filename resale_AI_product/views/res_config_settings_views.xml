@@ -5,22 +5,24 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="resale_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="inside">
-                <setting string="Product research agent">
-                    <field name="resale_ai_research_agent_id"/>
-                </setting>
-                <setting string="Backup research agent">
-                    <field name="resale_ai_backup_agent_id"/>
-                </setting>
-                <setting string="Default product category">
-                    <field name="resale_ai_default_category_id"/>
-                </setting>
-                <setting string="Default brand">
-                    <field name="resale_ai_default_brand_value_id"/>
-                </setting>
-                <setting string="AI request timeout">
-                    <field name="resale_ai_request_timeout"/>
-                </setting>
+            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="after">
+                <block title="AI product" name="resale_ai_setting_container">
+                    <setting string="Product research agent">
+                        <field name="resale_ai_research_agent_id"/>
+                    </setting>
+                    <setting string="Backup research agent">
+                        <field name="resale_ai_backup_agent_id"/>
+                    </setting>
+                    <setting string="Default product category">
+                        <field name="resale_ai_default_category_id"/>
+                    </setting>
+                    <setting string="Default brand">
+                        <field name="resale_ai_default_brand_value_id"/>
+                    </setting>
+                    <setting string="AI request timeout">
+                        <field name="resale_ai_request_timeout"/>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>

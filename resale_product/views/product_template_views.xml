@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="product_template_form_compliance_records" model="ir.ui.view">
+    <record id="product_template_form_resale_product" model="ir.ui.view">
         <field name="name">product.template.form.product.compliance</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="Resale Product" name="resale_product">
-                    <field name="resale_product_id"
-                           context="{'default_product_template_ids': [(4, id)]}"/>
-                    <group string="Classification" invisible="not resale_product_id">
-                        <field name="resale_product_category_id"/>
-                        <field name="resale_product_brand_value_id"/>
+            <data>
+                <xpath expr="//page[@name='sales']//group[@name='description']" position="after">
+                    <group colspan="2" string="Product Information" invisible="not resale_product_id">
+                        <!-- 2 Column Layout (Left & Right) -->
+                        <group>
+                            <field name="resale_product_manufacturer_id"/>
+                            <field name="resale_product_safety_record"/>
+                        </group>
+                        <group>
+                            <field name="resale_product_eu_responsible_person_id"/>
+                            <field name="resale_product_ce_compliance"/>
+                        </group>
+                        <!-- Full-Width Description Below -->
+                        <group>
+                            <field name="resale_product_description"/>
+                        </group>
                     </group>
-                    <group string="Identifiers" invisible="not resale_product_id">
-                        <field name="resale_product_ean"/>
-                        <field name="resale_product_upc"/>
-                        <field name="resale_product_asin"/>
-                    </group>
-                    <group string="Reference Retail Price" invisible="not resale_product_id">
-                        <field name="resale_product_reference_price"/>
-                        <field name="resale_product_launch_year"/>
-                    </group>
-                    <group string="Product Information" invisible="not resale_product_id">
-                        <field name="resale_product_description"/>
-                        <field name="resale_product_manufacturer_id"/>
-                        <field name="resale_product_eu_responsible_person_id"/>
-                        <field name="resale_product_ce_compliance"/>
-                        <field name="resale_product_safety_record"/>
-                    </group>
-                </page>
-            </xpath>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Resale Product" name="resale_product">
+                        <field name="resale_product_id" context="{'default_product_template_ids': [(4, id)]}"/>
+                        <group string="Classification" invisible="not resale_product_id">
+                            <field name="resale_product_category_id"/>
+                            <field name="resale_product_brand_value_id"/>
+                        </group>
+                        <group string="Identifiers" invisible="not resale_product_id">
+                            <field name="resale_product_ean"/>
+                            <field name="resale_product_upc"/>
+                            <field name="resale_product_asin"/>
+                        </group>
+                        <group string="Reference Retail Price" invisible="not resale_product_id">
+                            <field name="resale_product_reference_price"/>
+                            <field name="resale_product_launch_year"/>
+                        </group>
+                    </page>
+                </xpath>
+            </data>
         </field>
     </record>
 </odoo>

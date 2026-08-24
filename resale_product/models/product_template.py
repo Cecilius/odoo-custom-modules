@@ -20,12 +20,12 @@ class ProductTemplate(models.Model):
     )
     resale_product_category_id = fields.Many2one(
         related='resale_product_id.category_id',
-        string='Resale Product Category',
+        string='Product Category',
         readonly=True,
     )
     resale_product_brand_value_id = fields.Many2one(
         related='resale_product_id.brand_value_id',
-        string='Resale Product Brand',
+        string='Product Brand',
         readonly=True,
     )
     resale_product_reference_price = fields.Monetary(
@@ -37,31 +37,31 @@ class ProductTemplate(models.Model):
     resale_product_currency_id = fields.Many2one(
         'res.currency',
         related='resale_product_id.currency_id',
-        string='Resale Product Currency',
+        string='Product Currency',
         readonly=True,
     )
     resale_product_description = fields.Text(
         related='resale_product_id.description',
-        string='Resale Product Description',
+        string='Prod. Description',
         readonly=True,
     )
     resale_product_manufacturer_id = fields.Many2one(
         related='resale_product_id.manufacturer_id',
-        string='Resale Product Manufacturer',
-        readonly=True,
+        string='Manufacturer',
+        readonly=False,
     )
     resale_product_eu_responsible_person_id = fields.Many2one(
         related='resale_product_id.eu_responsible_person_id',
-        string='Resale Product EU Responsible Person',
-        readonly=True,
+        string='EU Resp. Person',
+        readonly=False,
     )
     resale_product_ce_compliance = fields.Text(
         related='resale_product_id.ce_compliance',
-        string='Resale Product CE Compliance',
-        readonly=True,
+        string='CE Compliance',
+        readonly=False,
     )
     resale_product_safety_record = fields.Text(
         related='resale_product_id.safety_record',
-        string='Resale Product Safety Record',
-        readonly=True,
+        string='Safety Record',
+        readonly=False,
     )
