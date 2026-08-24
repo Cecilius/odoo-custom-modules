@@ -18,6 +18,11 @@
                 </div>
 
                 <div invisible="state not in ('result', 'done')" class="w-100">
+                    <div invisible="same_company_note == False" class="mb-3">
+                        <separator string="Same company check"/>
+                        <field name="same_company_note" readonly="1" widget="text" nolabel="1" class="text-info w-100"/>
+                    </div>
+
                     <!-- Manufacturer -->
                     <separator string="Manufacturer contact"/>
                     <field name="manufacturer_action" class="w-100 mb-2"/>

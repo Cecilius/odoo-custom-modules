@@ -74,6 +74,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
 
     ce_compliance = fields.Text(string='CE Compliance')
     safety_record = fields.Text(string='Safety Record')
+    same_company_note = fields.Text(string='Same company check', readonly=True)
 
     @api.model
     def default_get(self, fields_list):
@@ -225,6 +226,11 @@ class ResaleAIManufacturerWizard(models.TransientModel):
 
         self._recommend_contact('manufacturer')
         self._recommend_contact('eu_responsible')
+        self.same_company_note = (
+            _('Manufacturer and EU Responsible Person appear to be the same company (common for EU '
+              'companies). They will be linked to a single contact.')
+            if self._proposals_are_same() else False
+        )
 
     def _recommend_contact(self, role):
         name = self['%s_name' % ('m' if role == 'manufacturer' else 'r')]
@@ -285,10 +291,19 @@ class ResaleAIManufacturerWizard(models.TransientModel):
         if self.safety_record:
             vals['safety_record'] = self.safety_record
 
-        manufacturer = self._resolve_contact('manufacturer')
+        manufacturer, manufacturer_new = self._resolve_contact('manufacturer')
+        eu_responsible, eu_responsible_new = self._resolve_contact('eu_responsible')
+
+        if self._proposals_are_same() and manufacturer and eu_responsible and manufacturer != eu_responsible:
+            if eu_responsible_new:
+                eu_responsible.unlink()
+                eu_responsible = manufacturer
+            elif manufacturer_new:
+                manufacturer.unlink()
+                manufacturer = eu_responsible
+
         if manufacturer:
             vals['manufacturer_id'] = manufacturer.id
-        eu_responsible = self._resolve_contact('eu_responsible')
         if eu_responsible:
             vals['eu_responsible_person_id'] = eu_responsible.id
 
@@ -300,13 +315,13 @@ class ResaleAIManufacturerWizard(models.TransientModel):
         prefix = 'm' if role == 'manufacturer' else 'r'
         action = self['%s_action' % role]
         if action == 'skip':
-            return self.env['res.partner']
+            return self.env['res.partner'], False
         if action == 'use_existing':
-            return self['%s_use_partner_id' % role]
+            return self['%s_use_partner_id' % role], False
         name = self['%s_name' % prefix]
         if not name:
-            return self.env['res.partner']
-        return self.env['res.partner'].create({
+            return self.env['res.partner'], False
+        partner = self.env['res.partner'].create({
             'name': name,
             'is_company': True,
             'street': self['%s_street' % prefix],
@@ -317,6 +332,20 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             'phone': self['%s_phone' % prefix],
             'website': self['%s_website' % prefix],
         })
+        return partner, True
+
+    def _proposals_are_same(self):
+        m_name = (self.m_name or '').strip().lower()
+        r_name = (self.r_name or '').strip().lower()
+        if m_name and r_name and m_name == r_name:
+            return True
+        m_web = (self.m_website or '').strip().lower()
+        r_web = (self.r_website or '').strip().lower()
+        m_mail = (self.m_email or '').strip().lower()
+        r_mail = (self.r_email or '').strip().lower()
+        if (m_web and m_web == r_web) or (m_mail and m_mail == r_mail):
+            return True
+        return False
 
     def _reload(self):
         return {
