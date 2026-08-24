@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="resale_product_view_form_inherit_gpsr" model="ir.ui.view">
+        <field name="name">resale.product.form.inherit.gpsr</field>
+        <field name="model">resale.product</field>
+        <field name="inherit_id" ref="resale_product.resale_product_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_find_gpsr_info" type="object"
+                        string="Find GPSR Info (AI)" class="oe_highlight" icon="fa-shield"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
