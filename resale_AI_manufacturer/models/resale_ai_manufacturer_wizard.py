@@ -226,6 +226,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
 
         self._recommend_contact('manufacturer')
         self._recommend_contact('eu_responsible')
+        self._apply_relationship_suggestions()
         if self._proposals_are_same():
             self.same_company_note = _(
                 'Manufacturer and EU Responsible Person appear to be the same company (common for EU '
@@ -262,6 +263,82 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             self[note_field] = _(
                 'No similar existing contact found. A new contact will be created unless you skip.'
             )
+
+    def _apply_relationship_suggestions(self):
+        for role in ('manufacturer', 'eu_responsible'):
+            self._suggest_known_contact(role)
+            self._suggest_related_contact(role)
+
+    def _suggest_known_contact(self, role):
+        product = self.resale_product_id
+        known = product.manufacturer_id if role == 'manufacturer' else product.eu_responsible_person_id
+        if not known:
+            return
+        candidate_field = '%s_candidate_ids' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        use_field = '%s_use_partner_id' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        action_field = '%s_action' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        note_field = '%s_note' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        existing = self[candidate_field]
+        if known not in existing:
+            self[candidate_field] = [fields.Command.set((existing | known).ids)]
+        if not self[use_field]:
+            self[use_field] = known
+            self[action_field] = 'use_existing'
+        current_note = self[note_field]
+        rel_note = _(
+            'This product already has %(role)s set to %(contact)s. It is proposed for reuse.'
+        ) % {'role': 'a manufacturer' if role == 'manufacturer' else 'an EU Responsible Person',
+             'contact': known.display_name}
+        self[note_field] = '%s\n%s' % (current_note, rel_note) if current_note else rel_note
+
+    def _suggest_related_contact(self, role):
+        product = self.resale_product_id
+        if role == 'eu_responsible':
+            anchor = product.manufacturer_id or self.manufacturer_candidate_ids[:1]
+        else:
+            anchor = product.eu_responsible_person_id or self.eu_responsible_candidate_ids[:1]
+        if not anchor:
+            return
+        if role == 'eu_responsible':
+            records = self.env['resale.product'].search([
+                ('manufacturer_id', '=', anchor.id),
+                ('eu_responsible_person_id', '!=', False),
+            ])
+            related = records.mapped('eu_responsible_person_id')
+        else:
+            records = self.env['resale.product'].search([
+                ('eu_responsible_person_id', '=', anchor.id),
+                ('manufacturer_id', '!=', False),
+            ])
+            related = records.mapped('manufacturer_id')
+        if not related:
+            return
+        counts = {}
+        for partner in related:
+            counts[partner.id] = counts.get(partner.id, 0) + 1
+        ordered = self.env['res.partner'].browse(
+            pid for pid, _ in sorted(counts.items(), key=lambda item: -item[1])
+        )
+        candidate_field = '%s_candidate_ids' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        use_field = '%s_use_partner_id' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        action_field = '%s_action' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        note_field = '%s_note' % ('manufacturer' if role == 'manufacturer' else 'eu_responsible')
+        existing = self[candidate_field]
+        merged = existing | ordered
+        if merged != existing:
+            self[candidate_field] = [fields.Command.set(merged.ids)]
+        if not self[use_field]:
+            self[use_field] = ordered[:1]
+            self[action_field] = 'use_existing'
+        anchor_name = anchor.display_name
+        top = ordered[:1].display_name
+        total = len(records)
+        rel_note = _(
+            'Based on existing records, %(anchor)s is already associated with %(contact)s in '
+            '%(count)s product(s). Consider reusing the existing contact instead of the proposal.'
+        ) % {'anchor': anchor_name, 'contact': top, 'count': total}
+        current_note = self[note_field]
+        self[note_field] = '%s\n%s' % (current_note, rel_note) if current_note else rel_note
 
     def _find_similar(self, name, email, website):
         conditions = []
