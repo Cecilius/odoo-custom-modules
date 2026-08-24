@@ -226,11 +226,18 @@ class ResaleAIManufacturerWizard(models.TransientModel):
 
         self._recommend_contact('manufacturer')
         self._recommend_contact('eu_responsible')
-        self.same_company_note = (
-            _('Manufacturer and EU Responsible Person appear to be the same company (common for EU '
-              'companies). They will be linked to a single contact.')
-            if self._proposals_are_same() else False
-        )
+        if self._proposals_are_same():
+            self.same_company_note = _(
+                'Manufacturer and EU Responsible Person appear to be the same company (common for EU '
+                'companies). They will be linked to a single contact.'
+            )
+        elif self._shared_contact_details():
+            self.same_company_note = _(
+                'Manufacturer and EU Responsible Person share a website or email. Double-check they are '
+                'not the same company before applying.'
+            )
+        else:
+            self.same_company_note = False
 
     def _recommend_contact(self, role):
         name = self['%s_name' % ('m' if role == 'manufacturer' else 'r')]
@@ -337,15 +344,14 @@ class ResaleAIManufacturerWizard(models.TransientModel):
     def _proposals_are_same(self):
         m_name = (self.m_name or '').strip().lower()
         r_name = (self.r_name or '').strip().lower()
-        if m_name and r_name and m_name == r_name:
-            return True
+        return bool(m_name and r_name and m_name == r_name)
+
+    def _shared_contact_details(self):
         m_web = (self.m_website or '').strip().lower()
         r_web = (self.r_website or '').strip().lower()
         m_mail = (self.m_email or '').strip().lower()
         r_mail = (self.r_email or '').strip().lower()
-        if (m_web and m_web == r_web) or (m_mail and m_mail == r_mail):
-            return True
-        return False
+        return bool((m_web and m_web == r_web) or (m_mail and m_mail == r_mail))
 
     def _reload(self):
         return {
