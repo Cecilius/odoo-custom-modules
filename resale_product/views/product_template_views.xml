@@ -7,21 +7,24 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//page[@name='sales']//group[@name='description']" position="after">
-                    <group colspan="2" string="Product Information" invisible="not resale_product_id">
-                        <!-- 2 Column Layout (Left & Right) -->
-                        <group>
-                            <field name="resale_product_manufacturer_id"/>
-                            <field name="resale_product_safety_record"/>
+                    <details name="resale_gpsr" colspan="2" class="mb-3">        
+                        <summary class="fw-bold cursor-pointer text-primary">GPSR information</summary>
+                        <group colspan="2" string="Product Information" invisible="not resale_product_id">
+                            <!-- 2 Column Layout (Left & Right) -->
+                            <group>
+                                <field name="resale_product_manufacturer_id"/>
+                                <field name="resale_product_safety_record"/>
+                            </group>
+                            <group>
+                                <field name="resale_product_eu_responsible_person_id"/>
+                                <field name="resale_product_ce_compliance"/>
+                            </group>
+                            <!-- Full-Width Description Below -->
+                            <group>
+                                <field name="resale_product_description"/>
+                            </group>
                         </group>
-                        <group>
-                            <field name="resale_product_eu_responsible_person_id"/>
-                            <field name="resale_product_ce_compliance"/>
-                        </group>
-                        <!-- Full-Width Description Below -->
-                        <group>
-                            <field name="resale_product_description"/>
-                        </group>
-                    </group>
+                    </details>
                 </xpath>
 
                 <xpath expr="//notebook" position="inside">

@@ -3,43 +3,62 @@
     <record id="product_template_form_listings" model="ir.ui.view">
         <field name="name">product.template.form.resale.listings</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="inherit_id" ref="resale_product.product_template_form_resale_product"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='sales']//group[@name='description']" position="after">
-                <group string="Long Listing" name="long_listing">
-                    <button
-                        colspan="2"
-                        name="action_generate_long_listing"
-                        type="object"
-                        string="Generate Long Listing (AI)"
-                        class="oe_highlight"
-                        icon="fa-magic"
-                        help="Use the configured AI research agents to generate long listing proposals."
-                    />
-                    <field
-                        colspan="2"
-                        name="long_listing"
-                        nolabel="1"
-                        placeholder="A detailed listing description to promote your product on resale channels. Use '/' to discover more features."
-                    />
-                </group>
-                <group string="Short Listing" name="short_listing">
-                    <button
-                        colspan="2"
-                        name="action_generate_short_listing"
-                        type="object"
-                        string="Generate Short Listing (AI)"
-                        class="oe_highlight"
-                        icon="fa-magic"
-                        help="Use the configured AI agents to shorten the long listing into short listing proposals."
-                    />
-                    <field
-                        colspan="2"
-                        name="short_listing"
-                        nolabel="1"
-                        placeholder="A concise listing description for resale channels."
-                    />
-                </group>
+            <xpath expr="//details[@name='resale_gpsr']" position="before">
+                <details colspan="2" class="mb-3">
+                    <summary class="fw-bold cursor-pointer text-primary">Long and short listings</summary>
+                    <group>
+                        <group string="Long Listing" name="long_listing">
+                            <button
+                                colspan="2"
+                                name="action_generate_long_listing"
+                                type="object"
+                                string="Generate Long Listing (AI)"
+                                class="oe_highlight"
+                                icon="fa-magic"
+                                help="Use the configured AI research agents to generate long listing proposals."
+                            />
+                            <field
+                                colspan="2"
+                                name="long_listing"
+                                nolabel="1"
+                                placeholder="A detailed listing description to promote your product on resale channels. Use '/' to discover more features."
+                            />
+                            <field
+                                colspan="2"
+                                name="long_listing_copy"
+                                readonly="1"
+                                nolabel="1"
+                                placeholder="Long listing + condition listing text + internal reference (copy/paste)."
+                            />
+                        </group>
+                        <group string="Short Listing" name="short_listing">
+                            <button
+                                colspan="2"
+                                name="action_generate_short_listing"
+                                type="object"
+                                string="Generate Short Listing (AI)"
+                                class="oe_highlight"
+                                icon="fa-magic"
+                                help="Use the configured AI agents to shorten the long listing into short listing proposals."
+                            />
+                            <field
+                                colspan="2"
+                                name="short_listing"
+                                nolabel="1"
+                                placeholder="A concise listing description for resale channels."
+                            />
+                            <field
+                                colspan="2"
+                                name="short_listing_copy"
+                                readonly="1"
+                                nolabel="1"
+                                placeholder="Short listing + condition listing text + internal reference (copy/paste)."
+                            />
+                        </group>
+                    </group>
+                </details>
             </xpath>
         </field>
     </record>
