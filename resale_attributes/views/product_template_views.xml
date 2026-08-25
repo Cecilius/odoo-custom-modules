@@ -3,33 +3,24 @@
     <record id="product_template_form_brand_map" model="ir.ui.view">
         <field name="name">product.template.form.resale.attributes</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="inherit_id" ref="resale_product.product_template_form_resale_product"/>
         <field name="arch" type="xml">
-            <field name="categ_id" position="after">
-                <field name="brand_attribute_id" invisible="1"/>
-                <field name="condition_attribute_id" invisible="1"/>
-                <field name="box_attribute_id" invisible="1"/>
-                <field name="warranty_attribute_id" invisible="1"/>
-                <field name="brand_value_id"
-                       widget="selection"
-                       domain="[('attribute_id', '=', brand_attribute_id)]"
-                       options="{'no_create': True}"/>
-                <field name="condition_value_id"
-                       widget="selection"
-                       domain="[('attribute_id', '=', condition_attribute_id)]"
-                       options="{'no_create': True}"/>
-                <field name="condition_operator_text" readonly="1"/>
-                <field name="condition_listing_text" readonly="1"/>
-                <field name="condition_followup_text" readonly="1"/>
-                <field name="box_value_id"
-                       widget="selection"
-                       domain="[('attribute_id', '=', box_attribute_id)]"
-                       options="{'no_create': True}"/>
-                <field name="warranty_value_id"
-                       widget="selection"
-                       domain="[('attribute_id', '=', warranty_attribute_id)]"
-                       options="{'no_create': True}"/>
-            </field>
+            <xpath expr="//group[@name='reference_retail_price']" position="after">
+                <group string="Product Attributes">
+                    <field name="brand_attribute_id" invisible="1"/>
+                    <field name="condition_attribute_id" invisible="1"/>
+                    <field name="box_attribute_id" invisible="1"/>
+                    <field name="warranty_attribute_id" invisible="1"/>
+                    <field name="brand_value_id"
+                           widget="selection"
+                           domain="[('attribute_id', '=', brand_attribute_id)]"
+                           options="{'no_create': True}"/>
+                    <field name="warranty_value_id"
+                           widget="selection"
+                           domain="[('attribute_id', '=', warranty_attribute_id)]"
+                           options="{'no_create': True}"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

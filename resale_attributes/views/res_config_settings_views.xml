@@ -5,7 +5,8 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="resale_base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="inside">
+            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="after">
+                <block title="Attributes" name="resale_attributes_setting_container">
                     <setting id="brand_attribute" string="Brand Attribute">
                         <field name="brand_attribute_id"/>
                     </setting>
@@ -18,11 +19,11 @@
                     <setting id="warranty_attribute" string="Warranty Attribute">
                         <field name="warranty_attribute_id"/>
                     </setting>
-                    <setting id="condition_text_mappings" string="Condition Texts"
-                             help="Maintain reusable operator, listing, and follow-up text for each Condition value.">
-                        <button name="%(action_resale_condition_text)d" type="action"
-                                string="Manage Condition Texts" class="btn-link"/>
+                    <setting id="condition_text_mappings" string="Condition Texts" help="Maintain reusable operator, listing, and follow-up text for each Condition value.">
+                        <button name="%(resale_attributes.action_resale_condition_text)d" type="action"
+                                string="Manage Condition Texts" class="btn-link" target="new"/>
                     </setting>
+                </block>
             </xpath>
         </field>
     </record>

@@ -31,7 +31,7 @@
                     <group>
                         <field name="operator_text" placeholder="Internal guidance for operators..."/>
                         <field name="listing_text" placeholder="Reusable customer-facing text..."/>
-                        <field name="followup_text" placeholder="Follow-up guidance..."/>
+                        <field name="followup_text" placeholder="Invoice guidance..."/>
                     </group>
                 </sheet>
             </form>

@@ -9,7 +9,7 @@
                 <setting id="product_test_results" string="Product Test Results"
                          help="Add, rename, reorder, archive, or remove available product test results.">
                     <button name="%(action_resale_product_test_result)d" type="action"
-                            string="Manage Test Results" class="btn-link"/>
+                            string="Manage Test Results" class="btn-link" target="new"/>
                 </setting>
             </xpath>
         </field>

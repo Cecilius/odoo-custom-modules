@@ -57,19 +57,19 @@ class ProductTemplate(models.Model):
         related='condition_text_id.operator_text',
         string='Operator Text',
         readonly=True,
-        store=True,
+        translate=True,
     )
-    condition_listing_text = fields.Html(
+    condition_listing_text = fields.Text(
         related='condition_text_id.listing_text',
         string='Listing Text',
         readonly=True,
-        store=True,
+        translate=True,
     )
     condition_followup_text = fields.Text(
         related='condition_text_id.followup_text',
-        string='Follow-up Text',
+        string='Invoice Text',
         readonly=True,
-        store=True,
+        translate=True,
     )
     box_value_id = fields.Many2one(
         'product.attribute.value', string='Box',

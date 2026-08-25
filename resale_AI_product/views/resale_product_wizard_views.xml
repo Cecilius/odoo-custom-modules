@@ -6,10 +6,11 @@
             <field name="research_notice" invisible="not research_notice" class="text-info"/>
             <group string="Identify product"><field name="ean"/><field name="upc"/><field name="asin"/><field name="description"/><field name="exclude_description"/><field name="additional_question" invisible="state != 'question'"/></group>
             <group string="Identifier conflict" invisible="state != 'conflict'"><field name="match_conflict_message"/><field name="match_line_ids"><list><field name="identifier"/><field name="product_id"/></list></field><field name="conflict_product_id" invisible="1"/><field name="conflict_field" invisible="1"/><field name="conflict_type" invisible="1"/><field name="conflict_supplied_value" invisible="1"/><field name="conflict_existing_value" invisible="1"/></group>
-            <group string="AI proposal" invisible="state in ('draft', 'error', 'conflict')"><field name="ai_question" invisible="state != 'question'"/><field name="result_name"/><field name="translation_preview" widget="text"/><field name="result_description" invisible="exclude_description"/><field name="description_translation_preview" widget="text" invisible="exclude_description"/><field name="result_category_id"/><field name="brand_attribute_id" invisible="1"/><field name="result_brand_value_id"/><field name="result_ean"/><field name="result_upc"/><field name="result_asin"/><field name="result_retail_price"/><field name="result_launch_year"/></group>
+            <group string="AI proposal" invisible="state in ('draft', 'error', 'conflict', 'matched')"><field name="ai_question" invisible="state != 'question'"/><field name="result_name"/><field name="translation_preview" widget="text"/><field name="result_description" invisible="exclude_description"/><field name="description_translation_preview" widget="text" invisible="exclude_description"/><field name="result_category_id"/><field name="brand_attribute_id" invisible="1"/><field name="result_brand_value_id"/><field name="result_ean"/><field name="result_upc"/><field name="result_asin"/><field name="result_retail_price"/><field name="result_launch_year"/></group>
+            <group string="Existing product found" invisible="state != 'matched'"><field name="match_existing_product_id" readonly="1"/><p invisible="not from_template">A resale product already exists for this identifier. Confirm it is the right one, then create a linked product (product.template) for it.</p><p invisible="from_template">A resale product already exists for this identifier. Confirm it is the right one, then open it.</p></group>
             <group string="Existing product comparison" invisible="state != 'comparison'"><field name="match_conflict_message"/><field name="comparison_target_product_id"/><field name="comparison_product_ids" invisible="1"/><field name="comparison_ids"><list><field name="field_label"/><field name="ai_value"/><field name="product_a_value" string="Product A"/><field name="product_b_value" string="Product B"/><field name="product_c_value" string="Product C"/></list></field></group>
             <field name="ai_response" invisible="1"/><field name="state" invisible="1"/>
-        </sheet><footer><button name="action_research" type="object" string="Research" class="btn-primary"/><button name="action_keep_existing_identifier" type="object" string="Keep existing value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'mismatch'"/><button name="action_replace_identifier" type="object" string="Replace with supplied value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'mismatch'"/><button name="action_save_identifier" type="object" string="Save supplied value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'missing'"/><button name="action_skip_identifier" type="object" string="Do not save" class="btn-secondary" invisible="state != 'conflict' or conflict_type != 'missing'"/><button name="action_create_product" type="object" string="Create product" class="btn-primary" invisible="state not in ('researched', 'comparison')"/><button name="action_apply_ai_to_existing" type="object" string="Apply AI proposal to selected product" class="btn-primary" invisible="state != 'comparison' or not comparison_target_product_id"/><button string="Cancel" special="cancel" class="btn-secondary"/></footer></form></field>
+        </sheet><footer><button name="action_research" type="object" string="Research" class="btn-primary"/><button name="action_keep_existing_identifier" type="object" string="Keep existing value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'mismatch'"/><button name="action_replace_identifier" type="object" string="Replace with supplied value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'mismatch'"/><button name="action_save_identifier" type="object" string="Save supplied value" class="btn-primary" invisible="state != 'conflict' or conflict_type != 'missing'"/><button name="action_skip_identifier" type="object" string="Do not save" class="btn-secondary" invisible="state != 'conflict' or conflict_type != 'missing'"/><button name="action_create_product" type="object" string="Create product" class="btn-primary" invisible="state not in ('researched', 'comparison')"/><button name="action_apply_ai_to_existing" type="object" string="Apply AI proposal to selected product" class="btn-primary" invisible="state != 'comparison' or not comparison_target_product_id"/><button name="action_open_existing" type="object" string="Open resale product" class="btn-primary" invisible="state != 'matched' or from_template"/><button name="action_open_existing" type="object" string="Create product" class="btn-primary" invisible="state != 'matched' or not from_template"/><button string="Cancel" special="cancel" class="btn-secondary"/></footer></form></field>
     </record>
     <record id="action_resale_product_wizard" model="ir.actions.act_window"><field name="name">AI Product Research</field><field name="res_model">resale.product.wizard</field><field name="view_mode">form</field><field name="target">new</field></record>
     <record id="resale_product_list_ai_button" model="ir.ui.view">
@@ -27,7 +28,7 @@
         </field>
     </record>
     <record id="resale_product_form_ai_button" model="ir.ui.view">
-        <field name="name">resale.product.form.ai.product.research</field>
+        <field name="name">resale.product.form.ai.product</field>
         <field name="model">resale.product</field>
         <field name="inherit_id" ref="resale_product.resale_product_view_form"/>
         <field name="arch" type="xml">
@@ -35,6 +36,34 @@
                 <button name="%(action_resale_product_wizard)d" type="action"
                         string="AI Product Research" class="oe_highlight"
                         context="{'default_ean': ean, 'default_upc': upc, 'default_asin': asin, 'default_description': description}"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_list_ai_button" model="ir.ui.view">
+        <field name="name">product.template.list.ai.product.research</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="%(action_resale_product_wizard)d" type="action"
+                            string="AI Product Research" class="oe_highlight"
+                            display="always" context="{'from_template': True}"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_form_ai_button" model="ir.ui.view">
+        <field name="name">product.template.form.ai.product.research</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="%(action_resale_product_wizard)d" type="action"
+                            string="AI Product Research" class="oe_highlight"
+                            context="{'from_template': True, 'default_description': name}"/>
+                </header>
             </xpath>
         </field>
     </record>

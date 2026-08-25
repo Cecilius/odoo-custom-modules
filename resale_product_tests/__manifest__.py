@@ -5,7 +5,7 @@
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['product', 'resale_base'],
+    'depends': ['product', 'resale_base', 'resale_attributes'],
     'data': [
         'security/ir.model.access.csv',
         'data/test_result_data.xml',
@@ -13,7 +13,6 @@
         'views/resale_product_test_result_views.xml',
         'views/res_config_settings_views.xml',
         'views/product_template_views.xml',
-        'views/product_product_views.xml',
     ],
     'installable': True,
     'application': False,

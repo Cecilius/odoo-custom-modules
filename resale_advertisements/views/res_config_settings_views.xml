@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.resale.advertisement</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="resale_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="after">
+                <block title="Advertisements" name="resale_advertisements_setting_container">
+                    <!-- Long Listing Group -->
+                    <div class="o_setting_box col-12">
+                        <h2 class="mt16">Long Listing</h2>
+                    </div>
+                    <setting string="Listing research agent">
+                        <field name="resale_advertisement_research_agent_id"/>
+                    </setting>
+                    <setting string="Backup listing research agent">
+                        <field name="resale_advertisement_backup_agent_id"/>
+                    </setting>
+                    <setting string="Long listing max characters">
+                        <field name="resale_advertisement_max_characters"/>
+                    </setting>
+
+                    <!-- Short Listing Group -->
+                    <div class="o_setting_box col-12">
+                        <h2 class="mt16">Short Listing</h2>
+                    </div>
+                    <setting string="Short listing agent">
+                        <field name="resale_advertisement_short_agent_id"/>
+                    </setting>
+                    <setting string="Backup short listing agent">
+                        <field name="resale_advertisement_backup_agent_id"/>
+                    </setting>
+                    <setting string="Short listing max characters">
+                        <field name="resale_advertisement_short_max_characters"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
