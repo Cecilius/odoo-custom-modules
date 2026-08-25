@@ -18,9 +18,9 @@ class ResaleConditionText(models.Model):
         required=True,
         ondelete='cascade',
     )
-    operator_text = fields.Text(string='Operator Text')
-    listing_text = fields.Html(string='Listing Text')
-    followup_text = fields.Text(string='Follow-up Text')
+    operator_text = fields.Text(string='Operator Text', translate=True)
+    listing_text = fields.Text(string='Listing Text', translate=True)
+    followup_text = fields.Text(string='Invoice Text', translate=True)
     active = fields.Boolean(default=True)
 
     _condition_value_unique = models.Constraint(
