@@ -29,7 +29,7 @@
                         <field name="resale_advertisement_short_agent_id"/>
                     </setting>
                     <setting string="Backup short listing agent">
-                        <field name="resale_advertisement_backup_agent_id"/>
+                        <field name="resale_advertisement_short_backup_agent_id"/>
                     </setting>
                     <setting string="Short listing max characters">
                         <field name="resale_advertisement_short_max_characters"/>
