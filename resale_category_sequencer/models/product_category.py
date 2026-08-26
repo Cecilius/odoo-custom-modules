@@ -42,7 +42,7 @@ class ProductCategory(models.Model):
                 'name': f"Product Sequence - Category {self.category_code} ({self.name})",
                 'code': seq_code,
                 'prefix': '',
-                'padding': 6,
+                'padding': 5,
                 'number_increment': 1,
                 'number_next': 1,
                 'implementation': 'standard',
