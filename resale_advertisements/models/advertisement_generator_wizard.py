@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 
 class ResaleAdvertisementGenerator(models.TransientModel):
     _name = 'resale.advertisement.generator'
-    _description = 'AI Long Listing Generator'
+    _description = 'AI Description Generator'
 
     product_template_id = fields.Many2one(
         'product.template', required=True, ondelete='cascade',
@@ -72,11 +72,11 @@ class ResaleAdvertisementGenerator(models.TransientModel):
 
     def action_generate(self):
         self.ensure_one()
-        if self.product_template_id.long_listing:
+        if self.product_template_id.description_ecommerce:
             self.state = 'confirm_overwrite'
             self.error_message = _(
-                'This product already has a long listing. Continuing will generate new '
-                'proposals and the one you choose will overwrite the current long listing.'
+                'This product already has a description. Continuing will generate new '
+                'proposals and the one you choose will overwrite the current description.'
             )
             return self._reload()
         return self._run_generation()
@@ -145,8 +145,8 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             'required': ['proposals'],
         }
         prompt = _(
-            'Generate 3 distinct, ready-to-publish long listing descriptions for the product '
-            'below, intended for resale marketplaces. Each listing must be a self-contained '
+            'Generate 3 distinct, ready-to-publish product descriptions for the product '
+            'below, intended for resale marketplaces. Each description must be a self-contained '
             'description highlighting the product\'s key features, condition, and selling points. '
             'Each proposal must differ in style and wording. '
             'Each proposal must not exceed %(max_chars)s characters. '
@@ -183,7 +183,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             text = text[:max_chars]
         escaped = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         html = '<p>%s</p>' % escaped.replace('\n', '<br/>')
-        self.product_template_id.long_listing = html
+        self.product_template_id.description_ecommerce = html
         return {'type': 'ir.actions.act_window_close'}
 
     def action_use_proposal_1(self):

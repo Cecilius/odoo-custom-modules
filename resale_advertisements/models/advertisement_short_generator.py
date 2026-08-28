@@ -15,6 +15,9 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         'product.template', required=True, ondelete='cascade',
     )
     max_characters = fields.Integer(string='Max characters', default=300)
+    target_lang_id = fields.Many2one(
+        'res.lang', string='Language', required=True, domain="[('active', '=', True)]",
+    )
     source_info = fields.Text(string='Long listing used as source', readonly=True)
     error_message = fields.Text(string='Status', readonly=True)
     proposal_1 = fields.Text(string='Proposal 1')
@@ -41,6 +44,16 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         )
         if product:
             vals['source_info'] = self._build_source_text(product)
+        if not vals.get('target_lang_id'):
+            lang_param = self.env['ir.config_parameter'].sudo().get_param(
+                'resale_advertisement.short_default_lang_id'
+            )
+            lang = self.env['res.lang'].browse(int(lang_param)).exists() if lang_param and lang_param.isdigit() else self.env['res.lang']
+            if not lang:
+                lang = self.env['res.lang'].search([('code', '=', self.env.user.lang)], limit=1)
+            if not lang:
+                lang = self.env['res.lang'].search([('active', '=', True)], limit=1)
+            vals['target_lang_id'] = lang.id if lang else False
         return vals
 
     def _get_agent(self, key):
@@ -48,8 +61,8 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
 
     def _build_source_text(self, product):
-        long_listing = product.long_listing or ''
-        return html2plaintext(long_listing).strip() if long_listing else ''
+        description = product.description_ecommerce or ''
+        return html2plaintext(description).strip() if description else ''
 
     def action_generate(self):
         self.ensure_one()
@@ -58,7 +71,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         if not source_text:
             self.state = 'error'
             self.error_message = _(
-                'The product has no long listing to shorten. Generate the long listing first.'
+                'The product has no description to shorten. Generate the description first.'
             )
             return self._reload()
         agent = self._get_agent('resale_advertisement.short_agent_id')
@@ -104,6 +117,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
 
     def _ask_agent(self, agent, source_text):
         max_chars = self.max_characters or 300
+        target_lang = self.target_lang_id.name or self.env.user.lang or 'English'
         schema = {
             'type': 'object',
             'properties': {
@@ -118,12 +132,12 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         }
         prompt = _(
             'Shorten the long listing below into 3 distinct, concise short listing descriptions '
-            'suitable for resale marketplaces. Each short listing must keep the key selling points '
-            'and be at most %(max_chars)s characters. Each proposal must differ in wording. '
-            'Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
+            'in %(lang)s, suitable for resale marketplaces. Each short listing must keep the key '
+            'selling points and be at most %(max_chars)s characters. Each proposal must differ in '
+            'wording. Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
             'Do not include Markdown fences, comments, or any other text.\n'
             'Long listing:\n%(source)s'
-        ) % {'max_chars': max_chars, 'source': source_text}
+        ) % {'lang': target_lang, 'max_chars': max_chars, 'source': source_text}
         provider = agent._get_provider()
         service = LLMApiService(self.env, provider=provider)
         response = service.request_llm(

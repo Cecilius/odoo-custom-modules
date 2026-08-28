@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="resale_advertisement_translator_form" model="ir.ui.view">
+        <field name="name">resale.advertisement.translator.form</field>
+        <field name="model">resale.advertisement.translator</field>
+        <field name="arch" type="xml">
+            <form string="Translate Description">
+                <group>
+                    <field name="product_template_id" readonly="1"/>
+                    <field name="source_lang" readonly="1"/>
+                    <field name="target_lang_id"/>
+                </group>
+
+                <separator string="Source listing (plain text)"/>
+                <field name="source_text" readonly="1" widget="text" nolabel="1" class="w-100 mb-3"/>
+
+                <div invisible="state != 'error'" class="mb-3">
+                    <separator string="Status"/>
+                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-danger w-100"/>
+                </div>
+
+                <div invisible="state != 'confirm_overwrite'" class="mb-3">
+                    <separator string="Confirmation required"/>
+                    <field name="error_message" readonly="1" widget="text" nolabel="1" class="text-warning w-100 mb-2"/>
+                    <button name="action_confirm_translate" type="object" string="Overwrite and Translate" class="btn-primary"/>
+                </div>
+
+                <div invisible="state != 'done'" class="w-100">
+                    <separator string="Translated listing"/>
+                    <field name="translated_text" readonly="1" widget="text" nolabel="1" class="w-100 mb-2"/>
+                    <button name="action_apply" type="object" string="Apply Translation" class="btn-primary"/>
+                </div>
+
+                <footer>
+                    <button name="action_translate" type="object" string="Translate"
+                            class="btn-primary"
+                            invisible="state in ('error', 'confirm_overwrite', 'done')"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
