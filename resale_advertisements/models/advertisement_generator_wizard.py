@@ -1,9 +1,12 @@
+"""Wizard for generating and safely applying long resale descriptions."""
+
 from odoo import _, api, fields, models
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 
 
 class ResaleAdvertisementGenerator(models.TransientModel):
+    """Collect product context, request proposals, and guard overwrites."""
     _name = 'resale.advertisement.generator'
     _description = 'AI Description Generator'
 
@@ -24,6 +27,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Load the configured character limit and visible AI input context."""
         vals = super().default_get(fields_list)
         raw = self.env['ir.config_parameter'].sudo().get_param(
             'resale_advertisement.max_characters', '2000'
@@ -43,6 +47,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return self.env['resale.ai.service'].get_agent(key)
 
     def _build_context_text(self, product):
+        """Build the concise product and latest-test context sent to the agent."""
         resale = product.resale_product_id
         lines = []
         if resale:
@@ -66,6 +71,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return '\n'.join(line for line in lines if line)
 
     def action_generate(self):
+        """Require confirmation when generation would replace an existing listing."""
         self.ensure_one()
         if self.product_template_id.description_ecommerce:
             self.state = 'confirm_overwrite'
@@ -81,6 +87,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return self._run_generation()
 
     def _run_generation(self):
+        """Request proposals, falling back to the configured backup agent."""
         self.ensure_one()
         context_text = self._build_context_text(self.product_template_id)
         self.research_info = context_text
@@ -126,6 +133,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return self._reload()
 
     def _ask_agent(self, agent, context_text):
+        """Ask one agent for three structured descriptions within the limit."""
         max_chars = self.max_characters or 2000
         schema = {
             'type': 'object',
@@ -162,6 +170,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_proposal(self, text):
+        """Store a selected proposal as safe HTML on the product template."""
         self.ensure_one()
         if not text:
             raise UserError(_('The selected proposal is empty.'))

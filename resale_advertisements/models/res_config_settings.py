@@ -1,7 +1,10 @@
+"""Configuration fields for advertisement, short-listing, and translation agents."""
+
 from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
+    """Store listing agents, languages, and configurable character limits."""
     _inherit = 'res.config.settings'
 
     resale_advertisement_max_characters = fields.Integer(

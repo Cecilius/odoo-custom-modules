@@ -1,7 +1,10 @@
+"""Expose shared resale-product and GPSR data on product templates."""
+
 from odoo import api, fields, models
 
 
 class ProductTemplate(models.Model):
+    """Bridge product templates to reusable resale-product records."""
     _inherit = 'product.template'
 
     resale_product_id = fields.Many2one(
@@ -91,11 +94,13 @@ class ProductTemplate(models.Model):
         'resale_product_eu_responsible_person_id.phone', 'resale_product_eu_responsible_person_id.website',
     )
     def _compute_gpsr_contact_copy(self):
+        """Build copy-ready contact lines for manufacturer and EU-responsible data."""
         for record in self:
             record.manufacturer_contact_copy = self._format_contact_line(record.resale_product_manufacturer_id)
             record.eu_responsible_contact_copy = self._format_contact_line(record.resale_product_eu_responsible_person_id)
 
     def _format_contact_line(self, partner):
+        """Format the populated partner fields into one readable contact line."""
         if not partner:
             return ''
         parts = []

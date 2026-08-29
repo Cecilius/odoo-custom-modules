@@ -1,7 +1,10 @@
+"""Settings for selecting the product attributes used by resale workflows."""
+
 from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
+    """Persist configurable attribute mappings and archive stale condition text."""
     _inherit = 'res.config.settings'
 
     brand_attribute_id = fields.Many2one(
@@ -39,6 +42,7 @@ class ResConfigSettings(models.TransientModel):
 
     @api.onchange('condition_attribute_id')
     def _onchange_condition_attribute_id(self):
+        """Warn the operator before switching away from a mapped condition attribute."""
         configured_id = self.env['ir.config_parameter'].sudo().get_param(
             'resale_attributes.condition_attribute_id'
         )
@@ -63,6 +67,7 @@ class ResConfigSettings(models.TransientModel):
         }
 
     def set_values(self):
+        """Save settings and archive mappings tied to the previous condition attribute."""
         configured_id = self.env['ir.config_parameter'].sudo().get_param(
             'resale_attributes.condition_attribute_id'
         )

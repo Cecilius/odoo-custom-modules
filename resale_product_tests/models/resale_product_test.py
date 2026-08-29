@@ -1,7 +1,10 @@
+"""Operator test records used to establish a product's latest test status."""
+
 from odoo import fields, models
 
 
 class ResaleProductTest(models.Model):
+    """A dated test result and notes entry for one product template."""
     _name = 'resale.product.test'
     _description = 'Resale Product Test'
     _order = 'test_date desc, id desc'

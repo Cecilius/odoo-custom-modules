@@ -1,3 +1,5 @@
+"""Shared resale-product identity, compliance, and identifier validation."""
+
 import re
 
 from odoo import api, fields, models
@@ -5,6 +7,7 @@ from odoo.exceptions import ValidationError
 
 
 class ProductCompliance(models.Model):
+    """A reusable product identity linked to one or more product templates."""
     _name = 'resale.product'
     _table = 'resale_product'
     _description = 'Resale Product'
@@ -90,6 +93,7 @@ class ProductCompliance(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        """Normalize identifiers and timestamp initial retail-price values."""
         for vals in vals_list:
             self._normalize_identifiers(vals)
             if (
@@ -101,6 +105,7 @@ class ProductCompliance(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
+        """Normalize updates and timestamp retail-price changes."""
         self._normalize_identifiers(vals)
         if (
             'reference_retail_price' in vals
@@ -112,6 +117,7 @@ class ProductCompliance(models.Model):
         return super().write(vals)
 
     def action_create_product(self):
+        """Create a product template linked to this resale-product record."""
         self.ensure_one()
         name_translations, _ = self.get_field_translations('name')
         values = {
@@ -144,6 +150,7 @@ class ProductCompliance(models.Model):
 
     @staticmethod
     def _normalize_identifiers(vals):
+        """Canonicalize identifiers before constraints and unique indexes run."""
         for field_name in ('ean', 'upc', 'asin'):
             if field_name in vals and isinstance(vals[field_name], str):
                 vals[field_name] = vals[field_name].strip().upper() or False
@@ -152,6 +159,7 @@ class ProductCompliance(models.Model):
 
     @staticmethod
     def _has_valid_check_digit(value):
+        """Validate the checksum used by EAN and UPC identifiers."""
         digits = [int(digit) for digit in value]
         first_weight = 3 if len(value) % 2 == 0 else 1
         checksum = sum(

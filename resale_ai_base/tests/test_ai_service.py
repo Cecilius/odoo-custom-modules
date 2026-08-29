@@ -2,11 +2,14 @@ from unittest.mock import MagicMock, patch
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
+"""Regression tests for shared AI response and provider-error handling."""
+
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase
 
 
 class TestResaleAIService(TransactionCase):
+    """Ensure provider envelopes and retryable errors are normalized consistently."""
 
     def test_parse_json_response_supports_fenced_json(self):
         result = self.env['resale.ai.service'].parse_json_response([

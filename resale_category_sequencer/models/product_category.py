@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Category-code validation and RFB sequence management."""
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
@@ -20,6 +21,7 @@ class ProductCategory(models.Model):
 
     @api.constrains('category_code')
     def _check_category_code(self):
+        """Ensure assigned category codes are exactly two decimal digits."""
         for rec in self:
             if rec.category_code:
                 if not rec.category_code.isdigit() or len(rec.category_code) != 2:
@@ -34,6 +36,7 @@ class ProductCategory(models.Model):
         return super().copy(default)
 
     def _get_or_create_sequence(self):
+        """Return the sequence associated with this category's code."""
         self.ensure_one()
         if not self.category_code:
             return None

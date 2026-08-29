@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Keep condition, box, and test-result fields together in the operator test tab. -->
     <record id="product_template_form_product_tests" model="ir.ui.view">
         <field name="name">product.template.form.resale.product.tests</field>
         <field name="model">product.template</field>

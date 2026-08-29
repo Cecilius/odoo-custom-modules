@@ -1,3 +1,5 @@
+"""Wizard for producing short listings from a saved long description."""
+
 from odoo import _, api, fields, models
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
@@ -5,6 +7,7 @@ from odoo.tools import html2plaintext
 
 
 class ResaleAdvertisementShortGenerator(models.TransientModel):
+    """Generate localized short-listing proposals with a strict length limit."""
     _name = 'resale.advertisement.short_generator'
     _description = 'AI Short Listing Generator'
 
@@ -27,6 +30,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Load the configured limit, source listing, and target language."""
         vals = super().default_get(fields_list)
         raw = self.env['ir.config_parameter'].sudo().get_param(
             'resale_advertisement.short_max_characters', '300'
@@ -56,10 +60,12 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         return self.env['resale.ai.service'].get_agent(key)
 
     def _build_source_text(self, product):
+        """Convert the product's HTML description into plain-text AI input."""
         description = product.description_ecommerce or ''
         return html2plaintext(description).strip() if description else ''
 
     def action_generate(self):
+        """Reject empty sources, then request proposals with backup fallback."""
         self.ensure_one()
         source_text = self._build_source_text(self.product_template_id)
         self.source_info = source_text
@@ -111,6 +117,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         return self._reload()
 
     def _ask_agent(self, agent, source_text):
+        """Ask one agent for three localized short listings."""
         max_chars = self.max_characters or 300
         target_lang = self.target_lang_id.name or self.env.user.lang or 'English'
         schema = {
@@ -146,6 +153,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_proposal(self, text):
+        """Store the selected, length-limited proposal as safe HTML."""
         self.ensure_one()
         if not text:
             raise UserError(_('The selected proposal is empty.'))

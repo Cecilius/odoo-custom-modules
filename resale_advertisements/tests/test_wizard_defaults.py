@@ -1,8 +1,11 @@
+"""Regression tests for advertisement wizard defaults and safety checks."""
+
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import UserError
 
 
 class TestAdvertisementWizardDefaults(TransactionCase):
+    """Verify configured limits and translation source-integrity protection."""
 
     def test_long_listing_uses_configured_max_characters(self):
         self.env['ir.config_parameter'].sudo().set_param(

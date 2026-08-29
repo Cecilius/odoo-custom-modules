@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Add shared resale identity, GPSR fields, and the operator-facing resale tab. -->
     <record id="product_template_form_resale_product" model="ir.ui.view">
         <field name="name">product.template.form.resale.product</field>
         <field name="model">product.template</field>

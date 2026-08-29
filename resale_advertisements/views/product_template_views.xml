@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- AI listing actions extend the standard sales page without changing core views. -->
     <record id="product_template_form_listings" model="ir.ui.view">
         <field name="name">product.template.form.resale.listings</field>
         <field name="model">product.template</field>

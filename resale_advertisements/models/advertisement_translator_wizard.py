@@ -1,3 +1,5 @@
+"""Wizard for translating product descriptions while preserving HTML blocks."""
+
 import json
 
 from odoo import _, api, fields, models
@@ -7,6 +9,7 @@ from odoo.tools.mail import html2plaintext
 
 
 class ResaleAdvertisementTranslator(models.TransientModel):
+    """Translate one listing and map each returned block to its source term."""
     _name = 'resale.advertisement.translator'
     _description = 'AI Description Translator'
 
@@ -30,6 +33,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Prepare source language, target language, and plain-text source content."""
         vals = super().default_get(fields_list)
         product = self.env['product.template'].browse(
             self.env.context.get('default_product_template_id')
@@ -60,11 +64,13 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         return self.env['resale.ai.service'].get_agent(key)
 
     def _translation_exists(self, lang_code):
+        """Check whether the target language already has a different translation."""
         source = self.product_template_id.description_ecommerce or ''
         translated = self.product_template_id.with_context(lang=lang_code).description_ecommerce or ''
         return bool(translated) and translated != source
 
     def action_translate(self):
+        """Require overwrite confirmation when the target translation exists."""
         self.ensure_one()
         if not self.target_lang_id:
             raise UserError(_('Select a target language.'))
@@ -81,6 +87,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         return self._run_translation()
 
     def _run_translation(self):
+        """Translate all source blocks in one request and preserve their ordering."""
         self.ensure_one()
         field = self.product_template_id._fields['description_ecommerce']
         src_html = self.product_template_id.with_context(lang=self.source_lang).description_ecommerce or ''
@@ -133,6 +140,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         return self._reload()
 
     def _ask_translate_agent_blocks(self, agent, blocks, target_language_name):
+        """Request one translated string for each numbered source block."""
         numbered = '\n'.join('%d. %s' % (i + 1, block) for i, block in enumerate(blocks))
         prompt = _(
             'Translate the following product description into %(lang)s. '
@@ -177,6 +185,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         return parts[:len(blocks)]
 
     def action_apply(self):
+        """Apply translations only if the source structure is unchanged."""
         self.ensure_one()
         if not self.translated_terms:
             raise UserError(_('No translated text to apply.'))

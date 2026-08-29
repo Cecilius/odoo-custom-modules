@@ -1,12 +1,16 @@
+"""Map configured Brand, Condition, Box, and Warranty attributes to products."""
+
 from odoo import api, fields, models, Command
 
 
 class ProductTemplate(models.Model):
+    """Expose configured attribute values through stable product fields."""
     _inherit = 'product.template'
 
     _ATTRIBUTE_KEYS = ('brand', 'condition', 'box', 'warranty')
 
     def _get_mapped_attribute(self, key):
+        """Resolve an attribute from settings, falling back to its XML ID."""
         configured_id = self.env['ir.config_parameter'].sudo().get_param(
             f'resale_attributes.{key}_attribute_id'
         )
@@ -97,6 +101,7 @@ class ProductTemplate(models.Model):
         self._compute_mapped_attribute_id('warranty')
 
     def _compute_mapped_attribute_id(self, key):
+        """Assign the configured attribute to every product in the recordset."""
         attribute = self._get_mapped_attribute(key)
         for template in self:
             setattr(template, f'{key}_attribute_id', attribute)
@@ -115,6 +120,7 @@ class ProductTemplate(models.Model):
 
     @api.depends('condition_value_id')
     def _compute_condition_text_id(self):
+        """Find the active operator/listing mapping for the selected condition."""
         Mapping = self.env['resale.condition.text']
         for template in self:
             template.condition_text_id = Mapping.search([
@@ -123,6 +129,7 @@ class ProductTemplate(models.Model):
             ], limit=1)
 
     def _compute_mapped_value(self, key):
+        """Read the first configured value from the product's attribute line."""
         for template in self:
             attribute = template._get_mapped_attribute(key)
             line = template.attribute_line_ids.filtered(
@@ -143,6 +150,7 @@ class ProductTemplate(models.Model):
         self._inverse_mapped_value('warranty')
 
     def _inverse_mapped_value(self, key):
+        """Write a selected value back to the corresponding attribute line."""
         attribute = self._get_mapped_attribute(key)
         if not attribute:
             return

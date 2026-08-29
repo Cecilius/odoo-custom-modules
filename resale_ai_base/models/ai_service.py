@@ -1,3 +1,5 @@
+"""Shared helpers for calling and normalising resale AI providers."""
+
 import json
 import re
 
@@ -17,7 +19,11 @@ class ResaleAIService(models.AbstractModel):
     _description = 'Resale AI Service Helpers'
 
     def get_agent(self, config_key):
-        """Return the configured AI agent, or an empty recordset if unset."""
+        """Return the configured AI agent, or an empty recordset if unset.
+
+        Configuration parameters store record IDs as strings, so invalid or
+        stale values are deliberately treated as an unconfigured agent.
+        """
         value = self.env['ir.config_parameter'].sudo().get_param(config_key)
         return (
             self.env['ai.agent'].browse(int(value)).exists()
@@ -42,7 +48,12 @@ class ResaleAIService(models.AbstractModel):
         self, agent, system_prompts, user_prompts, schema=None,
         service_class=LLMApiService,
     ):
-        """Call an agent and mark only provider failures as retryable."""
+        """Call an agent and mark only provider failures as retryable.
+
+        Provider ``UserError`` exceptions are converted to the shared error
+        type so each wizard can try its configured backup agent. Validation
+        and business-rule errors remain untouched and are not retried.
+        """
         provider = agent._get_provider()
         service = service_class(self.env, provider=provider)
         try:

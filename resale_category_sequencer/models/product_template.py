@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Generate product references using the category's RFB sequence."""
 from odoo import models, fields, api, _
 
 
@@ -12,6 +13,7 @@ class ProductTemplate(models.Model):
 
     @api.depends('categ_id', 'categ_id.category_code')
     def _compute_has_category_code(self):
+        """Show the RFB action only for categories with a valid code."""
         for rec in self:
             rec.has_category_code = bool(
                 rec.categ_id and rec.categ_id.category_code and len(rec.categ_id.category_code) == 2
@@ -37,6 +39,7 @@ class ProductTemplate(models.Model):
         self._generate_and_assign_rfb_code()
 
     def _generate_and_assign_rfb_code(self):
+        """Consume the category sequence and assign the next RFB reference."""
         self.ensure_one()
         if self.categ_id and self.categ_id.category_code:
             sequence = self.categ_id._get_or_create_sequence()
