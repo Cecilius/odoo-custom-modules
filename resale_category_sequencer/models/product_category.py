@@ -27,6 +27,12 @@ class ProductCategory(models.Model):
                         _("Category Code must be exactly 2 numeric digits (00-99).")
                     )
 
+    def copy(self, default=None):
+        """Duplicate a category without copying its globally unique code."""
+        default = dict(default or {})
+        default.setdefault('category_code', False)
+        return super().copy(default)
+
     def _get_or_create_sequence(self):
         self.ensure_one()
         if not self.category_code:
