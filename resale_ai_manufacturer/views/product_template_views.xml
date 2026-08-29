@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- The GPSR action is available from product templates linked to resale products. -->
     <record id="product_template_form_gpsr_button" model="ir.ui.view">
         <field name="name">product.template.form.resale.ai.manufacturer</field>
         <field name="model">product.template</field>

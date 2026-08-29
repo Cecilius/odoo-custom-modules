@@ -1,7 +1,10 @@
+"""Configuration fields for GPSR research agents."""
+
 from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
+    """Store the primary and backup manufacturer research agents."""
     _inherit = 'res.config.settings'
 
     resale_ai_manufacturer_research_agent_id = fields.Many2one(

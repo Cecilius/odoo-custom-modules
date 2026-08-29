@@ -1,3 +1,5 @@
+"""Wizard for identifying resale products and resolving identifier conflicts."""
+
 from odoo import _, api, Command, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
@@ -40,6 +42,7 @@ class ResaleProductWizardComparison(models.TransientModel):
 
 
 class ResaleProductWizard(models.TransientModel):
+    """Research products, compare matches, and create or update resale records."""
     _name = 'resale.product.wizard'
     _description = 'AI Resale Product Research'
 
@@ -119,11 +122,13 @@ class ResaleProductWizard(models.TransientModel):
 
     @api.constrains('ean', 'upc', 'asin', 'description', 'additional_question')
     def _check_input(self):
+        """Require at least one identifier, description, or follow-up question."""
         for wizard in self:
             if not any((wizard.ean, wizard.upc, wizard.asin, wizard.description, wizard.additional_question)):
                 raise ValidationError(_('Provide at least one identifier or a product description.'))
 
     def action_research(self):
+        """Resolve local matches before calling AI, including partial conflicts."""
         self.ensure_one()
         self._check_input()
         product_model = self.env['resale.product']
@@ -219,6 +224,7 @@ class ResaleProductWizard(models.TransientModel):
         return self._reload()
 
     def action_create_product(self):
+        """Create the proposed resale product and optionally its product template."""
         self.ensure_one()
         if not self.result_name:
             raise UserError(_('Research a product and review the result before creating it.'))
@@ -308,6 +314,7 @@ class ResaleProductWizard(models.TransientModel):
         }
 
     def _identifier_conflicts(self, identifiers, exclude_product=None):
+        """Find existing records that claim any supplied identifier."""
         conflicts = self.env['resale.product']
         for field_name, value in identifiers.items():
             if not value:
@@ -429,6 +436,7 @@ class ResaleProductWizard(models.TransientModel):
         return category.filtered('category_code')
 
     def _ask_agent(self, agent):
+        """Request structured product data using the configured research agent."""
         categories = self.env['product.category'].search([('category_code', '!=', False)])
         brand_id = self.env['ir.config_parameter'].sudo().get_param('resale_attributes.brand_attribute_id', '0')
         brand_attribute = self.env['product.attribute'].browse(int(brand_id)).exists() if brand_id.isdigit() else self.env['product.attribute']
@@ -491,6 +499,7 @@ Installed language codes: %(languages)s''') % {
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_result(self, result):
+        """Normalize and present the AI result for operator review."""
         if result.get('needs_details'):
             self.ai_question, self.state = result.get('question') or _('Please provide more details.'), 'question'
             return

@@ -1,9 +1,12 @@
+"""Wizard for researching GPSR manufacturer and responsible-person data."""
+
 from odoo import _, api, fields, models
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 
 
 class ResaleAIManufacturerWizard(models.TransientModel):
+    """Review AI proposals, reuse contacts, and apply compliance information."""
     _name = 'resale.ai.manufacturer.wizard'
     _description = 'AI GPSR Manufacturer & Compliance Finder'
 
@@ -75,6 +78,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Show the identifiers that will be sent to the research agent."""
         vals = super().default_get(fields_list)
         product = self.env['resale.product'].browse(
             self.env.context.get('default_resale_product_id')
@@ -99,6 +103,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
         return '\n'.join(line for line in lines if line)
 
     def action_generate(self):
+        """Research GPSR data and fall back when the primary agent is unavailable."""
         self.ensure_one()
         agent = self._get_agent('resale_ai_manufacturer.research_agent_id')
         if not agent:
@@ -130,6 +135,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
         return self._reload()
 
     def _ask_agent(self, agent, context_text):
+        """Request structured manufacturer, EU-responsible, and safety data."""
         schema = {
             'type': 'object',
             'properties': {
@@ -189,6 +195,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_result(self, result):
+        """Populate proposals and contact recommendations from the AI response."""
         manufacturer = result.get('manufacturer') or {}
         eu_responsible = result.get('eu_responsible') or {}
         self.m_name = (manufacturer.get('name') or '').strip() or False

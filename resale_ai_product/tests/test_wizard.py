@@ -1,7 +1,10 @@
+"""Regression tests for product-research matching and creation flows."""
+
 from odoo.tests.common import TransactionCase
 
 
 class TestResaleAIProductWizard(TransactionCase):
+    """Verify local matching decisions without making live AI requests."""
 
     @classmethod
     def setUpClass(cls):

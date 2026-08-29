@@ -1,11 +1,15 @@
+"""Expose GPSR research from product-template records."""
+
 from odoo import _, models
 from odoo.exceptions import UserError
 
 
 class ProductTemplate(models.Model):
+    """Open the GPSR wizard for the template's linked resale product."""
     _inherit = 'product.template'
 
     def action_find_gpsr_info(self):
+        """Open the manufacturer research wizard or explain the missing link."""
         self.ensure_one()
         if not self.resale_product_id:
             raise UserError(_(

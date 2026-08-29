@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Review research results in the wizard before creating or changing product data. -->
     <record id="resale_product_wizard_form" model="ir.ui.view">
         <field name="name">resale.product.wizard.form</field><field name="model">resale.product.wizard</field>
         <field name="arch" type="xml"><form string="AI Product Research"><sheet>

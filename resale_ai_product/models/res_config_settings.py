@@ -1,7 +1,10 @@
+"""Configuration fields for product-research AI agents and defaults."""
+
 from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
+    """Store product-research agent and default-value configuration."""
     _inherit = 'res.config.settings'
 
     resale_ai_research_agent_id = fields.Many2one('ai.agent', string='Product research agent', config_parameter='resale_ai_product.research_agent_id')
