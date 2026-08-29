@@ -1,0 +1,46 @@
+name: Resale addon tests
+
+on:
+  push:
+    branches: [resale_devel]
+  pull_request:
+    branches: [resale_devel]
+
+jobs:
+  odoo-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        options: >-
+          --health-cmd "pg_isready -U odoo -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Run resale addon tests
+        run: >-
+          docker run --rm --network host
+          -v "$PWD:/mnt/custom-addons:ro"
+          odoo:19.0
+          odoo
+          --db_host=127.0.0.1
+          --db_port=5432
+          --db_user=odoo
+          --db_password=odoo
+          --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/custom-addons
+          -d resale_ci
+          -i resale_advertisements,resale_ai_product,resale_ai_manufacturer
+          --test-enable
+          --stop-after-init
+          --http-port=8070
