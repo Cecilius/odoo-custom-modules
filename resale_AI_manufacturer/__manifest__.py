@@ -11,6 +11,7 @@
         'views/res_config_settings_views.xml',
         'views/resale_product_views.xml',
         'views/resale_ai_manufacturer_wizard_views.xml',
+        'views/product_template_views.xml',
     ],
     'installable': True,
     'application': False,
