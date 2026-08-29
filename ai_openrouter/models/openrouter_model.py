@@ -107,10 +107,12 @@ class OpenRouterModel(models.Model):
             else:
                 catalog.create(dict(values, model_id=model_id))
 
-        if seen_ids:
-            catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
-        else:
-            catalog.write({'active': False})
+        # An empty upstream response is treated as a failed/incomplete sync.
+        # Never deactivate the entire local catalog on that basis.
+        if not seen_ids:
+            raise UserError(_('OpenRouter returned no compatible models; the existing catalog was left unchanged.'))
+
+        catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
 
         _logger.info(
             'Synchronized %s OpenRouter models; %s passed Odoo AI guardrails',

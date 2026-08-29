@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import api, _, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -17,6 +17,7 @@ class ResConfigSettings(models.TransientModel):
         groups='base.group_system',
     )
 
+    @api.depends('google_key')
     def _compute_google_key_enabled(self):
         for record in self:
             record.google_key_enabled = bool(record.google_key)

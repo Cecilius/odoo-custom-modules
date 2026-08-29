@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
-from unittest.mock import patch
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.ai.utils.llm_providers import get_provider

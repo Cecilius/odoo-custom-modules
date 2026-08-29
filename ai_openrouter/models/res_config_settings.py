@@ -1,4 +1,4 @@
-from odoo import fields, models, _
+from odoo import api, fields, models, _
 
 
 class ResConfigSettings(models.TransientModel):
@@ -27,6 +27,7 @@ class ResConfigSettings(models.TransientModel):
         groups='base.group_system',
     )
 
+    @api.depends('openrouter_key')
     def _compute_openrouter_key_enabled(self):
         for record in self:
             record.openrouter_key_enabled = bool(record.openrouter_key)
