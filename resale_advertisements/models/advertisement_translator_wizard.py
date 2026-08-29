@@ -1,7 +1,7 @@
 import json
 
 from odoo import _, api, fields, models
-from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 from odoo.tools.mail import html2plaintext
 
@@ -111,7 +111,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
 
         try:
             translated_parts = _translate_all(agent)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_advertisement_backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -119,7 +119,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
                 return self._reload()
             try:
                 translated_parts = _translate_all(backup)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.error_message = _(
                     'Both translation agents failed. Primary: %(primary)s. Backup: %(backup)s.'
@@ -143,8 +143,6 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             'Respond with ONLY a JSON array of exactly %(count)d strings (no commentary, no Markdown '
             'fences), where element i is the translation of block i.\n\n%(blocks)s'
         ) % {'lang': target_language_name, 'count': len(blocks), 'blocks': numbered}
-        provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
         schema = {
             'type': 'object',
             'properties': {
@@ -157,12 +155,11 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             },
             'required': ['translations'],
         }
-        response = service.request_llm(
-            agent.llm_model,
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or _('You are a professional translator.')],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
         )
         try:
             data = self.env['resale.ai.service'].parse_json_response(response)
@@ -194,17 +191,14 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             if html2plaintext(term).strip()
         ]
         if len(source_terms) != len(translated_parts):
-            # Source changed between translation and apply; fall back to mapping the
-            # first block only to avoid duplicating the full text across blocks.
-            mapping = {}
-            if source_terms and translated_parts:
-                escaped = translated_parts[0].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                mapping[source_terms[0]] = escaped.replace('\n', '<br/>')
-        else:
-            mapping = {}
-            for term, translated in zip(source_terms, translated_parts):
-                escaped = translated.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                mapping[term] = escaped.replace('\n', '<br/>')
+            raise UserError(_(
+                'The source description changed after translation was generated. '
+                'Please translate it again.'
+            ))
+        mapping = {}
+        for term, translated in zip(source_terms, translated_parts):
+            escaped = translated.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            mapping[term] = escaped.replace('\n', '<br/>')
         self.product_template_id.update_field_translations(
             'description_ecommerce',
             {self.target_lang_id.code: mapping},

@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 from odoo.tools import html2plaintext
 
@@ -75,7 +75,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         try:
             with self.env.cr.savepoint():
                 result = self._ask_agent(agent, source_text)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_advertisement.short_backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -84,7 +84,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
             try:
                 with self.env.cr.savepoint():
                     result = self._ask_agent(backup, source_text)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.error_message = _(
                     'Both short listing agents failed. Primary: %(primary)s. Backup: %(backup)s.'
@@ -133,14 +133,11 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
             'Do not include Markdown fences, comments, or any other text.\n'
             'Long listing:\n%(source)s'
         ) % {'lang': target_lang, 'max_chars': max_chars, 'source': source_text}
-        provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
-        response = service.request_llm(
-            agent.llm_model,
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or 'You are an expert e-commerce copywriter.'],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
         )
         self.error_message = False
         try:

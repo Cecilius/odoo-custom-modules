@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 
 
@@ -108,7 +108,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
         try:
             with self.env.cr.savepoint():
                 result = self._ask_agent(agent, context_text)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_ai_manufacturer.backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -117,7 +117,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             try:
                 with self.env.cr.savepoint():
                     result = self._ask_agent(backup, context_text)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.error_message = _(
                     'Both GPSR research agents failed. Primary: %(primary)s. Backup: %(backup)s.'
@@ -176,14 +176,11 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             '- Do NOT include any of our own existing contacts or partner data; only research public information.\n'
             'Product information:\n%(context)s'
         ) % {'context': context_text}
-        provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
-        response = service.request_llm(
-            agent.llm_model,
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or 'You are a careful GPSR compliance research agent.'],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
         )
         self.error_message = False
         try:

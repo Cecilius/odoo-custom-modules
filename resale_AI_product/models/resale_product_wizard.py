@@ -1,5 +1,6 @@
 from odoo import _, api, Command, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -186,7 +187,7 @@ class ResaleProductWizard(models.TransientModel):
         try:
             with self.env.cr.savepoint():
                 result = self._ask_agent(agent)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_ai_product.backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -198,7 +199,7 @@ class ResaleProductWizard(models.TransientModel):
             try:
                 with self.env.cr.savepoint():
                     result = self._ask_agent(backup)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.research_notice = _(
                     'Both research agents failed. Primary %(primary_agent)s (%(primary_model)s): %(primary)s. Backup %(backup_agent)s (%(backup_model)s): %(backup)s.'
@@ -475,14 +476,12 @@ Installed language codes: %(languages)s''') % {
             'answer': self.additional_question or '',
             'categories': ', '.join('%s: %s' % (c.category_code, c.display_name) for c in categories), 'brands': ', '.join(brands.mapped('name')), 'languages': ', '.join(languages),
             'description_template': description_template, 'description_rule': description_rule}
-        provider = agent._get_provider()
-        service = ResearchLLMApiService(self.env, provider=provider)
-        response = service.request_llm(
-            agent.llm_model,
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or 'You are a careful product research agent.'],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
+            service_class=ResearchLLMApiService,
         )
         raw = response[-1] if response else ''
         self.ai_response = raw

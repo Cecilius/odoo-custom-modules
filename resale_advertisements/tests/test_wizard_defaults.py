@@ -1,4 +1,5 @@
 from odoo.tests.common import TransactionCase
+from odoo.exceptions import UserError
 
 
 class TestAdvertisementWizardDefaults(TransactionCase):
@@ -20,3 +21,22 @@ class TestAdvertisementWizardDefaults(TransactionCase):
             'max_characters',
         ])
         self.assertEqual(defaults['max_characters'], 88)
+
+    def test_translation_refuses_to_apply_when_source_changed(self):
+        languages = self.env['res.lang'].search([
+            ('active', '=', True), ('code', '!=', self.env.user.lang),
+        ], limit=1)
+        if not languages:
+            self.skipTest('A second active language is required for translation tests.')
+        product = self.env['product.template'].create({
+            'name': 'Translation source',
+            'description_ecommerce': '<p>Current source</p>',
+        })
+        wizard = self.env['resale.advertisement.translator'].new({
+            'product_template_id': product.id,
+            'source_lang': self.env.user.lang,
+            'target_lang_id': languages.id,
+            'translated_terms': '["first", "second"]',
+        })
+        with self.assertRaises(UserError):
+            wizard.action_apply()
