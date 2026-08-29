@@ -9,6 +9,7 @@ class ProductCategory(models.Model):
     category_code = fields.Char(
         string="Category Code (2-Digit)",
         size=2,
+        index=False,
         help="2-digit category code (00-99) used for generating internal references."
     )
 
