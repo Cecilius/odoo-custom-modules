@@ -5,7 +5,7 @@
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['product', 'resale_base', 'resale_product', 'resale_product_tests', 'resale_attributes', 'ai_provider_catalog', 'website_sale'],
+    'depends': ['resale_base', 'resale_product', 'resale_product_tests', 'resale_attributes', 'ai_provider_catalog', 'product', 'website_sale'],
     'data': [
         'security/ir.model.access.csv',
         'views/res_config_settings_views.xml',

@@ -12,13 +12,10 @@ class ProductCategory(models.Model):
         help="2-digit category code (00-99) used for generating internal references."
     )
 
-    _sql_constraints = [
-        (
-            'category_code_uniq',
-            'unique(category_code)',
-            'The Category Code must be unique across all categories!'
-        )
-    ]
+    _category_code_unique = models.Constraint(
+        'unique(category_code)',
+        'The Category Code must be unique across all categories!',
+    )
 
     @api.constrains('category_code')
     def _check_category_code(self):

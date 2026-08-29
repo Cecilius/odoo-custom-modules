@@ -28,14 +28,13 @@ class ResaleAdvertisementGenerator(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         vals = super().default_get(fields_list)
-        if not vals.get('max_characters'):
-            raw = self.env['ir.config_parameter'].sudo().get_param(
-                'resale_advertisement.max_characters', '2000'
-            )
-            try:
-                vals['max_characters'] = max(int(raw), 1)
-            except (TypeError, ValueError):
-                vals['max_characters'] = 2000
+        raw = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_advertisement.max_characters', '2000'
+        )
+        try:
+            vals['max_characters'] = max(int(raw), 1)
+        except (TypeError, ValueError):
+            vals['max_characters'] = 2000
         product = self.env['product.template'].browse(
             self.env.context.get('default_product_template_id')
         )

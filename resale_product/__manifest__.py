@@ -5,7 +5,7 @@
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['product', 'contacts', 'mail'],
+    'depends': ['resale_base', 'product', 'contacts', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/resale_product_views.xml',
