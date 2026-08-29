@@ -13,10 +13,12 @@
                             <!-- 2 Column Layout (Left & Right) -->
                             <group>
                                 <field name="resale_product_manufacturer_id"/>
+                                <field name="manufacturer_contact_copy" readonly="1"/>
                                 <field name="resale_product_safety_record"/>
                             </group>
                             <group>
                                 <field name="resale_product_eu_responsible_person_id"/>
+                                <field name="eu_responsible_contact_copy" readonly="1"/>
                                 <field name="resale_product_ce_compliance"/>
                             </group>
                             <!-- Full-Width Description Below -->
