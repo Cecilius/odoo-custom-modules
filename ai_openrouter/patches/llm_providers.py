@@ -1,5 +1,4 @@
 from odoo.addons.ai.utils import llm_providers
-from odoo.addons.ai.models import ai_agent
 
 
 OPENROUTER_LLMS = [

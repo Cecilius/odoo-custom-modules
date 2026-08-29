@@ -1,9 +1,10 @@
 from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
-from odoo.addons.ai.utils.llm_providers import get_provider, get_provider_for_embedding_model
+from odoo.addons.ai.utils.llm_providers import get_provider_for_embedding_model
 
 
 @tagged('-at_install', 'post_install')
@@ -30,14 +31,12 @@ class TestOpenRouter(TransactionCase):
                     'name': name,
                     'allowed': True,
                 })
-        self.assertEqual(
-            get_provider(self.env, 'nvidia/nemotron-3.5-lightning:free'),
-            'openrouter',
-        )
-        self.assertEqual(
-            get_provider(self.env, 'liquid/lfm-2.5-2.6b:free'),
-            'openrouter',
-        )
+        agent = self.env['ai.agent'].new({
+            'llm_model': 'nvidia/nemotron-3.5-lightning:free',
+        })
+        self.assertEqual(agent._get_provider(), 'openrouter')
+        agent.llm_model = 'liquid/lfm-2.5-2.6b:free'
+        self.assertEqual(agent._get_provider(), 'openrouter')
         self.assertEqual(
             get_provider_for_embedding_model(self.env, 'openai/text-embedding-3-small'),
             'openrouter',
@@ -185,7 +184,8 @@ class TestOpenRouter(TransactionCase):
             ('provider/supported-model', 'Supported model'),
             self.env['ai.openrouter.model'].get_selection(),
         )
-        self.assertEqual(get_provider(self.env, 'provider/supported-model'), 'openrouter')
+        agent = self.env['ai.agent'].new({'llm_model': 'provider/supported-model'})
+        self.assertEqual(agent._get_provider(), 'openrouter')
 
         request.assert_called_once()
         self.assertEqual(request.call_args.kwargs['endpoint'], '/models')
@@ -209,3 +209,66 @@ class TestOpenRouter(TransactionCase):
             'id': 'web',
             'max_results': 5,
         }])
+
+    @patch.object(LLMApiService, '_request')
+    def test_existing_disallowed_model_remains_selectable(self, request):
+        request.return_value = {
+            'data': [{
+                'id': 'provider/migrating-model',
+                'name': 'Migrating model',
+                'architecture': {'input_modalities': ['text'], 'output_modalities': ['text']},
+                'supported_parameters': ['tools'],
+            }],
+            'links': {'next': None},
+        }
+        self.env['ai.openrouter.model'].action_sync_models()
+        model = self.env['ai.openrouter.model'].search([
+            ('model_id', '=', 'provider/migrating-model'),
+        ])
+        agent = self.env['ai.agent'].create({
+            'name': 'Migration test agent',
+            'llm_model': model.model_id,
+        })
+        model.write({'active': False, 'allowed': False})
+
+        self.assertIn(
+            (model.model_id, model.name),
+            self.env['ai.agent']._fields['llm_model'].selection(self.env['ai.agent']),
+        )
+        agent.unlink()
+
+    @patch.object(LLMApiService, '_request')
+    def test_sync_preserves_omitted_prices(self, request):
+        model_payload = {
+            'id': 'provider/priced-model',
+            'name': 'Priced model',
+            'architecture': {'input_modalities': ['text'], 'output_modalities': ['text']},
+            'supported_parameters': ['tools'],
+            'pricing': {'prompt': '0.000001', 'completion': '0.000002'},
+        }
+        request.return_value = {'data': [model_payload], 'links': {'next': None}}
+        self.env['ai.openrouter.model'].action_sync_models()
+        model = self.env['ai.openrouter.model'].search([
+            ('model_id', '=', 'provider/priced-model'),
+        ])
+
+        model_payload.pop('pricing')
+        self.env['ai.openrouter.model'].action_sync_models()
+
+        self.assertEqual(model.prompt_cost_per_million, 1)
+        self.assertEqual(model.completion_cost_per_million, 2)
+
+    @patch.object(LLMApiService, '_request')
+    def test_empty_model_sync_is_reported(self, request):
+        request.return_value = {'data': [], 'links': {'next': None}}
+
+        with self.assertRaises(UserError):
+            self.env['ai.openrouter.model'].action_sync_models()
+
+    @patch.object(LLMApiService, '_request')
+    def test_invalid_chat_response_is_reported(self, request):
+        request.return_value = {'choices': []}
+        service = LLMApiService(self.env, provider='openrouter')
+
+        with self.assertRaises(UserError):
+            service.request_llm('provider/model', [], ['Hello'])

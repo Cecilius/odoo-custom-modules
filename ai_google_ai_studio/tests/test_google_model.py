@@ -1,9 +1,10 @@
 from unittest.mock import patch
 
+import requests
 from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
-from odoo.addons.ai.utils.llm_providers import get_provider
 
 
 @tagged('-at_install', 'post_install')
@@ -42,7 +43,8 @@ class TestGoogleModel(TransactionCase):
         ])
         self.assertEqual(model.input_token_limit, 100000)
         self.assertFalse(model.allowed)
-        self.assertEqual(get_provider(self.env, 'gemini-3.0-flash'), 'google')
+        agent = self.env['ai.agent'].new({'llm_model': 'gemini-3.0-flash'})
+        self.assertEqual(agent._get_provider(), 'google')
         model.allowed = True
         self.assertIn(
             ('gemini-3.0-flash', 'Gemini 3.0 Flash'),
@@ -67,3 +69,54 @@ class TestGoogleModel(TransactionCase):
         )
         body = request.call_args.kwargs['body']
         self.assertEqual(body['tools'], {'google_search': {}})
+
+    @patch('odoo.addons.ai_google_ai_studio.models.google_model.requests.get')
+    def test_sync_deactivates_models_missing_upstream(self, get):
+        get.return_value.raise_for_status.return_value = None
+        get.return_value.json.return_value = {
+            'models': [{
+                'name': 'models/gemini-current',
+                'displayName': 'Current Gemini',
+                'supportedGenerationMethods': ['generateContent'],
+            }],
+        }
+        self.env['ai.google.model'].action_sync_models()
+        old_model = self.env['ai.google.model'].create({
+            'model_id': 'gemini-retired',
+            'name': 'Retired Gemini',
+            'active': True,
+        })
+
+        self.env['ai.google.model'].action_sync_models()
+
+        self.assertFalse(old_model.active)
+        self.assertTrue(self.env['ai.google.model'].search([
+            ('model_id', '=', 'gemini-current'),
+        ]).active)
+
+    @patch('odoo.addons.ai_google_ai_studio.models.google_model.requests.get')
+    def test_empty_compatible_sync_does_not_change_catalog(self, get):
+        existing = self.env['ai.google.model'].create({
+            'model_id': 'gemini-existing',
+            'name': 'Existing Gemini',
+            'active': True,
+        })
+        get.return_value.raise_for_status.return_value = None
+        get.return_value.json.return_value = {
+            'models': [{
+                'name': 'models/text-embedding',
+                'supportedGenerationMethods': ['embedContent'],
+            }],
+        }
+
+        with self.assertRaises(UserError):
+            self.env['ai.google.model'].action_sync_models()
+
+        self.assertTrue(existing.active)
+
+    @patch('odoo.addons.ai_google_ai_studio.models.google_model.requests.get')
+    def test_google_catalog_api_errors_are_user_errors(self, get):
+        get.side_effect = requests.exceptions.Timeout('upstream timeout')
+
+        with self.assertRaises(UserError):
+            self.env['ai.google.model'].action_sync_models()

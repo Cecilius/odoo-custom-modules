@@ -1,6 +1,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 
@@ -53,6 +54,7 @@ class OpenRouterModel(models.Model):
         service = LLMApiService(self.env, provider='openrouter')
         models = []
         offset = 0
+        seen_pages = set()
         while True:
             response = service._request(
                 method='get',
@@ -66,7 +68,15 @@ class OpenRouterModel(models.Model):
                     'offset': offset,
                 },
             )
+            if not isinstance(response, dict):
+                raise UserError(_('OpenRouter returned an invalid model catalog response.'))
             page = response.get('data') or []
+            if not all(isinstance(model, dict) for model in page):
+                raise UserError(_('OpenRouter returned an invalid model catalog page.'))
+            page_key = tuple(model.get('id') for model in page)
+            if page_key in seen_pages:
+                raise UserError(_('OpenRouter returned a repeated model catalog page.'))
+            seen_pages.add(page_key)
             models.extend(page)
             if not page or not response.get('links', {}).get('next') or len(page) < 1000:
                 break
@@ -81,6 +91,14 @@ class OpenRouterModel(models.Model):
         now = fields.Datetime.now()
         catalog = self.sudo()
         seen_ids = set()
+        supported_ids = [
+            model.get('id') for model in supported_models if model.get('id')
+        ]
+
+        existing_by_id = {
+            record.model_id: record
+            for record in catalog.search([('model_id', 'in', supported_ids)])
+        }
 
         for model in supported_models:
             model_id = model.get('id')
@@ -96,12 +114,17 @@ class OpenRouterModel(models.Model):
                 'supported_parameters': ','.join(model.get('supported_parameters') or []),
                 'active': True,
                 'last_seen': now,
-                'prompt_cost_per_million': self._price_per_million(model.get('pricing', {}).get('prompt')),
-                'completion_cost_per_million': self._price_per_million(model.get('pricing', {}).get('completion')),
-                'request_cost': self._price_float(model.get('pricing', {}).get('request')),
-                'web_search_cost': self._price_float(model.get('pricing', {}).get('web_search')),
             }
-            existing = catalog.search([('model_id', '=', model_id)], limit=1)
+            pricing = model.get('pricing') or {}
+            for field_name, price_key, converter in (
+                ('prompt_cost_per_million', 'prompt', self._price_per_million),
+                ('completion_cost_per_million', 'completion', self._price_per_million),
+                ('request_cost', 'request', self._price_float),
+                ('web_search_cost', 'web_search', self._price_float),
+            ):
+                if pricing.get(price_key) is not None:
+                    values[field_name] = converter(pricing[price_key])
+            existing = existing_by_id.get(model_id)
             if existing:
                 existing.write(values)
             else:
@@ -112,11 +135,15 @@ class OpenRouterModel(models.Model):
         if not seen_ids:
             raise UserError(_('OpenRouter returned no compatible models; the existing catalog was left unchanged.'))
 
-        catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
+        deactivated = catalog.search([
+            ('model_id', 'not in', list(seen_ids)),
+            ('active', '=', True),
+        ])
+        deactivated.write({'active': False})
 
         _logger.info(
-            'Synchronized %s OpenRouter models; %s passed Odoo AI guardrails',
-            len(model_data), len(seen_ids),
+            'Synchronized %s OpenRouter models; %s passed Odoo AI guardrails; %s deactivated',
+            len(model_data), len(seen_ids), len(deactivated),
         )
         return len(seen_ids)
 
