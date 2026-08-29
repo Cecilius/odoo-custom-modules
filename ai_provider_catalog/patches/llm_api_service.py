@@ -13,6 +13,7 @@ _original_request_llm = getattr(
 
 
 def _request_llm(self, *args, **kwargs):
+    """Dispatch through a registered adapter while preserving Odoo defaults."""
     if self.provider in ('google', 'openrouter') and self.env.context.get('ai_web_search'):
         kwargs['web_grounding'] = True
     handler = get_llm_request_handler(self.provider)

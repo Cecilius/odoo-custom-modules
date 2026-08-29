@@ -4,6 +4,8 @@ from odoo.addons.ai.utils import llm_providers
 OPENROUTER_LLMS = [
 ]
 
+# Keep the provider's embedding capability available even though chat models
+# are discovered dynamically from the OpenRouter catalog.
 try:
     OPENROUTER_PROVIDER = llm_providers.Provider(
         'openrouter',

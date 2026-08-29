@@ -9,4 +9,5 @@ def register_llm_request_handler(provider, handler):
 
 
 def get_llm_request_handler(provider):
+    """Return the registered single-request handler for ``provider``."""
     return LLM_REQUEST_HANDLERS.get(provider)

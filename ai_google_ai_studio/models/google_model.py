@@ -32,6 +32,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def _get_api_key(self):
+        """Return the configured Gemini key, falling back to the environment."""
         key = self.env['ir.config_parameter'].sudo().get_param('ai.google_key')
         key = key or os.getenv('ODOO_AI_GEMINI_TOKEN')
         if not key:
@@ -40,6 +41,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def _fetch_models(self):
+        """Fetch every Gemini model page exposed by the AI Studio API."""
         key = self._get_api_key()
         models_data = []
         page_token = None
@@ -48,6 +50,7 @@ class GoogleModel(models.Model):
             if page_token:
                 params['pageToken'] = page_token
             try:
+                # Google uses a page token rather than offset-based pagination.
                 response = requests.get(
                     'https://generativelanguage.googleapis.com/v1beta/models',
                     params=params,
@@ -66,10 +69,16 @@ class GoogleModel(models.Model):
 
     @api.model
     def _is_supported_model(self, model_data):
+        """Return whether a Gemini model supports text generation for agents."""
         return 'generateContent' in (model_data.get('supportedGenerationMethods') or [])
 
     @api.model
     def action_sync_models(self):
+        """Refresh the local Gemini catalog and deactivate missing models.
+
+        Newly discovered models remain disallowed until an administrator
+        explicitly approves them for use by AI agents.
+        """
         model_data = self._fetch_models()
         supported_models = [model for model in model_data if self._is_supported_model(model)]
         now = fields.Datetime.now()
@@ -109,6 +118,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def get_selection(self):
+        """Return approved, active Gemini models for a selection field."""
         return [
             (model.model_id, model.name)
             for model in self.sudo().search([('active', '=', True), ('allowed', '=', True)])
@@ -116,6 +126,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def action_open_model_management(self):
+        """Open the administrator-facing Gemini model catalog."""
         return {
             'type': 'ir.actions.act_window',
             'name': _('Allowed Google Gemini Models'),

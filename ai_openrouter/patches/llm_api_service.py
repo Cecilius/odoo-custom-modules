@@ -18,6 +18,7 @@ _original_build_tool_call_response = getattr(
 
 
 def _init(self, env, provider='openai'):
+    """Initialize Odoo's service with the OpenRouter API endpoint when needed."""
     if provider != 'openrouter':
         return _original_init(self, env, provider)
     self.provider = provider
@@ -26,6 +27,7 @@ def _init(self, env, provider='openai'):
 
 
 def _get_api_token(self):
+    """Read the OpenRouter key from settings, then from the environment."""
     if self.provider != 'openrouter':
         return _original_get_api_token(self)
     key = self.env['ir.config_parameter'].sudo().get_param('ai.openrouter_key')
@@ -36,6 +38,7 @@ def _get_api_token(self):
 
 
 def _get_openrouter_headers(self):
+    """Build standard API headers plus optional OpenRouter attribution headers."""
     headers = self._get_base_headers()
     params = self.env['ir.config_parameter'].sudo()
     if referer := params.get_param('ai.openrouter_http_referer'):
@@ -49,6 +52,7 @@ def _request_llm_openrouter(
     self, llm_model, system_prompts, user_prompts, tools=None,
     files=None, schema=None, temperature=0.2, inputs=(), web_grounding=False,
 ):
+    """Translate Odoo's tool/chat contract to OpenRouter's chat-completions API."""
     messages = [{'role': 'system', 'content': prompt} for prompt in system_prompts]
     if user_prompts:
         messages.append({'role': 'user', 'content': '\n\n'.join(user_prompts)})
@@ -158,6 +162,7 @@ def _request_llm_openrouter(
 
 
 def _build_tool_call_response(self, tool_call_id, return_value):
+    """Format a tool result as an OpenAI-compatible tool message."""
     if self.provider == 'openrouter':
         if isinstance(return_value, (dict, list, tuple)):
             return_value = json.dumps(return_value, default=str)

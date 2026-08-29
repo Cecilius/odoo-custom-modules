@@ -8,6 +8,7 @@ class AIAgent(models.Model):
 
     @api.model
     def _get_llm_model_selection(self):
+        """Combine Odoo's built-ins with approved dynamic provider models."""
         selection = list(super()._get_llm_model_selection())
         original_selection = dict(selection)
         configured_models = set(
@@ -56,6 +57,7 @@ class AIAgent(models.Model):
         return selection
 
     def _get_provider(self):
+        """Resolve dynamic catalog models before falling back to Odoo."""
         self.ensure_one()
         for model_name, provider_name in (
             ('ai.openrouter.model', 'openrouter'),
@@ -73,6 +75,7 @@ class AIAgent(models.Model):
         return super()._get_provider()
 
     def _generate_response(self, *args, **kwargs):
+        """Pass the agent's web-search preference into the AI service context."""
         self.ensure_one()
         if self.web_search:
             self = self.with_context(

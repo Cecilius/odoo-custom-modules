@@ -36,6 +36,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _is_supported_model(self, model_data):
+        """Apply the capability filters required by Odoo AI agents."""
         architecture = model_data.get('architecture') or {}
         input_modalities = architecture.get('input_modalities') or []
         output_modalities = architecture.get('output_modalities') or []
@@ -51,11 +52,14 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _fetch_models(self):
+        """Fetch the complete OpenRouter model catalog page by page."""
         service = LLMApiService(self.env, provider='openrouter')
         models = []
         offset = 0
         seen_pages = set()
         while True:
+            # The API exposes a next link; offset is advanced by the actual
+            # page size to remain correct if the final page is shorter.
             response = service._request(
                 method='get',
                 endpoint='/models',
@@ -85,7 +89,11 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def action_sync_models(self):
-        """Synchronize the OpenRouter catalog into Odoo."""
+        """Synchronize the OpenRouter catalog into Odoo.
+
+        The upstream catalog is authoritative for availability, while local
+        approval flags remain administrator-controlled.
+        """
         model_data = self._fetch_models()
         supported_models = [model for model in model_data if self._is_supported_model(model)]
         now = fields.Datetime.now()
@@ -95,6 +103,7 @@ class OpenRouterModel(models.Model):
             model.get('id') for model in supported_models if model.get('id')
         ]
 
+        # Read existing rows once instead of querying once per upstream model.
         existing_by_id = {
             record.model_id: record
             for record in catalog.search([('model_id', 'in', supported_ids)])
@@ -135,6 +144,7 @@ class OpenRouterModel(models.Model):
         if not seen_ids:
             raise UserError(_('OpenRouter returned no compatible models; the existing catalog was left unchanged.'))
 
+        # Only active rows need a write, which keeps synchronization idempotent.
         deactivated = catalog.search([
             ('model_id', 'not in', list(seen_ids)),
             ('active', '=', True),
@@ -149,6 +159,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _price_float(self, value):
+        """Convert an API price to a float without failing synchronization."""
         try:
             return float(value or 0)
         except (TypeError, ValueError):
@@ -156,10 +167,12 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _price_per_million(self, value):
+        """Convert a per-token API price to the UI's per-million unit."""
         return self._price_float(value) * 1_000_000
 
     @api.model
     def get_selection(self):
+        """Return approved, active OpenRouter models for agent selection."""
         return [
             (model.model_id, model.name)
             for model in self.sudo().search([
@@ -170,6 +183,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def action_open_model_management(self):
+        """Open the administrator-facing OpenRouter model catalog."""
         return {
             'type': 'ir.actions.act_window',
             'name': _('Allowed OpenRouter Models'),
