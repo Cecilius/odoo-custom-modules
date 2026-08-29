@@ -1,6 +1,3 @@
-import json
-import re
-
 from odoo import _, api, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.exceptions import UserError
@@ -43,8 +40,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return vals
 
     def _get_agent(self, key):
-        value = self.env['ir.config_parameter'].sudo().get_param(key)
-        return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+        return self.env['resale.ai.service'].get_agent(key)
 
     def _build_context_text(self, product):
         resale = product.resale_product_id
@@ -162,14 +158,9 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             schema=schema if provider != 'google' else None,
             web_grounding=agent.web_search,
         )
-        raw = response[-1] if response else ''
         self.error_message = False
         try:
-            result = json.loads(re.sub(r'^```(?:json)?|```$', '', raw.strip(), flags=re.MULTILINE).strip())
-            if result.get('candidates'):
-                text = result['candidates'][0]['content']['parts'][0].get('text', '')
-                result = json.loads(text)
-            return result
+            return self.env['resale.ai.service'].parse_json_response(response)
         except (TypeError, ValueError) as error:
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 

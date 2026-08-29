@@ -1,5 +1,4 @@
 import json
-import re
 
 from odoo import _, api, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
@@ -58,8 +57,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         return vals
 
     def _get_agent(self, key):
-        value = self.env['ir.config_parameter'].sudo().get_param(key)
-        return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+        return self.env['resale.ai.service'].get_agent(key)
 
     def _translation_exists(self, lang_code):
         source = self.product_template_id.description_ecommerce or ''
@@ -166,10 +164,8 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             schema=schema if provider != 'google' else None,
             web_grounding=agent.web_search,
         )
-        raw = response[-1] if response else ''
-        cleaned = re.sub(r'^```(?:json)?|```$', '', raw.strip(), flags=re.MULTILINE).strip()
         try:
-            data = json.loads(cleaned)
+            data = self.env['resale.ai.service'].parse_json_response(response)
         except (TypeError, ValueError):
             data = None
         if isinstance(data, list):

@@ -1,6 +1,3 @@
-import json
-import re
-
 from odoo import _, api, Command, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.exceptions import UserError, ValidationError
@@ -301,8 +298,7 @@ class ResaleProductWizard(models.TransientModel):
         return self._open_or_create_template(target)
 
     def _get_agent(self, key):
-        value = self.env['ir.config_parameter'].sudo().get_param(key)
-        return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+        return self.env['resale.ai.service'].get_agent(key)
 
     def _result_identifiers(self):
         return {
@@ -491,12 +487,7 @@ Installed language codes: %(languages)s''') % {
         raw = response[-1] if response else ''
         self.ai_response = raw
         try:
-            result = json.loads(re.sub(r'^```(?:json)?|```$', '', raw.strip(), flags=re.MULTILINE).strip())
-            # Some Gemini responses include the native candidate envelope.
-            if result.get('candidates'):
-                text = result['candidates'][0]['content']['parts'][0].get('text', '')
-                result = json.loads(text)
-            return result
+            return self.env['resale.ai.service'].parse_json_response(response)
         except (TypeError, ValueError) as error:
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
