@@ -21,21 +21,21 @@ class ResaleAIManufacturerWizard(models.TransientModel):
     error_message = fields.Text(string='Status', readonly=True)
 
     # Manufacturer (proposed by AI)
-    m_name = fields.Char(string='Name')
-    m_street = fields.Char(string='Street')
-    m_city = fields.Char(string='City')
-    m_zip = fields.Char(string='ZIP')
-    m_country_id = fields.Many2one('res.country', string='Country')
-    m_email = fields.Char(string='Email')
-    m_phone = fields.Char(string='Phone')
-    m_website = fields.Char(string='Website')
+    m_name = fields.Char(string='Manufacturer Name')
+    m_street = fields.Char(string='Manufacturer Street')
+    m_city = fields.Char(string='Manufacturer City')
+    m_zip = fields.Char(string='Manufacturer ZIP')
+    m_country_id = fields.Many2one('res.country', string='Manufacturer Country')
+    m_email = fields.Char(string='Manufacturer Email')
+    m_phone = fields.Char(string='Manufacturer Phone')
+    m_website = fields.Char(string='Manufacturer Website')
     manufacturer_candidate_ids = fields.Many2many(
-        'res.partner', string='Similar existing contacts',
+        'res.partner', string='Similar manufacturer contacts',
         relation='resale_ai_mfr_manufacturer_rel',
         column1='wizard_id', column2='partner_id',
     )
     manufacturer_use_partner_id = fields.Many2one(
-        'res.partner', string='Use existing contact',
+        'res.partner', string='Use existing manufacturer contact',
         domain="[('id', 'in', manufacturer_candidate_ids)]",
     )
     manufacturer_action = fields.Selection(
@@ -44,24 +44,24 @@ class ResaleAIManufacturerWizard(models.TransientModel):
          ('skip', 'Skip')],
         string='Manufacturer action', default='create',
     )
-    manufacturer_note = fields.Text(string='Recommendation', readonly=True)
+    manufacturer_note = fields.Text(string='Manufacturer Recommendation', readonly=True)
 
     # EU Responsible person (proposed by AI)
-    r_name = fields.Char(string='Name')
-    r_street = fields.Char(string='Street')
-    r_city = fields.Char(string='City')
-    r_zip = fields.Char(string='ZIP')
-    r_country_id = fields.Many2one('res.country', string='Country')
-    r_email = fields.Char(string='Email')
-    r_phone = fields.Char(string='Phone')
-    r_website = fields.Char(string='Website')
+    r_name = fields.Char(string='EU Responsible Name')
+    r_street = fields.Char(string='EU Responsible Street')
+    r_city = fields.Char(string='EU Responsible City')
+    r_zip = fields.Char(string='EU Responsible ZIP')
+    r_country_id = fields.Many2one('res.country', string='EU Responsible Country')
+    r_email = fields.Char(string='EU Responsible Email')
+    r_phone = fields.Char(string='EU Responsible Phone')
+    r_website = fields.Char(string='EU Responsible Website')
     eu_responsible_candidate_ids = fields.Many2many(
-        'res.partner', string='Similar existing contacts',
+        'res.partner', string='Similar EU Responsible contacts',
         relation='resale_ai_mfr_eu_responsible_rel',
         column1='wizard_id', column2='partner_id',
     )
     eu_responsible_use_partner_id = fields.Many2one(
-        'res.partner', string='Use existing contact',
+        'res.partner', string='Use existing EU Responsible contact',
         domain="[('id', 'in', eu_responsible_candidate_ids)]",
     )
     eu_responsible_action = fields.Selection(
@@ -70,7 +70,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
          ('skip', 'Skip')],
         string='EU Responsible action', default='create',
     )
-    eu_responsible_note = fields.Text(string='Recommendation', readonly=True)
+    eu_responsible_note = fields.Text(string='EU Responsible Recommendation', readonly=True)
 
     ce_compliance = fields.Text(string='CE Compliance')
     safety_record = fields.Text(string='Safety Record')

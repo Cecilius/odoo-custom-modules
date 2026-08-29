@@ -20,7 +20,7 @@ class ProductTemplate(models.Model):
     )
     resale_product_category_id = fields.Many2one(
         related='resale_product_id.category_id',
-        string='Product Category',
+        string='Resale Category',
         readonly=True,
     )
     resale_product_brand_value_id = fields.Many2one(
