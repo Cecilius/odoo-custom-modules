@@ -26,12 +26,23 @@ class GoogleModel(models.Model):
         string='Allowed for AI agents',
         help='Only allowed models are available in the AI agent model selector.',
     )
+    api_mode = fields.Selection(
+        [
+            ('interactions', 'Interactions API (v1)'),
+            ('generate_content', 'Generate Content (v1beta)'),
+        ],
+        string='API Mode',
+        default='interactions',
+        help='Which Gemini API endpoint this model uses. The interactions API is the new '
+             'agent-oriented v1 endpoint; generateContent is the legacy v1beta endpoint.',
+    )
     last_seen = fields.Datetime()
 
     _model_id_unique = models.UniqueIndex('(model_id)')
 
     @api.model
     def _get_api_key(self):
+        """Return the configured Gemini key, falling back to the environment."""
         key = self.env['ir.config_parameter'].sudo().get_param('ai.google_key')
         key = key or os.getenv('ODOO_AI_GEMINI_TOKEN')
         if not key:
@@ -40,6 +51,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def _fetch_models(self):
+        """Fetch every Gemini model page exposed by the AI Studio API."""
         key = self._get_api_key()
         models_data = []
         page_token = None
@@ -48,6 +60,7 @@ class GoogleModel(models.Model):
             if page_token:
                 params['pageToken'] = page_token
             try:
+                # Google uses a page token rather than offset-based pagination.
                 response = requests.get(
                     'https://generativelanguage.googleapis.com/v1beta/models',
                     params=params,
@@ -66,10 +79,18 @@ class GoogleModel(models.Model):
 
     @api.model
     def _is_supported_model(self, model_data):
-        return 'generateContent' in (model_data.get('supportedGenerationMethods') or [])
+        """Return whether a Gemini model supports text generation or interaction frameworks."""
+        methods = model_data.get('supportedGenerationMethods') or []
+        # Allow models supporting either legacy content generation or the new interactions paradigm
+        return 'generateContent' in methods or 'interactions' in methods or 'generateInteraction' in methods
 
     @api.model
     def action_sync_models(self):
+        """Refresh the local Gemini catalog and deactivate missing models.
+
+        Newly discovered models remain disallowed until an administrator
+        explicitly approves them for use by AI agents.
+        """
         model_data = self._fetch_models()
         supported_models = [model for model in model_data if self._is_supported_model(model)]
         now = fields.Datetime.now()
@@ -80,12 +101,18 @@ class GoogleModel(models.Model):
             if not model_id:
                 continue
             seen_ids.add(model_id)
+            methods = model.get('supportedGenerationMethods') or []
             values = {
                 'name': model.get('displayName') or model_id,
                 'description': model.get('description'),
                 'input_token_limit': model.get('inputTokenLimit') or 0,
                 'output_token_limit': model.get('outputTokenLimit') or 0,
-                'supported_generation_methods': ','.join(model.get('supportedGenerationMethods') or []),
+                'supported_generation_methods': ','.join(methods),
+                'api_mode': (
+                    'interactions'
+                    if 'interactions' in methods or 'generateInteraction' in methods
+                    else 'generate_content'
+                ),
                 'active': True,
                 'last_seen': now,
             }
@@ -95,10 +122,12 @@ class GoogleModel(models.Model):
             else:
                 catalog.create(dict(values, model_id=model_id))
 
-        if seen_ids:
-            catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
-        else:
-            catalog.write({'active': False})
+        # An empty upstream response is treated as a failed/incomplete sync.
+        # Never deactivate the entire local catalog on that basis.
+        if not seen_ids:
+            raise UserError(_('Google Gemini returned no compatible models; the existing catalog was left unchanged.'))
+
+        catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
         _logger.info(
             'Synchronized %s Google Gemini models; %s passed AI guardrails',
             len(model_data), len(seen_ids),
@@ -107,6 +136,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def get_selection(self):
+        """Return approved, active Gemini models for a selection field."""
         return [
             (model.model_id, model.name)
             for model in self.sudo().search([('active', '=', True), ('allowed', '=', True)])
@@ -114,6 +144,7 @@ class GoogleModel(models.Model):
 
     @api.model
     def action_open_model_management(self):
+        """Open the administrator-facing Gemini model catalog."""
         return {
             'type': 'ir.actions.act_window',
             'name': _('Allowed Google Gemini Models'),

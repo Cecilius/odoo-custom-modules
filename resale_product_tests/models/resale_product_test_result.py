@@ -1,7 +1,10 @@
+"""Configurable outcomes used by operator product tests."""
+
 from odoo import fields, models
 
 
 class ResaleProductTestResult(models.Model):
+    """A named, ordered, and optionally archived test outcome."""
     _name = 'resale.product.test.result'
     _description = 'Resale Product Test Result'
     _order = 'sequence, name, id'

@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
+"""Generate product references using the category's RFB sequence."""
 from odoo import models, fields, api, _
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+
+    # Internal references are stable identifiers in listings, exports, and
+    # integrations. Empty values remain allowed while a product is drafted.
+    _default_code_unique = models.UniqueIndex(
+        "USING btree (lower(btrim(default_code))) "
+        "WHERE default_code IS NOT NULL AND btrim(default_code) <> ''",
+        'Internal Reference must be unique when provided.',
+    )
 
     has_category_code = fields.Boolean(
         compute='_compute_has_category_code',
@@ -12,6 +21,7 @@ class ProductTemplate(models.Model):
 
     @api.depends('categ_id', 'categ_id.category_code')
     def _compute_has_category_code(self):
+        """Show the RFB action only for categories with a valid code."""
         for rec in self:
             rec.has_category_code = bool(
                 rec.categ_id and rec.categ_id.category_code and len(rec.categ_id.category_code) == 2
@@ -37,6 +47,7 @@ class ProductTemplate(models.Model):
         self._generate_and_assign_rfb_code()
 
     def _generate_and_assign_rfb_code(self):
+        """Consume the category sequence and assign the next RFB reference."""
         self.ensure_one()
         if self.categ_id and self.categ_id.category_code:
             sequence = self.categ_id._get_or_create_sequence()

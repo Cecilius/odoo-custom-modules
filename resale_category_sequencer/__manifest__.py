@@ -7,9 +7,10 @@
     'author': 'Reparero',
     'website': 'https://reparero.es',
     'license': 'LGPL-3',
-    'depends': ['product', 'stock'],
+    'depends': ['resale_base', 'product'],
     'data': [
         'security/ir.model.access.csv',
+        'data/rfb_sequence_server_actions.xml',
         'views/product_category_views.xml',
     ],
     'installable': True,

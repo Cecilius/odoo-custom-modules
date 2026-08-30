@@ -7,6 +7,7 @@
             <form string="Generate Short Listing">
                 <group>
                     <field name="product_template_id" readonly="1"/>
+                    <field name="target_lang_id"/>
                     <field name="max_characters"/>
                 </group>
 

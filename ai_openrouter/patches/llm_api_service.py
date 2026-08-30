@@ -5,15 +5,20 @@ from odoo import _
 from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.ai_provider_catalog.hooks import register_llm_request_handler
 
 
-_original_init = LLMApiService.__init__
-_original_get_api_token = LLMApiService._get_api_token
-_original_request_llm = LLMApiService._request_llm
-_original_build_tool_call_response = LLMApiService._build_tool_call_response
+_original_init = getattr(LLMApiService.__init__, '_ai_openrouter_original', LLMApiService.__init__)
+_original_get_api_token = getattr(LLMApiService._get_api_token, '_ai_openrouter_original', LLMApiService._get_api_token)
+_original_build_tool_call_response = getattr(
+    LLMApiService._build_tool_call_response,
+    '_ai_openrouter_original',
+    LLMApiService._build_tool_call_response,
+)
 
 
 def _init(self, env, provider='openai'):
+    """Initialize Odoo's service with the OpenRouter API endpoint when needed."""
     if provider != 'openrouter':
         return _original_init(self, env, provider)
     self.provider = provider
@@ -22,6 +27,7 @@ def _init(self, env, provider='openai'):
 
 
 def _get_api_token(self):
+    """Read the OpenRouter key from settings, then from the environment."""
     if self.provider != 'openrouter':
         return _original_get_api_token(self)
     key = self.env['ir.config_parameter'].sudo().get_param('ai.openrouter_key')
@@ -32,6 +38,7 @@ def _get_api_token(self):
 
 
 def _get_openrouter_headers(self):
+    """Build standard API headers plus optional OpenRouter attribution headers."""
     headers = self._get_base_headers()
     params = self.env['ir.config_parameter'].sudo()
     if referer := params.get_param('ai.openrouter_http_referer'):
@@ -45,6 +52,7 @@ def _request_llm_openrouter(
     self, llm_model, system_prompts, user_prompts, tools=None,
     files=None, schema=None, temperature=0.2, inputs=(), web_grounding=False,
 ):
+    """Translate Odoo's tool/chat contract to OpenRouter's chat-completions API."""
     messages = [{'role': 'system', 'content': prompt} for prompt in system_prompts]
     if user_prompts:
         messages.append({'role': 'user', 'content': '\n\n'.join(user_prompts)})
@@ -101,8 +109,15 @@ def _request_llm_openrouter(
         headers=_get_openrouter_headers(self),
         body=body,
     )
-    choice = (response.get('choices') or [{}])[0]
+    if not isinstance(response, dict):
+        raise UserError(_('OpenRouter returned an invalid chat completion response.'))
+    choices = response.get('choices') or []
+    if not choices or not isinstance(choices[0], dict):
+        raise UserError(_('OpenRouter returned no usable chat completion choice.'))
+    choice = choices[0]
     message = choice.get('message') or {}
+    if not isinstance(message, dict):
+        raise UserError(_('OpenRouter returned an invalid chat completion message.'))
     next_inputs = list(inputs or ())
     tool_calls = message.get('tool_calls') or []
 
@@ -118,6 +133,26 @@ def _request_llm_openrouter(
             try:
                 arguments = json.loads(function.get('arguments') or '{}')
             except json.JSONDecodeError:
+                _logger.warning(
+                    'OpenRouter returned malformed tool arguments for %s',
+                    function.get('name'),
+                )
+                parsed_calls.append((
+                    '__invalid_tool_arguments__',
+                    tool_call.get('id'),
+                    {'__error': 'The tool arguments were invalid JSON. Please retry with valid JSON.'},
+                ))
+                continue
+            if not isinstance(arguments, dict):
+                _logger.warning(
+                    'OpenRouter returned non-object tool arguments for %s',
+                    function.get('name'),
+                )
+                parsed_calls.append((
+                    '__invalid_tool_arguments__',
+                    tool_call.get('id'),
+                    {'__error': 'The tool arguments must be a JSON object. Please retry.'},
+                ))
                 continue
             parsed_calls.append((function.get('name'), tool_call.get('id'), arguments))
         return [], parsed_calls, next_inputs
@@ -126,14 +161,11 @@ def _request_llm_openrouter(
     return ([content] if content else []), [], next_inputs
 
 
-def _request_llm(self, *args, **kwargs):
-    if self.provider == 'openrouter':
-        return _request_llm_openrouter(self, *args, **kwargs)
-    return _original_request_llm(self, *args, **kwargs)
-
-
 def _build_tool_call_response(self, tool_call_id, return_value):
+    """Format a tool result as an OpenAI-compatible tool message."""
     if self.provider == 'openrouter':
+        if isinstance(return_value, (dict, list, tuple)):
+            return_value = json.dumps(return_value, default=str)
         return {
             'role': 'tool',
             'tool_call_id': tool_call_id,
@@ -142,7 +174,14 @@ def _build_tool_call_response(self, tool_call_id, return_value):
     return _original_build_tool_call_response(self, tool_call_id, return_value)
 
 
+for patched, original in (
+    (_init, _original_init),
+    (_get_api_token, _original_get_api_token),
+    (_build_tool_call_response, _original_build_tool_call_response),
+):
+    patched._ai_openrouter_original = original
+
 LLMApiService.__init__ = _init
 LLMApiService._get_api_token = _get_api_token
-LLMApiService._request_llm = _request_llm
 LLMApiService._build_tool_call_response = _build_tool_call_response
+register_llm_request_handler('openrouter', _request_llm_openrouter)

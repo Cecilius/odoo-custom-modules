@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import api, _, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -17,11 +17,14 @@ class ResConfigSettings(models.TransientModel):
         groups='base.group_system',
     )
 
+    @api.depends('google_key')
     def _compute_google_key_enabled(self):
+        """Expose whether a custom Google key has been configured."""
         for record in self:
             record.google_key_enabled = bool(record.google_key)
 
     def action_sync_google_models(self):
+        """Synchronize Gemini models and show the result in the settings UI."""
         self.ensure_one()
         count = self.env['ai.google.model'].action_sync_models()
         return {
@@ -35,5 +38,6 @@ class ResConfigSettings(models.TransientModel):
         }
 
     def action_open_google_models(self):
+        """Open Gemini model approval from the AI settings page."""
         self.ensure_one()
         return self.env['ai.google.model'].action_open_model_management()

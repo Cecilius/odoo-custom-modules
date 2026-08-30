@@ -4,7 +4,7 @@
         <field name="name">resale.advertisement.generator.form</field>
         <field name="model">resale.advertisement.generator</field>
         <field name="arch" type="xml">
-            <form string="Generate Long Listing">
+            <form string="Generate Description">
                 <group>
                     <field name="product_template_id" readonly="1"/>
                     <field name="max_characters"/>

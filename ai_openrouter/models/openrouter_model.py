@@ -1,6 +1,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 
@@ -35,6 +36,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _is_supported_model(self, model_data):
+        """Apply the capability filters required by Odoo AI agents."""
         architecture = model_data.get('architecture') or {}
         input_modalities = architecture.get('input_modalities') or []
         output_modalities = architecture.get('output_modalities') or []
@@ -50,10 +52,14 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _fetch_models(self):
+        """Fetch the complete OpenRouter model catalog page by page."""
         service = LLMApiService(self.env, provider='openrouter')
         models = []
         offset = 0
+        seen_pages = set()
         while True:
+            # The API exposes a next link; offset is advanced by the actual
+            # page size to remain correct if the final page is shorter.
             response = service._request(
                 method='get',
                 endpoint='/models',
@@ -66,7 +72,15 @@ class OpenRouterModel(models.Model):
                     'offset': offset,
                 },
             )
+            if not isinstance(response, dict):
+                raise UserError(_('OpenRouter returned an invalid model catalog response.'))
             page = response.get('data') or []
+            if not all(isinstance(model, dict) for model in page):
+                raise UserError(_('OpenRouter returned an invalid model catalog page.'))
+            page_key = tuple(model.get('id') for model in page)
+            if page_key in seen_pages:
+                raise UserError(_('OpenRouter returned a repeated model catalog page.'))
+            seen_pages.add(page_key)
             models.extend(page)
             if not page or not response.get('links', {}).get('next') or len(page) < 1000:
                 break
@@ -75,12 +89,25 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def action_sync_models(self):
-        """Synchronize the OpenRouter catalog into Odoo."""
+        """Synchronize the OpenRouter catalog into Odoo.
+
+        The upstream catalog is authoritative for availability, while local
+        approval flags remain administrator-controlled.
+        """
         model_data = self._fetch_models()
         supported_models = [model for model in model_data if self._is_supported_model(model)]
         now = fields.Datetime.now()
         catalog = self.sudo()
         seen_ids = set()
+        supported_ids = [
+            model.get('id') for model in supported_models if model.get('id')
+        ]
+
+        # Read existing rows once instead of querying once per upstream model.
+        existing_by_id = {
+            record.model_id: record
+            for record in catalog.search([('model_id', 'in', supported_ids)])
+        }
 
         for model in supported_models:
             model_id = model.get('id')
@@ -96,30 +123,43 @@ class OpenRouterModel(models.Model):
                 'supported_parameters': ','.join(model.get('supported_parameters') or []),
                 'active': True,
                 'last_seen': now,
-                'prompt_cost_per_million': self._price_per_million(model.get('pricing', {}).get('prompt')),
-                'completion_cost_per_million': self._price_per_million(model.get('pricing', {}).get('completion')),
-                'request_cost': self._price_float(model.get('pricing', {}).get('request')),
-                'web_search_cost': self._price_float(model.get('pricing', {}).get('web_search')),
             }
-            existing = catalog.search([('model_id', '=', model_id)], limit=1)
+            pricing = model.get('pricing') or {}
+            for field_name, price_key, converter in (
+                ('prompt_cost_per_million', 'prompt', self._price_per_million),
+                ('completion_cost_per_million', 'completion', self._price_per_million),
+                ('request_cost', 'request', self._price_float),
+                ('web_search_cost', 'web_search', self._price_float),
+            ):
+                if pricing.get(price_key) is not None:
+                    values[field_name] = converter(pricing[price_key])
+            existing = existing_by_id.get(model_id)
             if existing:
                 existing.write(values)
             else:
                 catalog.create(dict(values, model_id=model_id))
 
-        if seen_ids:
-            catalog.search([('model_id', 'not in', list(seen_ids))]).write({'active': False})
-        else:
-            catalog.write({'active': False})
+        # An empty upstream response is treated as a failed/incomplete sync.
+        # Never deactivate the entire local catalog on that basis.
+        if not seen_ids:
+            raise UserError(_('OpenRouter returned no compatible models; the existing catalog was left unchanged.'))
+
+        # Only active rows need a write, which keeps synchronization idempotent.
+        deactivated = catalog.search([
+            ('model_id', 'not in', list(seen_ids)),
+            ('active', '=', True),
+        ])
+        deactivated.write({'active': False})
 
         _logger.info(
-            'Synchronized %s OpenRouter models; %s passed Odoo AI guardrails',
-            len(model_data), len(seen_ids),
+            'Synchronized %s OpenRouter models; %s passed Odoo AI guardrails; %s deactivated',
+            len(model_data), len(seen_ids), len(deactivated),
         )
         return len(seen_ids)
 
     @api.model
     def _price_float(self, value):
+        """Convert an API price to a float without failing synchronization."""
         try:
             return float(value or 0)
         except (TypeError, ValueError):
@@ -127,10 +167,12 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def _price_per_million(self, value):
+        """Convert a per-token API price to the UI's per-million unit."""
         return self._price_float(value) * 1_000_000
 
     @api.model
     def get_selection(self):
+        """Return approved, active OpenRouter models for agent selection."""
         return [
             (model.model_id, model.name)
             for model in self.sudo().search([
@@ -141,6 +183,7 @@ class OpenRouterModel(models.Model):
 
     @api.model
     def action_open_model_management(self):
+        """Open the administrator-facing OpenRouter model catalog."""
         return {
             'type': 'ir.actions.act_window',
             'name': _('Allowed OpenRouter Models'),

@@ -7,9 +7,9 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='resale']/block[@name='resale_settings_block']" position="after">
                 <block title="Advertisements" name="resale_advertisements_setting_container">
-                    <!-- Long Listing Group -->
+                    <!-- Description Group -->
                     <div class="o_setting_box col-12">
-                        <h2 class="mt16">Long Listing</h2>
+                        <h2 class="mt16">Description</h2>
                     </div>
                     <setting string="Listing research agent">
                         <field name="resale_advertisement_research_agent_id"/>
@@ -17,7 +17,10 @@
                     <setting string="Backup listing research agent">
                         <field name="resale_advertisement_backup_agent_id"/>
                     </setting>
-                    <setting string="Long listing max characters">
+                    <setting string="Listing translation agent">
+                        <field name="resale_advertisement_translation_agent_id"/>
+                    </setting>
+                    <setting string="Description max characters">
                         <field name="resale_advertisement_max_characters"/>
                     </setting>
 
@@ -29,7 +32,10 @@
                         <field name="resale_advertisement_short_agent_id"/>
                     </setting>
                     <setting string="Backup short listing agent">
-                        <field name="resale_advertisement_backup_agent_id"/>
+                        <field name="resale_advertisement_short_backup_agent_id"/>
+                    </setting>
+                    <setting string="Short listing default language">
+                        <field name="resale_advertisement_short_default_lang_id"/>
                     </setting>
                     <setting string="Short listing max characters">
                         <field name="resale_advertisement_short_max_characters"/>

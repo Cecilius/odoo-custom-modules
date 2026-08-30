@@ -16,3 +16,8 @@ the database.
 The adapter supports text chat, tool calls, structured outputs, images,
 OpenRouter embeddings, and bounded web search. Arbitrary PDF uploads are not
 enabled yet.
+
+After installing the module, synchronize the provider catalog from the AI
+integration settings and explicitly approve the models that agents may use.
+Models omitted by OpenRouter are deactivated, while existing agents retain
+their current model selection so administrators can migrate them safely.

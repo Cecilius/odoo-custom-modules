@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- The GPSR action is available from product templates linked to resale products. -->
+    <record id="product_template_form_gpsr_button" model="ir.ui.view">
+        <field name="name">product.template.form.resale.ai.manufacturer</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="resale_product.product_template_form_resale_product"/>
+        <field name="arch" type="xml">
+            <xpath expr="//details[@name='resale_gpsr']" position="inside">
+                <group>
+                    <button
+                        name="action_find_gpsr_info"
+                        type="object"
+                        string="Find GPSR Info (AI)"
+                        class="oe_highlight"
+                        icon="fa-robot"
+                        help="Research the Manufacturer and EU Responsible Person for this product's assigned Resale Product."
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

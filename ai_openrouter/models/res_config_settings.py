@@ -1,4 +1,4 @@
-from odoo import fields, models, _
+from odoo import api, fields, models, _
 
 
 class ResConfigSettings(models.TransientModel):
@@ -27,11 +27,14 @@ class ResConfigSettings(models.TransientModel):
         groups='base.group_system',
     )
 
+    @api.depends('openrouter_key')
     def _compute_openrouter_key_enabled(self):
+        """Expose whether a custom OpenRouter key has been configured."""
         for record in self:
             record.openrouter_key_enabled = bool(record.openrouter_key)
 
     def action_sync_openrouter_models(self):
+        """Synchronize OpenRouter models and notify the administrator."""
         self.ensure_one()
         count = self.env['ai.openrouter.model'].action_sync_models()
         return {
@@ -45,5 +48,6 @@ class ResConfigSettings(models.TransientModel):
         }
 
     def action_open_openrouter_models(self):
+        """Open OpenRouter model approval from the AI settings page."""
         self.ensure_one()
         return self.env['ai.openrouter.model'].action_open_model_management()

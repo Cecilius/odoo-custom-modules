@@ -1,8 +1,11 @@
+"""Condition attribute mappings used in operator and listing text."""
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
 class ResaleConditionText(models.Model):
+    """Map one configured condition value to operator and listing wording."""
     _name = 'resale.condition.text'
     _description = 'Condition Text Mapping'
     _order = 'condition_value_id'
@@ -30,6 +33,7 @@ class ResaleConditionText(models.Model):
 
     @api.depends()
     def _compute_condition_attribute_id(self):
+        """Resolve the configured Condition attribute, with an XML-ID fallback."""
         configured_id = self.env['ir.config_parameter'].sudo().get_param(
             'resale_attributes.condition_attribute_id'
         )
@@ -47,6 +51,7 @@ class ResaleConditionText(models.Model):
 
     @api.constrains('condition_value_id')
     def _check_condition_value_attribute(self):
+        """Prevent mappings from using values of another product attribute."""
         for mapping in self:
             if (
                 mapping.condition_value_id

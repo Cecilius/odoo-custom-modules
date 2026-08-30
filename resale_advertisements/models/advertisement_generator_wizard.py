@@ -1,14 +1,14 @@
-import json
-import re
+"""Wizard for generating and safely applying long resale descriptions."""
 
 from odoo import _, api, fields, models
-from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 
 
 class ResaleAdvertisementGenerator(models.TransientModel):
+    """Collect product context, request proposals, and guard overwrites."""
     _name = 'resale.advertisement.generator'
-    _description = 'AI Long Listing Generator'
+    _description = 'AI Description Generator'
 
     product_template_id = fields.Many2one(
         'product.template', required=True, ondelete='cascade',
@@ -27,15 +27,15 @@ class ResaleAdvertisementGenerator(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Load the configured character limit and visible AI input context."""
         vals = super().default_get(fields_list)
-        if not vals.get('max_characters'):
-            raw = self.env['ir.config_parameter'].sudo().get_param(
-                'resale_advertisement.max_characters', '2000'
-            )
-            try:
-                vals['max_characters'] = max(int(raw), 1)
-            except (TypeError, ValueError):
-                vals['max_characters'] = 2000
+        raw = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_advertisement.max_characters', '2000'
+        )
+        try:
+            vals['max_characters'] = max(int(raw), 1)
+        except (TypeError, ValueError):
+            vals['max_characters'] = 2000
         product = self.env['product.template'].browse(
             self.env.context.get('default_product_template_id')
         )
@@ -44,10 +44,10 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return vals
 
     def _get_agent(self, key):
-        value = self.env['ir.config_parameter'].sudo().get_param(key)
-        return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+        return self.env['resale.ai.service'].get_agent(key)
 
     def _build_context_text(self, product):
+        """Build the concise product and latest-test context sent to the agent."""
         resale = product.resale_product_id
         lines = []
         if resale:
@@ -71,12 +71,13 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return '\n'.join(line for line in lines if line)
 
     def action_generate(self):
+        """Require confirmation when generation would replace an existing listing."""
         self.ensure_one()
-        if self.product_template_id.long_listing:
+        if self.product_template_id.description_ecommerce:
             self.state = 'confirm_overwrite'
             self.error_message = _(
-                'This product already has a long listing. Continuing will generate new '
-                'proposals and the one you choose will overwrite the current long listing.'
+                'This product already has a description. Continuing will generate new '
+                'proposals and the one you choose will overwrite the current description.'
             )
             return self._reload()
         return self._run_generation()
@@ -86,6 +87,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return self._run_generation()
 
     def _run_generation(self):
+        """Request proposals, falling back to the configured backup agent."""
         self.ensure_one()
         context_text = self._build_context_text(self.product_template_id)
         self.research_info = context_text
@@ -95,7 +97,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         try:
             with self.env.cr.savepoint():
                 result = self._ask_agent(agent, context_text)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_advertisement.backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -104,7 +106,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             try:
                 with self.env.cr.savepoint():
                     result = self._ask_agent(backup, context_text)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.error_message = _(
                     'Both research agents failed. Primary: %(primary)s. Backup: %(backup)s.'
@@ -131,6 +133,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
         return self._reload()
 
     def _ask_agent(self, agent, context_text):
+        """Ask one agent for three structured descriptions within the limit."""
         max_chars = self.max_characters or 2000
         schema = {
             'type': 'object',
@@ -145,8 +148,8 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             'required': ['proposals'],
         }
         prompt = _(
-            'Generate 3 distinct, ready-to-publish long listing descriptions for the product '
-            'below, intended for resale marketplaces. Each listing must be a self-contained '
+            'Generate 3 distinct, ready-to-publish product descriptions for the product '
+            'below, intended for resale marketplaces. Each description must be a self-contained '
             'description highlighting the product\'s key features, condition, and selling points. '
             'Each proposal must differ in style and wording. '
             'Each proposal must not exceed %(max_chars)s characters. '
@@ -154,27 +157,20 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             'Do not include Markdown fences, comments, or any other text.\n'
             'Product information:\n%(context)s'
         ) % {'max_chars': max_chars, 'context': context_text}
-        provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
-        response = service.request_llm(
-            agent.llm_model,
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or 'You are an expert e-commerce copywriter.'],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
         )
-        raw = response[-1] if response else ''
         self.error_message = False
         try:
-            result = json.loads(re.sub(r'^```(?:json)?|```$', '', raw.strip(), flags=re.MULTILINE).strip())
-            if result.get('candidates'):
-                text = result['candidates'][0]['content']['parts'][0].get('text', '')
-                result = json.loads(text)
-            return result
+            return self.env['resale.ai.service'].parse_json_response(response)
         except (TypeError, ValueError) as error:
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_proposal(self, text):
+        """Store a selected proposal as safe HTML on the product template."""
         self.ensure_one()
         if not text:
             raise UserError(_('The selected proposal is empty.'))
@@ -183,7 +179,7 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             text = text[:max_chars]
         escaped = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         html = '<p>%s</p>' % escaped.replace('\n', '<br/>')
-        self.product_template_id.long_listing = html
+        self.product_template_id.description_ecommerce = html
         return {'type': 'ir.actions.act_window_close'}
 
     def action_use_proposal_1(self):

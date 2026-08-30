@@ -1,13 +1,13 @@
-import json
-import re
+"""Wizard for producing short listings from a saved long description."""
 
 from odoo import _, api, fields, models
-from odoo.addons.ai.utils.llm_api_service import LLMApiService
+from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
 from odoo.tools import html2plaintext
 
 
 class ResaleAdvertisementShortGenerator(models.TransientModel):
+    """Generate localized short-listing proposals with a strict length limit."""
     _name = 'resale.advertisement.short_generator'
     _description = 'AI Short Listing Generator'
 
@@ -15,6 +15,9 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         'product.template', required=True, ondelete='cascade',
     )
     max_characters = fields.Integer(string='Max characters', default=300)
+    target_lang_id = fields.Many2one(
+        'res.lang', string='Language', required=True, domain="[('active', '=', True)]",
+    )
     source_info = fields.Text(string='Long listing used as source', readonly=True)
     error_message = fields.Text(string='Status', readonly=True)
     proposal_1 = fields.Text(string='Proposal 1')
@@ -27,38 +30,49 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
+        """Load the configured limit, source listing, and target language."""
         vals = super().default_get(fields_list)
-        if not vals.get('max_characters'):
-            raw = self.env['ir.config_parameter'].sudo().get_param(
-                'resale_advertisement.short_max_characters', '300'
-            )
-            try:
-                vals['max_characters'] = max(int(raw), 1)
-            except (TypeError, ValueError):
-                vals['max_characters'] = 300
+        raw = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_advertisement.short_max_characters', '300'
+        )
+        try:
+            vals['max_characters'] = max(int(raw), 1)
+        except (TypeError, ValueError):
+            vals['max_characters'] = 300
         product = self.env['product.template'].browse(
             self.env.context.get('default_product_template_id')
         )
         if product:
             vals['source_info'] = self._build_source_text(product)
+        if not vals.get('target_lang_id'):
+            lang_param = self.env['ir.config_parameter'].sudo().get_param(
+                'resale_advertisement.short_default_lang_id'
+            )
+            lang = self.env['res.lang'].browse(int(lang_param)).exists() if lang_param and lang_param.isdigit() else self.env['res.lang']
+            if not lang:
+                lang = self.env['res.lang'].search([('code', '=', self.env.user.lang)], limit=1)
+            if not lang:
+                lang = self.env['res.lang'].search([('active', '=', True)], limit=1)
+            vals['target_lang_id'] = lang.id if lang else False
         return vals
 
     def _get_agent(self, key):
-        value = self.env['ir.config_parameter'].sudo().get_param(key)
-        return self.env['ai.agent'].browse(int(value)).exists() if value and value.isdigit() else self.env['ai.agent']
+        return self.env['resale.ai.service'].get_agent(key)
 
     def _build_source_text(self, product):
-        long_listing = product.long_listing or ''
-        return html2plaintext(long_listing).strip() if long_listing else ''
+        """Convert the product's HTML description into plain-text AI input."""
+        description = product.description_ecommerce or ''
+        return html2plaintext(description).strip() if description else ''
 
     def action_generate(self):
+        """Reject empty sources, then request proposals with backup fallback."""
         self.ensure_one()
         source_text = self._build_source_text(self.product_template_id)
         self.source_info = source_text
         if not source_text:
             self.state = 'error'
             self.error_message = _(
-                'The product has no long listing to shorten. Generate the long listing first.'
+                'The product has no description to shorten. Generate the description first.'
             )
             return self._reload()
         agent = self._get_agent('resale_advertisement.short_agent_id')
@@ -67,7 +81,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         try:
             with self.env.cr.savepoint():
                 result = self._ask_agent(agent, source_text)
-        except Exception as primary_error:
+        except ResaleAIRequestError as primary_error:
             backup = self._get_agent('resale_advertisement.short_backup_agent_id')
             if not backup or backup == agent:
                 self.state = 'error'
@@ -76,7 +90,7 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
             try:
                 with self.env.cr.savepoint():
                     result = self._ask_agent(backup, source_text)
-            except Exception as backup_error:
+            except ResaleAIRequestError as backup_error:
                 self.state = 'error'
                 self.error_message = _(
                     'Both short listing agents failed. Primary: %(primary)s. Backup: %(backup)s.'
@@ -103,7 +117,9 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         return self._reload()
 
     def _ask_agent(self, agent, source_text):
+        """Ask one agent for three localized short listings."""
         max_chars = self.max_characters or 300
+        target_lang = self.target_lang_id.name or self.env.user.lang or 'English'
         schema = {
             'type': 'object',
             'properties': {
@@ -118,33 +134,26 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
         }
         prompt = _(
             'Shorten the long listing below into 3 distinct, concise short listing descriptions '
-            'suitable for resale marketplaces. Each short listing must keep the key selling points '
-            'and be at most %(max_chars)s characters. Each proposal must differ in wording. '
-            'Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
+            'in %(lang)s, suitable for resale marketplaces. Each short listing must keep the key '
+            'selling points and be at most %(max_chars)s characters. Each proposal must differ in '
+            'wording. Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
             'Do not include Markdown fences, comments, or any other text.\n'
             'Long listing:\n%(source)s'
-        ) % {'max_chars': max_chars, 'source': source_text}
-        provider = agent._get_provider()
-        service = LLMApiService(self.env, provider=provider)
-        response = service.request_llm(
-            agent.llm_model,
+        ) % {'lang': target_lang, 'max_chars': max_chars, 'source': source_text}
+        response = self.env['resale.ai.service'].request_llm(
+            agent,
             [agent.system_prompt or 'You are an expert e-commerce copywriter.'],
             [prompt],
-            schema=schema if provider != 'google' else None,
-            web_grounding=agent.web_search,
+            schema=schema,
         )
-        raw = response[-1] if response else ''
         self.error_message = False
         try:
-            result = json.loads(re.sub(r'^```(?:json)?|```$', '', raw.strip(), flags=re.MULTILINE).strip())
-            if result.get('candidates'):
-                text = result['candidates'][0]['content']['parts'][0].get('text', '')
-                result = json.loads(text)
-            return result
+            return self.env['resale.ai.service'].parse_json_response(response)
         except (TypeError, ValueError) as error:
             raise UserError(_('The AI agent returned an invalid structured response.')) from error
 
     def _apply_proposal(self, text):
+        """Store the selected, length-limited proposal as safe HTML."""
         self.ensure_one()
         if not text:
             raise UserError(_('The selected proposal is empty.'))

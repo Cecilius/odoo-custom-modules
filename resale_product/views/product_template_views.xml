@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Add shared resale identity, GPSR fields, and the operator-facing resale tab. -->
     <record id="product_template_form_resale_product" model="ir.ui.view">
         <field name="name">product.template.form.resale.product</field>
         <field name="model">product.template</field>
@@ -13,10 +14,12 @@
                             <!-- 2 Column Layout (Left & Right) -->
                             <group>
                                 <field name="resale_product_manufacturer_id"/>
+                                <field name="manufacturer_contact_copy" readonly="1"/>
                                 <field name="resale_product_safety_record"/>
                             </group>
                             <group>
                                 <field name="resale_product_eu_responsible_person_id"/>
+                                <field name="eu_responsible_contact_copy" readonly="1"/>
                                 <field name="resale_product_ce_compliance"/>
                             </group>
                             <!-- Full-Width Description Below -->

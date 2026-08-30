@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <list string="Allowed Google Gemini Models" editable="bottom">
                 <field name="allowed" widget="boolean_toggle"/>
+                <field name="api_mode"/>
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="input_token_limit"/>
@@ -28,6 +29,7 @@
                     </div>
                     <group>
                         <field name="allowed"/>
+                        <field name="api_mode"/>
                         <field name="model_id" readonly="1"/>
                         <field name="input_token_limit" readonly="1"/>
                         <field name="output_token_limit" readonly="1"/>

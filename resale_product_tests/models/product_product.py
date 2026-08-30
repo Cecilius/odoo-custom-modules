@@ -1,7 +1,10 @@
+"""Store the latest resale test result on product variants."""
+
 from odoo import api, fields, models
 
 
 class ProductProduct(models.Model):
+    """Batch-compute variant test results from their product templates."""
     _inherit = 'product.product'
 
     resale_last_test_result_id = fields.Many2one(
@@ -17,11 +20,15 @@ class ProductProduct(models.Model):
         'product_tmpl_id.resale_product_test_ids.result_id',
     )
     def _compute_resale_last_test_result_id(self):
-        test_model = self.env['resale.product.test']
+        """Fetch all relevant tests once, avoiding one query per product variant."""
+        tests = self.env['resale.product.test'].search(
+            [('product_template_id', 'in', self.mapped('product_tmpl_id').ids)],
+            order='test_date desc, id desc',
+        )
+        latest_by_template = {}
+        for test in tests:
+            latest_by_template.setdefault(test.product_template_id.id, test.result_id)
         for product in self:
-            latest_test = test_model.search(
-                [('product_template_id', '=', product.product_tmpl_id.id)],
-                order='test_date desc, id desc',
-                limit=1,
+            product.resale_last_test_result_id = latest_by_template.get(
+                product.product_tmpl_id.id,
             )
-            product.resale_last_test_result_id = latest_test.result_id
