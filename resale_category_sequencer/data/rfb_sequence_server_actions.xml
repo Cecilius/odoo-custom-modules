@@ -9,7 +9,7 @@
         <field name="code"><![CDATA[
 if not env.user.has_group('base.group_system'):
     raise Warning('Only system administrators can run RFB sequence alignment.')
-rows = env['product.category']._adjust_rfb_sequences(dry_run=True)
+rows = records._adjust_rfb_sequences(dry_run=True)
 changed = sum(1 for row in rows if row['changed'])
 log('RFB sequence dry run: %s sequence(s) would change.' % changed, level='info')
 action = {
@@ -34,7 +34,7 @@ action = {
         <field name="code"><![CDATA[
 if not env.user.has_group('base.group_system'):
     raise Warning('Only system administrators can run RFB sequence alignment.')
-rows = env['product.category']._adjust_rfb_sequences(dry_run=False)
+rows = records._adjust_rfb_sequences(dry_run=False)
 changed = sum(1 for row in rows if row['changed'])
 log('RFB sequence alignment applied: %s sequence(s) changed.' % changed, level='info')
 action = {

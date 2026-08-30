@@ -84,7 +84,10 @@ class ProductCategory(models.Model):
                     highest.get(code, 0), int(match.group('number'))
                 )
 
-        categories = self.env['product.category'].sudo().search(
+        # Contextual server actions pass the selected categories in ``self``.
+        # An empty model recordset, as used by the shell script, intentionally
+        # means all coded categories.
+        categories = self.sudo() if self else self.env['product.category'].sudo().search(
             [('category_code', '!=', False)],
             order='category_code,id',
         )
