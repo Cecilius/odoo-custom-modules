@@ -229,8 +229,8 @@ def _request_llm_google_interactions(
         request_token_usage = {}
         for attempt in range(3):
             response, to_call, next_inputs, request_token_usage = (
-                self._request_llm_google_interactions_helper(
-                    llm_model, system_prompts, user_prompts, tools=tools, files=files,
+                _request_llm_google_interactions_helper(
+                    self, llm_model, system_prompts, user_prompts, tools=tools, files=files,
                     schema=schema, reasoning=reasoning, inputs=inputs,
                     web_grounding=web_grounding,
                 )
