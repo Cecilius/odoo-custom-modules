@@ -26,6 +26,16 @@ class GoogleModel(models.Model):
         string='Allowed for AI agents',
         help='Only allowed models are available in the AI agent model selector.',
     )
+    api_mode = fields.Selection(
+        [
+            ('interactions', 'Interactions API (v1)'),
+            ('generate_content', 'Generate Content (v1beta)'),
+        ],
+        string='API Mode',
+        default='interactions',
+        help='Which Gemini API endpoint this model uses. The interactions API is the new '
+             'agent-oriented v1 endpoint; generateContent is the legacy v1beta endpoint.',
+    )
     last_seen = fields.Datetime()
 
     _model_id_unique = models.UniqueIndex('(model_id)')
@@ -69,8 +79,10 @@ class GoogleModel(models.Model):
 
     @api.model
     def _is_supported_model(self, model_data):
-        """Return whether a Gemini model supports text generation for agents."""
-        return 'generateContent' in (model_data.get('supportedGenerationMethods') or [])
+        """Return whether a Gemini model supports text generation or interaction frameworks."""
+        methods = model_data.get('supportedGenerationMethods') or []
+        # Allow models supporting either legacy content generation or the new interactions paradigm
+        return 'generateContent' in methods or 'interactions' in methods or 'generateInteraction' in methods
 
     @api.model
     def action_sync_models(self):
@@ -89,12 +101,18 @@ class GoogleModel(models.Model):
             if not model_id:
                 continue
             seen_ids.add(model_id)
+            methods = model.get('supportedGenerationMethods') or []
             values = {
                 'name': model.get('displayName') or model_id,
                 'description': model.get('description'),
                 'input_token_limit': model.get('inputTokenLimit') or 0,
                 'output_token_limit': model.get('outputTokenLimit') or 0,
-                'supported_generation_methods': ','.join(model.get('supportedGenerationMethods') or []),
+                'supported_generation_methods': ','.join(methods),
+                'api_mode': (
+                    'interactions'
+                    if 'interactions' in methods or 'generateInteraction' in methods
+                    else 'generate_content'
+                ),
                 'active': True,
                 'last_seen': now,
             }
