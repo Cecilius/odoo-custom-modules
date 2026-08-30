@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 """Category-code validation and RFB sequence management."""
+import re
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+
+
+_RFB_REFERENCE = re.compile(r'^RFB-(?P<category>\d{2})-(?P<number>\d+)$')
 
 
 class ProductCategory(models.Model):
@@ -55,3 +60,58 @@ class ProductCategory(models.Model):
                 'implementation': 'standard',
             })
         return sequence
+
+    def _adjust_rfb_sequences(self, dry_run=True):
+        """Align category sequences with existing RFB product references.
+
+        References are matched by their embedded category code, even if a
+        product was later moved to another category. Sequences only advance.
+
+        :param bool dry_run: report intended changes without writing anything.
+        :return: one result dictionary per coded category.
+        """
+        highest = {}
+        products = self.env['product.template'].search([
+            ('default_code', 'ilike', 'RFB-%'),
+        ])
+        for product in products:
+            match = _RFB_REFERENCE.match(
+                (product.default_code or '').strip().upper()
+            )
+            if match:
+                code = match.group('category')
+                highest[code] = max(
+                    highest.get(code, 0), int(match.group('number'))
+                )
+
+        categories = self.env['product.category'].sudo().search(
+            [('category_code', '!=', False)],
+            order='category_code,id',
+        )
+        sequences = self.env['ir.sequence'].sudo()
+        results = []
+        for category in categories:
+            code = category.category_code
+            sequence_code = f'product.category.seq.{code}'
+            sequence = sequences.search([('code', '=', sequence_code)], limit=1)
+            missing = not sequence
+            current_next = sequence.number_next if sequence else 1
+            target_next = max(current_next, highest.get(code, 0) + 1)
+            changed = missing or target_next != current_next
+
+            if changed and not dry_run:
+                sequence = category._get_or_create_sequence()
+                if sequence.number_next != target_next:
+                    sequence.write({'number_next': target_next})
+
+            results.append({
+                'category_id': category.id,
+                'category': category.display_name,
+                'category_code': code,
+                'sequence_code': sequence_code,
+                'existing_highest': highest.get(code, 0),
+                'current_next': current_next,
+                'target_next': target_next,
+                'changed': changed,
+            })
+        return results

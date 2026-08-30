@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_rfb_sequences_dry_run" model="ir.actions.server">
+        <field name="name">Align RFB Sequences (Dry Run)</field>
+        <field name="model_id" ref="product.model_product_category"/>
+        <field name="binding_model_id" ref="product.model_product_category"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+rows = env['product.category']._adjust_rfb_sequences(dry_run=True)
+changed = sum(1 for row in rows if row['changed'])
+log('RFB sequence dry run: %s sequence(s) would change.' % changed, level='info')
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'RFB Sequence Dry Run',
+        'message': '%s sequence(s) would change. See the server log for details.' % changed,
+        'type': 'info',
+        'sticky': False,
+    },
+}
+        ]]></field>
+    </record>
+
+    <record id="action_rfb_sequences_apply" model="ir.actions.server">
+        <field name="name">Align RFB Sequences (Apply)</field>
+        <field name="model_id" ref="product.model_product_category"/>
+        <field name="binding_model_id" ref="product.model_product_category"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+rows = env['product.category']._adjust_rfb_sequences(dry_run=False)
+changed = sum(1 for row in rows if row['changed'])
+log('RFB sequence alignment applied: %s sequence(s) changed.' % changed, level='info')
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'RFB Sequences Aligned',
+        'message': '%s sequence(s) changed.' % changed,
+        'type': 'success',
+        'sticky': False,
+    },
+}
+        ]]></field>
+    </record>
+</odoo>
