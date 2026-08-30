@@ -13,6 +13,9 @@
                     <setting string="Backup GPSR research agent">
                         <field name="resale_ai_manufacturer_backup_agent_id"/>
                     </setting>
+                    <setting string="AI request timeout">
+                        <field name="resale_ai_manufacturer_request_timeout"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

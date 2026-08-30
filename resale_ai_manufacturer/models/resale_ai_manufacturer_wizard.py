@@ -1,8 +1,23 @@
 """Wizard for researching GPSR manufacturer and responsible-person data."""
 
 from odoo import _, api, fields, models
+from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
 from odoo.exceptions import UserError
+
+
+class ManufacturerLLMApiService(LLMApiService):
+    """Give GPSR research requests a configurable timeout."""
+
+    def _request(self, *args, timeout=30, **kwargs):
+        configured_timeout = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_ai_manufacturer.request_timeout', '90'
+        )
+        try:
+            configured_timeout = max(int(configured_timeout), 30)
+        except (TypeError, ValueError):
+            configured_timeout = 90
+        return super()._request(*args, timeout=max(timeout, configured_timeout), **kwargs)
 
 
 class ResaleAIManufacturerWizard(models.TransientModel):
@@ -187,6 +202,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             [agent.system_prompt or 'You are a careful GPSR compliance research agent.'],
             [prompt],
             schema=schema,
+            service_class=ManufacturerLLMApiService,
         )
         self.error_message = False
         try:
