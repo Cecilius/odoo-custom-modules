@@ -6,6 +6,14 @@ from odoo import models, fields, api, _
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    # Internal references are stable identifiers in listings, exports, and
+    # integrations. Empty values remain allowed while a product is drafted.
+    _default_code_unique = models.UniqueIndex(
+        "USING btree (lower(btrim(default_code))) "
+        "WHERE default_code IS NOT NULL AND btrim(default_code) <> ''",
+        'Internal Reference must be unique when provided.',
+    )
+
     has_category_code = fields.Boolean(
         compute='_compute_has_category_code',
         string="Has Category Code"
