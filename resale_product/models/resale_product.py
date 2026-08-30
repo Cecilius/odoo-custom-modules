@@ -129,6 +129,11 @@ class ProductCompliance(models.Model):
         product_model = self.env['product.template']
         if self.brand_value_id and 'brand_value_id' in product_model._fields:
             values['brand_value_id'] = self.brand_value_id.id
+        default_warranty_id = self.env['ir.config_parameter'].sudo().get_param(
+            'resale_attributes.default_warranty_value_id'
+        )
+        if default_warranty_id and 'warranty_value_id' in product_model._fields:
+            values['warranty_value_id'] = int(default_warranty_id)
         product = product_model.with_context(lang='en_US').create(values)
         for translation in name_translations:
             if (
