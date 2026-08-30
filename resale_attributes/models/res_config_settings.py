@@ -42,6 +42,7 @@ class ResConfigSettings(models.TransientModel):
     default_warranty_value_id = fields.Many2one(
         'product.attribute.value', string='Default Warranty',
         config_parameter='resale_attributes.default_warranty_value_id',
+        default_model='product.template',
         domain="[('attribute_id', '=', warranty_attribute_id)]",
     )
 
