@@ -456,7 +456,7 @@ class ResaleProductWizard(models.TransientModel):
             'Descriptions must contain every installed language code and should be accurate and concise.'
         )
         prompt = _('''Research this product using web search. Never invent identifiers or prices. If input is insufficient, set needs_details=true and ask one concise question. Otherwise return all fields.
-Return ONLY one valid JSON object. Do not return Markdown fences, comments, explanations, or any other text.
+Return ONLY one valid JSON object. Do not return Markdown fences, comments, explanations, or any other text. If available return MSRP as a "retail_price".
 Use this exact response template and key names:
 {
   "needs_details": false,
@@ -486,7 +486,7 @@ Installed language codes: %(languages)s''') % {
             'description_template': description_template, 'description_rule': description_rule}
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or 'You are a careful product research agent.'],
+            [agent.system_prompt or 'You are a careful product research agent researching primarily Spanish market, if you dont find enough relevant information then European. If neither of those results in satisfactory result then search globally.'],
             [prompt],
             schema=schema,
             service_class=ResearchLLMApiService,

@@ -39,6 +39,12 @@ class ResConfigSettings(models.TransientModel):
         ),
         domain=[('create_variant', '=', 'no_variant')],
     )
+    default_warranty_value_id = fields.Many2one(
+        'product.attribute.value', string='Default Warranty',
+        config_parameter='resale_attributes.default_warranty_value_id',
+        default_model='product.template',
+        domain="[('attribute_id', '=', warranty_attribute_id)]",
+    )
 
     @api.onchange('condition_attribute_id')
     def _onchange_condition_attribute_id(self):

@@ -19,6 +19,9 @@
                     <setting id="warranty_attribute" string="Warranty Attribute">
                         <field name="warranty_attribute_id"/>
                     </setting>
+                    <setting id="default_warranty" string="Default Warranty" help="Set a default warranty value for new products created from resale products.">
+                        <field name="default_warranty_value_id"/>
+                    </setting>
                     <setting id="condition_text_mappings" string="Condition Texts" help="Maintain reusable operator, listing, and follow-up text for each Condition value.">
                         <button name="%(resale_attributes.action_resale_condition_text)d" type="action"
                                 string="Manage Condition Texts" class="btn-link" target="new"/>
