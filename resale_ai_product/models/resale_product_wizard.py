@@ -1,5 +1,7 @@
 """Wizard for identifying resale products and resolving identifier conflicts."""
 
+import re
+
 from odoo import _, api, Command, fields, models
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
@@ -127,10 +129,28 @@ class ResaleProductWizard(models.TransientModel):
             if not any((wizard.ean, wizard.upc, wizard.asin, wizard.description, wizard.additional_question)):
                 raise ValidationError(_('Provide at least one identifier or a product description.'))
 
+    def _check_identifier_formats(self):
+        """Validate EAN/UPC/ASIN format before sending to AI."""
+        self.ensure_one()
+        resale_product = self.env['resale.product']
+        ean = (self.ean or '').strip().upper()
+        upc = (self.upc or '').strip().upper()
+        asin = (self.asin or '').strip().upper()
+        if ean:
+            if not ean.isdigit() or len(ean) not in (8, 13, 14) or not resale_product._has_valid_check_digit(ean):
+                raise ValidationError(_('EAN must be a valid 8, 13, or 14 digit barcode.'))
+        if upc:
+            if not upc.isdigit() or len(upc) != 12 or not resale_product._has_valid_check_digit(upc):
+                raise ValidationError(_('UPC must be a valid 12 digit UPC-A barcode.'))
+        if asin:
+            if not re.fullmatch(r'[A-Z0-9]{10}', asin):
+                raise ValidationError(_('ASIN must contain exactly 10 letters or digits.'))
+
     def action_research(self):
         """Resolve local matches before calling AI, including partial conflicts."""
         self.ensure_one()
         self._check_input()
+        self._check_identifier_formats()
         product_model = self.env['resale.product']
         matches = []
         provided_identifiers = []
@@ -443,14 +463,31 @@ class ResaleProductWizard(models.TransientModel):
         brands = brand_attribute.value_ids if brand_attribute else self.env['product.attribute.value']
         languages = self.env['res.lang'].search([('active', '=', True)]).mapped('code')
         schema = {'type': 'object', 'properties': {
-            'needs_details': {'type': 'boolean'}, 'question': {'type': 'string'}, 'names': {'type': 'object', 'additionalProperties': {'type': 'string'}},
+            'needs_details': {'type': 'boolean'}, 'question': {'type': 'string'},
+            'names': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {'lang': {'type': 'string'}, 'name': {'type': 'string'}},
+                    'required': ['lang', 'name'],
+                    'additionalProperties': False,
+                },
+            },
             'category_code': {'type': 'string'}, 'brand': {'type': 'string'}, 'ean': {'type': 'string'}, 'upc': {'type': 'string'}, 'asin': {'type': 'string'},
             'retail_price': {'type': 'number'}, 'launch_year': {'type': 'integer'},
         }, 'required': ['needs_details', 'question', 'names', 'category_code', 'brand', 'ean', 'upc', 'asin', 'retail_price', 'launch_year']}
         if not self.exclude_description:
-            schema['properties']['descriptions'] = {'type': 'object', 'additionalProperties': {'type': 'string'}}
+            schema['properties']['descriptions'] = {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {'lang': {'type': 'string'}, 'description': {'type': 'string'}},
+                    'required': ['lang', 'description'],
+                    'additionalProperties': False,
+                },
+            }
             schema['required'].insert(3, 'descriptions')
-        description_template = '' if self.exclude_description else '  "descriptions": {"en_US": "Concise product description in English"},\n'
+        description_template = '' if self.exclude_description else '  "descriptions": [{"lang": "en_US", "description": "Concise product description in English"}],\n'
         description_rule = (
             'Do not return a descriptions field.' if self.exclude_description else
             'Descriptions must contain every installed language code and should be accurate and concise.'
@@ -461,7 +498,7 @@ Use this exact response template and key names:
 {
   "needs_details": false,
   "question": "",
-  "names": {"en_US": "Product name in English"},
+  "names": [{"lang": "en_US", "name": "Product name in English"}],
 %(description_template)s  "category_code": "01",
   "brand": "Apple",
   "ean": "0190199098534",
@@ -511,9 +548,13 @@ Installed language codes: %(languages)s''') % {
         self.result_brand_value_id = self._brand_value((result.get('brand') or '').strip()) or self._default_brand()
         self.result_ean, self.result_upc, self.result_asin = result.get('ean') or False, result.get('upc') or False, result.get('asin') or False
         self.result_retail_price, self.result_launch_year = result.get('retail_price') or 0, result.get('launch_year') or False
-        names = result.get('names') or result.get('name') or {}
-        if isinstance(names, str):
-            names = {self.env.lang or 'en_US': names}
+        names_raw = result.get('names') or result.get('name') or []
+        if isinstance(names_raw, str):
+            names = {self.env.lang or 'en_US': names_raw}
+        elif isinstance(names_raw, list):
+            names = {item['lang']: item['name'] for item in names_raw if isinstance(item, dict) and 'lang' in item and 'name' in item}
+        else:
+            names = names_raw
         languages = self.env['res.lang'].search([('active', '=', True)]).mapped('code')
         fallback_name = next((str(name).strip()[:50] for name in names.values() if name), '')
         preview = []
@@ -523,9 +564,13 @@ Installed language codes: %(languages)s''') % {
                 self.with_context(lang=lang).result_name = name
                 preview.append('%s: %s' % (lang, name))
         self.translation_preview = '\n'.join(preview)
-        descriptions = {} if self.exclude_description else result.get('descriptions') or result.get('description') or {}
-        if isinstance(descriptions, str):
-            descriptions = {self.env.lang or 'en_US': descriptions}
+        descriptions_raw = [] if self.exclude_description else result.get('descriptions') or result.get('description') or []
+        if isinstance(descriptions_raw, str):
+            descriptions = {self.env.lang or 'en_US': descriptions_raw}
+        elif isinstance(descriptions_raw, list):
+            descriptions = {item['lang']: item['description'] for item in descriptions_raw if isinstance(item, dict) and 'lang' in item and 'description' in item}
+        else:
+            descriptions = descriptions_raw
         description_fallback = next((str(value).strip() for value in descriptions.values() if value), '')
         description_preview = []
         for lang in languages:
