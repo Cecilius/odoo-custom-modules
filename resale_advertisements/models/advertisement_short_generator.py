@@ -132,17 +132,10 @@ class ResaleAdvertisementShortGenerator(models.TransientModel):
             },
             'required': ['proposals'],
         }
-        prompt = _(
-            'Shorten the long listing below into 3 distinct, concise short listing descriptions '
-            'in %(lang)s, suitable for resale marketplaces. Each short listing must keep the key '
-            'selling points and be at most %(max_chars)s characters. Each proposal must differ in '
-            'wording. Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
-            'Do not include Markdown fences, comments, or any other text.\n'
-            'Long listing:\n%(source)s'
-        ) % {'lang': target_lang, 'max_chars': max_chars, 'source': source_text}
+        prompt = _('Max characters: %(max_chars)s\nTarget language: %(lang)s\nLong listing:\n%(source)s') % {'lang': target_lang, 'max_chars': max_chars, 'source': source_text}
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or 'You are an expert e-commerce copywriter.'],
+            [agent.system_prompt],
             [prompt],
             schema=schema,
         )

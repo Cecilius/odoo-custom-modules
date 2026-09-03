@@ -1,6 +1,7 @@
 """Wizard for translating product descriptions while preserving HTML blocks."""
 
 import json
+import re
 
 from odoo import _, api, fields, models
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
@@ -143,13 +144,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         """Request one translated string for each numbered source block."""
         numbered = '\n'.join('%d. %s' % (i + 1, block) for i, block in enumerate(blocks))
         prompt = _(
-            'Translate the following product description into %(lang)s. '
-            'It is provided as %(count)d separate numbered blocks that all belong to the same '
-            'description, so translate them as one coherent text while keeping each block '
-            'independent and in the same order. Preserve the meaning, tone, marketing style and key '
-            'selling points, and keep each block roughly the same length as its source. '
-            'Respond with ONLY a JSON array of exactly %(count)d strings (no commentary, no Markdown '
-            'fences), where element i is the translation of block i.\n\n%(blocks)s'
+            'Target language: %(lang)s\nNumber of blocks: %(count)s\n\n%(blocks)s'
         ) % {'lang': target_language_name, 'count': len(blocks), 'blocks': numbered}
         schema = {
             'type': 'object',
@@ -165,24 +160,13 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         }
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or _('You are a professional translator.')],
+            [agent.system_prompt],
             [prompt],
             schema=schema,
         )
-        try:
-            data = self.env['resale.ai.service'].parse_json_response(response)
-        except (TypeError, ValueError):
-            data = None
-        if isinstance(data, list):
-            parts = data
-        elif isinstance(data, dict):
-            parts = data.get('translations') or []
-        else:
-            parts = []
-        parts = [str(part).strip() for part in parts]
-        if len(parts) < len(blocks):
-            parts = parts + [''] * (len(blocks) - len(parts))
-        return parts[:len(blocks)]
+        data = self.env['resale.ai.service'].parse_json_response(response)
+        parts = data.get('translations') or []
+        return [re.sub(r'^\d+\.\s*', '', str(part).strip()) for part in parts]
 
     def action_apply(self):
         """Apply translations only if the source structure is unchanged."""

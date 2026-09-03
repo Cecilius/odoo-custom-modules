@@ -52,10 +52,6 @@ class ResaleProductWizard(models.TransientModel):
     upc = fields.Char(string='UPC')
     asin = fields.Char(string='ASIN')
     description = fields.Text(string='Product identification details')
-    exclude_description = fields.Boolean(
-        string='Exclude description from AI response',
-        help='When enabled, the agent will not research or return a product description. The identification details above are still sent.',
-    )
     additional_question = fields.Text(string='Answer to AI question')
     state = fields.Selection([('draft', 'Ready'), ('matched', 'Internal match'), ('researched', 'AI result'), ('question', 'More details required'), ('conflict', 'Identifier conflict'), ('comparison', 'AI comparison'), ('error', 'Research failed')], default='draft', required=True)
     result_name = fields.Char(string='Product name', translate=True)
@@ -473,11 +469,7 @@ class ResaleProductWizard(models.TransientModel):
                     'additionalProperties': False,
                 },
             },
-            'category_code': {'type': 'string'}, 'brand': {'type': 'string'}, 'ean': {'type': 'string'}, 'upc': {'type': 'string'}, 'asin': {'type': 'string'},
-            'retail_price': {'type': 'number'}, 'launch_year': {'type': 'integer'},
-        }, 'required': ['needs_details', 'question', 'names', 'category_code', 'brand', 'ean', 'upc', 'asin', 'retail_price', 'launch_year']}
-        if not self.exclude_description:
-            schema['properties']['descriptions'] = {
+            'descriptions': {
                 'type': 'array',
                 'items': {
                     'type': 'object',
@@ -485,45 +477,25 @@ class ResaleProductWizard(models.TransientModel):
                     'required': ['lang', 'description'],
                     'additionalProperties': False,
                 },
-            }
-            schema['required'].insert(3, 'descriptions')
-        description_template = '' if self.exclude_description else '  "descriptions": [{"lang": "en_US", "description": "Concise product description in English"}],\n'
-        description_rule = (
-            'Do not return a descriptions field.' if self.exclude_description else
-            'Descriptions must contain every installed language code and should be accurate and concise.'
-        )
-        prompt = _('''Research this product using web search. Never invent identifiers or prices. If input is insufficient, set needs_details=true and ask one concise question. Otherwise return all fields.
-Return ONLY one valid JSON object. Do not return Markdown fences, comments, explanations, or any other text. If available return MSRP as a "retail_price".
-Use this exact response template and key names:
-{
-  "needs_details": false,
-  "question": "",
-  "names": [{"lang": "en_US", "name": "Product name in English"}],
-%(description_template)s  "category_code": "01",
-  "brand": "Apple",
-  "ean": "0190199098534",
-  "upc": "190199098534",
-  "asin": null,
-  "retail_price": 0.0,
-  "launch_year": null
-}
-Rules: names must contain every installed language code and each name must be 50 characters or fewer. %(description_rule)s Use only an allowed category_code. Use only an allowed brand, or an empty string when unknown. Use null for an unknown identifier, price, or launch year. When needs_details is true, put the single clarification question in question and still include every other template key.
+            },
+            'category_code': {'type': 'string'}, 'brand': {'type': 'string'}, 'ean': {'type': 'string'}, 'upc': {'type': 'string'}, 'asin': {'type': 'string'},
+            'retail_price': {'type': 'number'}, 'launch_year': {'type': 'integer'},
+        }, 'required': ['needs_details', 'question', 'names', 'descriptions', 'category_code', 'brand', 'ean', 'upc', 'asin', 'retail_price', 'launch_year']}
+        prompt = _('''Allowed categories (code: name): %(categories)s
+Allowed brands: %(brands)s
+Installed language codes: %(languages)s
 EAN: %(ean)s
 UPC: %(upc)s
 ASIN: %(asin)s
 Description: %(description)s
-Additional answer: %(answer)s
-Allowed categories (code: name): %(categories)s
-Allowed brands: %(brands)s
-Installed language codes: %(languages)s''') % {
+Additional answer: %(answer)s''') % {
             'ean': self.ean or '', 'upc': self.upc or '', 'asin': self.asin or '',
             'description': self.description or '',
             'answer': self.additional_question or '',
-            'categories': ', '.join('%s: %s' % (c.category_code, c.display_name) for c in categories), 'brands': ', '.join(brands.mapped('name')), 'languages': ', '.join(languages),
-            'description_template': description_template, 'description_rule': description_rule}
+            'categories': ', '.join('%s: %s' % (c.category_code, c.display_name) for c in categories), 'brands': ', '.join(brands.mapped('name')), 'languages': ', '.join(languages)}
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or 'You are a careful product research agent researching primarily Spanish market, if you dont find enough relevant information then European. If neither of those results in satisfactory result then search globally.'],
+            [agent.system_prompt],
             [prompt],
             schema=schema,
             service_class=ResearchLLMApiService,
@@ -564,7 +536,7 @@ Installed language codes: %(languages)s''') % {
                 self.with_context(lang=lang).result_name = name
                 preview.append('%s: %s' % (lang, name))
         self.translation_preview = '\n'.join(preview)
-        descriptions_raw = [] if self.exclude_description else result.get('descriptions') or result.get('description') or []
+        descriptions_raw = result.get('descriptions') or result.get('description') or []
         if isinstance(descriptions_raw, str):
             descriptions = {self.env.lang or 'en_US': descriptions_raw}
         elif isinstance(descriptions_raw, list):
