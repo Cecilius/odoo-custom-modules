@@ -162,7 +162,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'country': {'type': 'string'}, 'email': {'type': 'string'},
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
-                    'required': ['name'],
+                    'required': ['name', 'street', 'city', 'zip', 'country', 'email', 'phone', 'website'],
                     'additionalProperties': False,
                 },
                 'eu_responsible': {
@@ -173,7 +173,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'country': {'type': 'string'}, 'email': {'type': 'string'},
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
-                    'required': ['name'],
+                    'required': ['name', 'street', 'city', 'zip', 'country', 'email', 'phone', 'website'],
                     'additionalProperties': False,
                 },
                 'ce_compliance': {'type': 'string'},
