@@ -162,7 +162,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'country': {'type': 'string'}, 'email': {'type': 'string'},
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
-                    'required': ['name'],
+                    'required': ['name', 'street', 'city', 'zip', 'country', 'email', 'phone', 'website'],
                     'additionalProperties': False,
                 },
                 'eu_responsible': {
@@ -173,13 +173,14 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'country': {'type': 'string'}, 'email': {'type': 'string'},
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
-                    'required': ['name'],
+                    'required': ['name', 'street', 'city', 'zip', 'country', 'email', 'phone', 'website'],
                     'additionalProperties': False,
                 },
                 'ce_compliance': {'type': 'string'},
                 'safety_record': {'type': 'string'},
             },
             'required': ['manufacturer', 'eu_responsible', 'ce_compliance', 'safety_record'],
+            'additionalProperties': False,
         }
         prompt = _('Product information:\n%(context)s') % {'context': context_text}
         response = self.env['resale.ai.service'].request_llm(
