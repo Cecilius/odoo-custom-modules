@@ -163,6 +163,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
                     'required': ['name'],
+                    'additionalProperties': False,
                 },
                 'eu_responsible': {
                     'type': 'object',
@@ -173,6 +174,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                         'phone': {'type': 'string'}, 'website': {'type': 'string'},
                     },
                     'required': ['name'],
+                    'additionalProperties': False,
                 },
                 'ce_compliance': {'type': 'string'},
                 'safety_record': {'type': 'string'},
