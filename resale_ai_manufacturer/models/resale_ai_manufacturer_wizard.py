@@ -180,6 +180,7 @@ class ResaleAIManufacturerWizard(models.TransientModel):
                 'safety_record': {'type': 'string'},
             },
             'required': ['manufacturer', 'eu_responsible', 'ce_compliance', 'safety_record'],
+            'additionalProperties': False,
         }
         prompt = _('Product information:\n%(context)s') % {'context': context_text}
         response = self.env['resale.ai.service'].request_llm(
