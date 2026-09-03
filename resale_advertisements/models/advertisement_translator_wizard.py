@@ -1,6 +1,7 @@
 """Wizard for translating product descriptions while preserving HTML blocks."""
 
 import json
+import re
 
 from odoo import _, api, fields, models
 from odoo.addons.resale_ai_base.models.ai_service import ResaleAIRequestError
@@ -165,7 +166,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         )
         data = self.env['resale.ai.service'].parse_json_response(response)
         parts = data.get('translations') or []
-        return [str(part).strip() for part in parts]
+        return [re.sub(r'^\d+\.\s*', '', str(part).strip()) for part in parts]
 
     def action_apply(self):
         """Apply translations only if the source structure is unchanged."""
