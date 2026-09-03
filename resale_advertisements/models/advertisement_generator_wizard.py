@@ -147,19 +147,10 @@ class ResaleAdvertisementGenerator(models.TransientModel):
             },
             'required': ['proposals'],
         }
-        prompt = _(
-            'Generate 3 distinct, ready-to-publish product descriptions for the product '
-            'below, intended for resale marketplaces. Each description must be a self-contained '
-            'description highlighting the product\'s key features, condition, and selling points. '
-            'Each proposal must differ in style and wording. '
-            'Each proposal must not exceed %(max_chars)s characters. '
-            'Return ONLY one valid JSON object with a "proposals" array of exactly 3 strings. '
-            'Do not include Markdown fences, comments, or any other text.\n'
-            'Product information:\n%(context)s'
-        ) % {'max_chars': max_chars, 'context': context_text}
+        prompt = _('Max characters: %(max_chars)s\nProduct information:\n%(context)s') % {'max_chars': max_chars, 'context': context_text}
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or 'You are an expert e-commerce copywriter.'],
+            [agent.system_prompt],
             [prompt],
             schema=schema,
         )

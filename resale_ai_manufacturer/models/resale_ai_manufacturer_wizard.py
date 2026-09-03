@@ -179,27 +179,10 @@ class ResaleAIManufacturerWizard(models.TransientModel):
             },
             'required': ['manufacturer', 'eu_responsible', 'ce_compliance', 'safety_record'],
         }
-        prompt = _(
-            'Research this product using web search to find GPSR (General Product Safety '
-            'Regulation) compliance information. Never invent details; use null/empty for anything unknown.\n'
-            'Return ONLY one valid JSON object with the structure below. Do not include Markdown '
-            'fences, comments, or any other text.\n'
-            '{\n'
-            '  "manufacturer": {"name": "", "street": "", "city": "", "zip": "", "country": "", "email": "", "phone": "", "website": ""},\n'
-            '  "eu_responsible": {"name": "", "street": "", "city": "", "zip": "", "country": "", "email": "", "phone": "", "website": ""},\n'
-            '  "ce_compliance": "CE compliance / EU declaration of conformity details",\n'
-            '  "safety_record": "Safety information, hazards and warnings"\n'
-            '}\n'
-            'Rules:\n'
-            '- "manufacturer" is the product manufacturer (a company).\n'
-            '- "eu_responsible" is the EU Responsible Person under GPSR.\n'
-            '- "country" should be the country name or ISO code.\n'
-            '- Do NOT include any of our own existing contacts or partner data; only research public information.\n'
-            'Product information:\n%(context)s'
-        ) % {'context': context_text}
+        prompt = _('Product information:\n%(context)s') % {'context': context_text}
         response = self.env['resale.ai.service'].request_llm(
             agent,
-            [agent.system_prompt or 'You are a careful GPSR compliance research agent.'],
+            [agent.system_prompt],
             [prompt],
             schema=schema,
             service_class=ManufacturerLLMApiService,
