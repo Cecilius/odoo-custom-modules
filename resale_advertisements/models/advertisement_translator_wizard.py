@@ -87,7 +87,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
         self.ensure_one()
         return self._run_translation()
 
-def _run_translation(self):
+    def _run_translation(self):
         """Translate all source blocks in one request and preserve their ordering."""
         self.ensure_one()
         field = self.product_template_id._fields['description_ecommerce']
