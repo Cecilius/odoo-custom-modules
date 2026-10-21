@@ -69,7 +69,7 @@
                 <filter string="Draft" name="status_draft" domain="[('status', '=', 'draft')]"/>
                 <filter string="Sold" name="status_sold" domain="[('status', '=', 'sold')]"/>
                 <filter string="Removed" name="status_removed" domain="[('status', '=', 'removed')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Platform" name="group_by_platform" context="{'group_by': 'platform'}"/>
                     <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
                     <filter string="Listed On" name="group_by_date" context="{'group_by': 'date_listed'}"/>
