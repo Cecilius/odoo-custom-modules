@@ -115,7 +115,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             # per block (kept separated) to preserve the source structure.
             return self._ask_translate_agent_blocks(ag, source_parts, self.target_lang_id.name)
 
-        source_parts = [html2plaintext(term).strip() for term in source_terms]
+        source_parts = [term.strip() for term in source_terms]
 
         try:
             translated_parts = _translate_all(agent)
@@ -190,8 +190,7 @@ class ResaleAdvertisementTranslator(models.TransientModel):
             ))
         mapping = {}
         for term, translated in zip(source_terms, translated_parts):
-            escaped = translated.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            mapping[term] = escaped.replace('\n', '<br/>')
+            mapping[term] = translated.replace('\n', '<br/>')
         self.product_template_id.update_field_translations(
             'description_ecommerce',
             {self.target_lang_id.code: mapping},

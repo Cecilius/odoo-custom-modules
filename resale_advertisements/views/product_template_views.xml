@@ -59,6 +59,50 @@
                     </group>
                 </details>
             </xpath>
+
+            <xpath expr="//details[@name='resale_gpsr']" position="after">
+                <details name="resale_platform_ads" colspan="2" class="mb-3">
+                    <summary class="fw-bold cursor-pointer text-primary">Platform advertisements</summary>
+                    <group colspan="2">
+                        <field name="new_listing_url" placeholder="Paste eBay / Wallapop / Vinted advertisement link..."/>
+                        <button name="action_add_listing" type="object"
+                                string="Add" class="btn btn-primary" icon="fa-plus-circle"/>
+                    </group>
+                    <group colspan="2">
+                        <field name="listing_ids" nolabel="1" colspan="2">
+                            <list editable="bottom" create="false">
+                                <field name="platform_id"/>
+                                <field name="url" widget="url"/>
+                                <field name="date_listed"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group colspan="2">
+                        <group>
+                            <field name="listing_platform_ids" widget="many2many_tags" readonly="1"/>
+                        </group>
+                    </group>
+                </details>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filters for advertised / not advertised products per platform. -->
+    <record id="product_template_search_view_resale_listings" model="ir.ui.view">
+        <field name="name">product.template.search.resale.listings</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="listing_ids"/>
+                <field name="listing_platform_ids" string="Platform"/>
+                <separator/>
+                <filter string="Has Advertisement" name="has_advertisement" domain="[('listing_ids', '!=', False)]"/>
+                <filter string="No Advertisement" name="no_advertisement" domain="[('listing_ids', '=', False)]"/>
+                <searchpanel>
+                    <field name="listing_platform_ids" string="Platforms" icon="fa-globe" enable_counters="1" select="multi"/>
+                </searchpanel>
+            </xpath>
         </field>
     </record>
 </odoo>

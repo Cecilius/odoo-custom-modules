@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Editable sales platforms; add new marketplaces without code changes. -->
+    <record id="resale_platform_view_list" model="ir.ui.view">
+        <field name="name">resale.platform.list</field>
+        <field name="model">resale.platform</field>
+        <field name="arch" type="xml">
+            <list string="Sales Platforms" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="host_keyword"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="resale_platform_view_form" model="ir.ui.view">
+        <field name="name">resale.platform.form</field>
+        <field name="model">resale.platform</field>
+        <field name="arch" type="xml">
+            <form string="Sales Platform">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. eBay"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="host_keyword"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="resale_platform_view_search" model="ir.ui.view">
+        <field name="name">resale.platform.search</field>
+        <field name="model">resale.platform</field>
+        <field name="arch" type="xml">
+            <search string="Sales Platforms">
+                <field name="name"/>
+                <field name="host_keyword"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="resale_platform_action" model="ir.actions.act_window">
+        <field name="name">Sales Platforms</field>
+        <field name="res_model">resale.platform</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="resale_platform_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new sales platform
+            </p>
+            <p>
+                The URL keyword is used to detect the platform when pasting an advertisement link.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_resale_platform"
+              name="Sales Platforms"
+              parent="resale_product.menu_resale_product_root"
+              action="resale_platform_action"
+              sequence="30"/>
+</odoo>
