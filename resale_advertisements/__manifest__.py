@@ -1,6 +1,6 @@
 {
     'name': 'Resale Advertisements',
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'summary': 'Product descriptions and short listings with AI generation for resale products',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
@@ -8,7 +8,9 @@
     'depends': ['resale_base', 'resale_product', 'resale_product_tests', 'resale_attributes', 'resale_ai_base', 'ai_provider_catalog', 'product', 'website_sale'],
     'data': [
         'security/ir.model.access.csv',
+        'data/resale_platform_data.xml',
         'views/res_config_settings_views.xml',
+        'views/resale_platform_views.xml',
         'views/product_template_views.xml',
         'views/resale_listing_views.xml',
         'views/advertisement_generator_wizard_views.xml',

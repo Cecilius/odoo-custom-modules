@@ -24,24 +24,12 @@ class ProductTemplate(models.Model):
         string='Platform Advertisements',
         help='Advertisements on external platforms that include this product.',
     )
-    listing_count = fields.Integer(
-        string='Advertisement Count',
-        compute='_compute_listing_flags',
-    )
-    listed_on_ebay = fields.Boolean(
-        string='Listed on eBay',
-        compute='_compute_listing_flags',
+    listing_platform_ids = fields.Many2many(
+        'resale.platform',
+        string='Listed on',
+        compute='_compute_listing_platform_ids',
         store=True,
-    )
-    listed_on_wallapop = fields.Boolean(
-        string='Listed on Wallapop',
-        compute='_compute_listing_flags',
-        store=True,
-    )
-    listed_on_vinted = fields.Boolean(
-        string='Listed on Vinted',
-        compute='_compute_listing_flags',
-        store=True,
+        help='Platforms where this product currently has an advertisement.',
     )
     new_listing_url = fields.Char(
         string='Paste Ad Link',
@@ -78,14 +66,10 @@ class ProductTemplate(models.Model):
             self.env['resale.listing']._delete_orphans(linked_listings)
         return result
 
-    @api.depends('listing_ids.platform')
-    def _compute_listing_flags(self):
+    @api.depends('listing_ids.platform_id')
+    def _compute_listing_platform_ids(self):
         for record in self:
-            platforms = set(record.listing_ids.mapped('platform'))
-            record.listed_on_ebay = 'ebay' in platforms
-            record.listed_on_wallapop = 'wallapop' in platforms
-            record.listed_on_vinted = 'vinted' in platforms
-            record.listing_count = len(record.listing_ids)
+            record.listing_platform_ids = record.listing_ids.mapped('platform_id')
 
     @api.depends('short_listing', 'condition_listing_text', 'default_code')
     def _compute_short_listing_copy(self):

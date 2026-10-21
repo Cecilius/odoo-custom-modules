@@ -2,34 +2,24 @@
 
 from odoo import api, fields, models
 
-PLATFORM_SELECTION = [
-    ('ebay', 'eBay'),
-    ('wallapop', 'Wallapop'),
-    ('vinted', 'Vinted'),
-]
-
-PLATFORM_HOSTS = {
-    'ebay': 'ebay',
-    'wallapop': 'wallapop',
-    'vinted': 'vinted',
-}
-
 
 class ResaleListing(models.Model):
     """One advertisement link on one sales platform, shared by many products."""
     _name = 'resale.listing'
     _table = 'resale_listing'
     _description = 'Resale Platform Advertisement'
-    _order = 'platform, url, id'
+    _order = 'platform_id, url, id'
 
     _url_unique = models.UniqueIndex(
-        "USING btree (platform, lower(btrim(url)))",
+        "USING btree (lower(btrim(url)))",
         'An advertisement with this URL already exists.',
     )
 
-    platform = fields.Selection(
-        PLATFORM_SELECTION,
+    platform_id = fields.Many2one(
+        'resale.platform',
         string='Platform',
+        ondelete='restrict',
+        index=True,
         help='Detected automatically from the link; can be corrected manually.',
     )
     url = fields.Char(
@@ -59,13 +49,11 @@ class ResaleListing(models.Model):
         for record in self:
             record.product_count = len(record.product_template_ids)
 
-    @api.depends('url', 'platform')
+    @api.depends('url', 'platform_id')
     def _compute_display_name(self):
-        platforms = dict(PLATFORM_SELECTION)
         for record in self:
-            prefix = platforms.get(record.platform, '')
-            label = record.url or ''
-            record.display_name = ' - '.join(part for part in (prefix, label) if part)
+            prefix = record.platform_id.display_name or ''
+            record.display_name = ' - '.join(part for part in (prefix, record.url) if part)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -73,7 +61,8 @@ class ResaleListing(models.Model):
         resolved = []
         fresh_vals = []
         for vals in vals_list:
-            self._normalize_values(vals)
+            self._strip_url(vals)
+            self._infer_platform(vals)
             existing = self._find_existing(vals.get('url')) if vals.get('url') else False
             resolved.append(existing)
             if not existing:
@@ -87,22 +76,26 @@ class ResaleListing(models.Model):
 
     def write(self, vals):
         """Normalize links on updates so deduplication stays consistent."""
-        self._normalize_values(vals)
+        self._strip_url(vals)
         return super().write(vals)
 
     @staticmethod
-    def _normalize_values(vals):
+    def _strip_url(vals):
         if isinstance(vals.get('url'), str):
             vals['url'] = vals['url'].strip() or False
-        if not vals.get('platform') and isinstance(vals.get('url'), str):
-            vals['platform'] = ResaleListing._infer_platform(vals['url'])
 
-    @staticmethod
-    def _infer_platform(url):
+    def _infer_platform(self, vals):
+        if vals.get('platform_id') or not isinstance(vals.get('url'), str):
+            return
+        vals['platform_id'] = self._detect_platform_id(vals['url'])
+
+    def _detect_platform_id(self, url):
         lowered = url.lower()
-        for platform, needle in PLATFORM_HOSTS.items():
-            if needle in lowered:
-                return platform
+        platforms = self.env['resale.platform'].search([], order='sequence, id')
+        for platform in platforms:
+            keyword = (platform.host_keyword or platform.name or '').lower().strip()
+            if keyword and keyword in lowered:
+                return platform.id
         return False
 
     def _find_existing(self, url):

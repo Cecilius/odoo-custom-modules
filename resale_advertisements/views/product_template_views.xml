@@ -71,7 +71,7 @@
                     <group colspan="2">
                         <field name="listing_ids" nolabel="1" colspan="2">
                             <list editable="bottom" create="false">
-                                <field name="platform"/>
+                                <field name="platform_id"/>
                                 <field name="url" widget="url"/>
                                 <field name="date_listed"/>
                             </list>
@@ -79,9 +79,7 @@
                     </group>
                     <group colspan="2">
                         <group>
-                            <field name="listed_on_ebay"/>
-                            <field name="listed_on_wallapop"/>
-                            <field name="listed_on_vinted"/>
+                            <field name="listing_platform_ids" widget="many2many_tags" readonly="1"/>
                         </group>
                     </group>
                 </details>
@@ -97,18 +95,13 @@
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
                 <field name="listing_ids"/>
+                <field name="listing_platform_ids" string="Platform"/>
                 <separator/>
                 <filter string="Has Advertisement" name="has_advertisement" domain="[('listing_ids', '!=', False)]"/>
                 <filter string="No Advertisement" name="no_advertisement" domain="[('listing_ids', '=', False)]"/>
-                <separator/>
-                <filter string="Listed on eBay" name="listed_on_ebay" domain="[('listed_on_ebay', '=', True)]"/>
-                <filter string="Not on eBay" name="not_on_ebay" domain="[('listed_on_ebay', '=', False)]"/>
-                <separator/>
-                <filter string="Listed on Wallapop" name="listed_on_wallapop" domain="[('listed_on_wallapop', '=', True)]"/>
-                <filter string="Not on Wallapop" name="not_on_wallapop" domain="[('listed_on_wallapop', '=', False)]"/>
-                <separator/>
-                <filter string="Listed on Vinted" name="listed_on_vinted" domain="[('listed_on_vinted', '=', True)]"/>
-                <filter string="Not on Vinted" name="not_on_vinted" domain="[('listed_on_vinted', '=', False)]"/>
+                <searchpanel>
+                    <field name="listing_platform_ids" string="Platforms" icon="fa-globe" enable_counters="1" select="multi"/>
+                </searchpanel>
             </xpath>
         </field>
     </record>

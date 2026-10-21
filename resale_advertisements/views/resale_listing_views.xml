@@ -6,7 +6,7 @@
         <field name="model">resale.listing</field>
         <field name="arch" type="xml">
             <list string="Platform Advertisements" editable="bottom">
-                <field name="platform"/>
+                <field name="platform_id"/>
                 <field name="url" widget="url"/>
                 <field name="date_listed"/>
                 <field name="product_count"/>
@@ -27,7 +27,7 @@
                     <group>
                         <group string="Advertisement">
                             <field name="url" widget="url" placeholder="Paste advertisement link..."/>
-                            <field name="platform"/>
+                            <field name="platform_id"/>
                         </group>
                         <group string="Listing">
                             <field name="date_listed"/>
@@ -47,15 +47,13 @@
         <field name="arch" type="xml">
             <search string="Platform Advertisements">
                 <field name="url"/>
+                <field name="platform_id"/>
                 <field name="product_template_ids"/>
-                <filter string="eBay" name="platform_ebay" domain="[('platform', '=', 'ebay')]"/>
-                <filter string="Wallapop" name="platform_wallapop" domain="[('platform', '=', 'wallapop')]"/>
-                <filter string="Vinted" name="platform_vinted" domain="[('platform', '=', 'vinted')]"/>
-                <filter string="No Platform" name="platform_none" domain="[('platform', '=', False)]"/>
+                <filter string="No Platform" name="platform_none" domain="[('platform_id', '=', False)]"/>
                 <separator/>
                 <filter string="No Products" name="no_products" domain="[('product_template_ids', '=', False)]"/>
                 <group>
-                    <filter string="Platform" name="group_by_platform" context="{'group_by': 'platform'}"/>
+                    <filter string="Platform" name="group_by_platform" context="{'group_by': 'platform_id'}"/>
                     <filter string="Listed On" name="group_by_date" context="{'group_by': 'date_listed'}"/>
                 </group>
             </search>
