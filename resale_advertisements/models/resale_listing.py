@@ -110,6 +110,13 @@ class ResaleListing(models.Model):
             ('url', '=ilike', url),
         ], limit=1)
 
+    @api.model
+    def _delete_orphans(self, listings):
+        """Remove advertisement records that no longer reference any product."""
+        orphans = listings.filtered(lambda listing: not listing.product_template_ids)
+        if orphans:
+            orphans.unlink()
+
     def action_open_products(self):
         self.ensure_one()
         return {

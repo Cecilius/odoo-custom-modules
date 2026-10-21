@@ -52,6 +52,8 @@
                 <filter string="Wallapop" name="platform_wallapop" domain="[('platform', '=', 'wallapop')]"/>
                 <filter string="Vinted" name="platform_vinted" domain="[('platform', '=', 'vinted')]"/>
                 <filter string="No Platform" name="platform_none" domain="[('platform', '=', False)]"/>
+                <separator/>
+                <filter string="No Products" name="no_products" domain="[('product_template_ids', '=', False)]"/>
                 <group>
                     <filter string="Platform" name="group_by_platform" context="{'group_by': 'platform'}"/>
                     <filter string="Listed On" name="group_by_date" context="{'group_by': 'date_listed'}"/>

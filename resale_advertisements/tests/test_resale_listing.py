@@ -71,3 +71,28 @@ class TestResaleListing(TransactionCase):
             ('listing_ids', '=', False),
         ])
         self.assertIn(self.product_b, no_ads_products)
+
+    def test_removing_last_link_deletes_listing(self):
+        self.product_a.new_listing_url = 'https://ebay.example/itm/77'
+        self.product_a.action_add_listing()
+        listing = self.product_a.listing_ids
+        self.product_a.listing_ids = [(3, listing.id)]
+        self.assertFalse(listing.exists())
+
+    def test_combined_ad_survives_single_unlink(self):
+        self.product_a.new_listing_url = 'https://vinted.example/i/55'
+        self.product_a.action_add_listing()
+        self.product_b.new_listing_url = 'https://vinted.example/i/55'
+        self.product_b.action_add_listing()
+        listing = self.product_a.listing_ids
+        self.assertEqual(listing, self.product_b.listing_ids)
+        self.product_a.listing_ids = [(3, listing.id)]
+        self.assertTrue(listing.exists())
+        self.assertEqual(self.product_b.listing_ids, listing)
+
+    def test_deleting_last_product_deletes_listing(self):
+        self.product_a.new_listing_url = 'https://wallapop.example/en/item/88'
+        self.product_a.action_add_listing()
+        listing = self.product_a.listing_ids
+        self.product_a.unlink()
+        self.assertFalse(listing.exists())

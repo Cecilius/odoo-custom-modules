@@ -1,6 +1,6 @@
 {
     'name': 'Resale Advertisements',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'summary': 'Product descriptions and short listings with AI generation for resale products',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',

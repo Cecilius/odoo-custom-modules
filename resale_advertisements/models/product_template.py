@@ -59,6 +59,25 @@ class ProductTemplate(models.Model):
         self.new_listing_url = False
         return True
 
+    def write(self, vals):
+        """Delete advertisement records that lost their last product link."""
+        if 'listing_ids' not in vals:
+            return super().write(vals)
+        old_listings = self.listing_ids
+        result = super().write(vals)
+        removed = old_listings - self.listing_ids
+        if removed:
+            self.env['resale.listing']._delete_orphans(removed)
+        return result
+
+    def unlink(self):
+        """Remove advertisements that only the deleted products referenced."""
+        linked_listings = self.listing_ids
+        result = super().unlink()
+        if linked_listings:
+            self.env['resale.listing']._delete_orphans(linked_listings)
+        return result
+
     @api.depends('listing_ids.platform')
     def _compute_listing_flags(self):
         for record in self:
