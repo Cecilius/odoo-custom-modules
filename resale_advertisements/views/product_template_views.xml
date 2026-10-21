@@ -59,6 +59,53 @@
                     </group>
                 </details>
             </xpath>
+
+            <xpath expr="//details[@name='resale_gpsr']" position="after">
+                <details name="resale_platform_ads" colspan="2" class="mb-3">
+                    <summary class="fw-bold cursor-pointer text-primary">Platform advertisements</summary>
+                    <group colspan="2">
+                        <field name="listing_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="platform"/>
+                                <field name="url" widget="url" placeholder="Paste advertisement link..."/>
+                                <field name="status"/>
+                                <field name="price"/>
+                                <field name="currency_id" groups="base.group_multi_currency"/>
+                                <field name="date_listed"/>
+                            </list>
+                        </field>
+                        <group>
+                            <field name="listed_on_ebay"/>
+                            <field name="listed_on_wallapop"/>
+                            <field name="listed_on_vinted"/>
+                        </group>
+                    </group>
+                </details>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filters for advertised / not advertised products per platform. -->
+    <record id="product_template_search_view_resale_listings" model="ir.ui.view">
+        <field name="name">product.template.search.resale.listings</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="listing_ids"/>
+                <separator/>
+                <filter string="Has Advertisement" name="has_advertisement" domain="[('listing_ids', '!=', False)]"/>
+                <filter string="No Advertisement" name="no_advertisement" domain="[('listing_ids', '=', False)]"/>
+                <separator/>
+                <filter string="Listed on eBay" name="listed_on_ebay" domain="[('listed_on_ebay', '=', True)]"/>
+                <filter string="Not on eBay" name="not_on_ebay" domain="[('listed_on_ebay', '=', False)]"/>
+                <separator/>
+                <filter string="Listed on Wallapop" name="listed_on_wallapop" domain="[('listed_on_wallapop', '=', True)]"/>
+                <filter string="Not on Wallapop" name="not_on_wallapop" domain="[('listed_on_wallapop', '=', False)]"/>
+                <separator/>
+                <filter string="Listed on Vinted" name="listed_on_vinted" domain="[('listed_on_vinted', '=', True)]"/>
+                <filter string="Not on Vinted" name="not_on_vinted" domain="[('listed_on_vinted', '=', False)]"/>
+            </xpath>
         </field>
     </record>
 </odoo>

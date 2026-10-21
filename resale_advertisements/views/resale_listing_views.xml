@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Platform advertisement records shared across product templates. -->
+    <record id="resale_listing_view_list" model="ir.ui.view">
+        <field name="name">resale.listing.list</field>
+        <field name="model">resale.listing</field>
+        <field name="arch" type="xml">
+            <list string="Platform Advertisements" editable="bottom">
+                <field name="platform"/>
+                <field name="name" optional="show"/>
+                <field name="url" widget="url"/>
+                <field name="status"/>
+                <field name="price" optional="show"/>
+                <field name="currency_id" optional="hide" groups="base.group_multi_currency"/>
+                <field name="date_listed" optional="show"/>
+                <field name="product_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="resale_listing_view_form" model="ir.ui.view">
+        <field name="name">resale.listing.form</field>
+        <field name="model">resale.listing</field>
+        <field name="arch" type="xml">
+            <form string="Platform Advertisement">
+                <header>
+                    <button name="action_open_products" type="object"
+                            string="Open Products" icon="fa-shopping-bag"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Advertisement title"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Advertisement">
+                            <field name="platform"/>
+                            <field name="url" widget="url" placeholder="https://..."/>
+                            <field name="status"/>
+                        </group>
+                        <group string="Listing Details">
+                            <field name="price"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="date_listed"/>
+                        </group>
+                    </group>
+                    <group string="Products">
+                        <field name="product_template_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="resale_listing_view_search" model="ir.ui.view">
+        <field name="name">resale.listing.search</field>
+        <field name="model">resale.listing</field>
+        <field name="arch" type="xml">
+            <search string="Platform Advertisements">
+                <field name="name"/>
+                <field name="url"/>
+                <field name="product_template_ids"/>
+                <filter string="eBay" name="platform_ebay" domain="[('platform', '=', 'ebay')]"/>
+                <filter string="Wallapop" name="platform_wallapop" domain="[('platform', '=', 'wallapop')]"/>
+                <filter string="Vinted" name="platform_vinted" domain="[('platform', '=', 'vinted')]"/>
+                <separator/>
+                <filter string="Listed" name="status_listed" domain="[('status', '=', 'listed')]"/>
+                <filter string="Draft" name="status_draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Sold" name="status_sold" domain="[('status', '=', 'sold')]"/>
+                <filter string="Removed" name="status_removed" domain="[('status', '=', 'removed')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Platform" name="group_by_platform" context="{'group_by': 'platform'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Listed On" name="group_by_date" context="{'group_by': 'date_listed'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="resale_listing_action" model="ir.actions.act_window">
+        <field name="name">Platform Advertisements</field>
+        <field name="res_model">resale.listing</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="resale_listing_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first platform advertisement
+            </p>
+            <p>
+                One advertisement link can cover multiple products (combined listings).
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_resale_listing"
+              name="Platform Advertisements"
+              parent="resale_product.menu_resale_product_root"
+              action="resale_listing_action"
+              sequence="25"/>
+</odoo>

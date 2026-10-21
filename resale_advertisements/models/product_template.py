@@ -15,6 +15,42 @@ class ProductTemplate(models.Model):
         compute='_compute_short_listing_copy',
         help='Combined short listing, condition listing text and internal reference for copy/paste.',
     )
+    listing_ids = fields.Many2many(
+        'resale.listing',
+        'product_template_resale_listing_rel',
+        'product_template_id',
+        'listing_id',
+        string='Platform Advertisements',
+        help='Advertisements on external platforms that include this product.',
+    )
+    listing_count = fields.Integer(
+        string='Advertisement Count',
+        compute='_compute_listing_flags',
+    )
+    listed_on_ebay = fields.Boolean(
+        string='Listed on eBay',
+        compute='_compute_listing_flags',
+        store=True,
+    )
+    listed_on_wallapop = fields.Boolean(
+        string='Listed on Wallapop',
+        compute='_compute_listing_flags',
+        store=True,
+    )
+    listed_on_vinted = fields.Boolean(
+        string='Listed on Vinted',
+        compute='_compute_listing_flags',
+        store=True,
+    )
+
+    @api.depends('listing_ids.platform')
+    def _compute_listing_flags(self):
+        for record in self:
+            platforms = set(record.listing_ids.mapped('platform'))
+            record.listed_on_ebay = 'ebay' in platforms
+            record.listed_on_wallapop = 'wallapop' in platforms
+            record.listed_on_vinted = 'vinted' in platforms
+            record.listing_count = len(record.listing_ids)
 
     @api.depends('short_listing', 'condition_listing_text', 'default_code')
     def _compute_short_listing_copy(self):
