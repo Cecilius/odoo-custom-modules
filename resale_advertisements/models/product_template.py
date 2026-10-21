@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools.mail import html2plaintext
 
 
@@ -42,6 +43,21 @@ class ProductTemplate(models.Model):
         compute='_compute_listing_flags',
         store=True,
     )
+    new_listing_url = fields.Char(
+        string='Paste Ad Link',
+        help='Paste an eBay, Wallapop or Vinted advertisement link and click Add.',
+    )
+
+    def action_add_listing(self):
+        """Create or reuse a listing record from the pasted link and attach it."""
+        self.ensure_one()
+        url = (self.new_listing_url or '').strip()
+        if not url:
+            raise UserError(_('Paste an advertisement link first.'))
+        listing = self.env['resale.listing'].create({'url': url})
+        self.listing_ids |= listing
+        self.new_listing_url = False
+        return True
 
     @api.depends('listing_ids.platform')
     def _compute_listing_flags(self):

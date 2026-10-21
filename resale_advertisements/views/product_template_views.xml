@@ -64,16 +64,20 @@
                 <details name="resale_platform_ads" colspan="2" class="mb-3">
                     <summary class="fw-bold cursor-pointer text-primary">Platform advertisements</summary>
                     <group colspan="2">
-                        <field name="listing_ids" nolabel="1">
-                            <list editable="bottom">
+                        <field name="new_listing_url" placeholder="Paste eBay / Wallapop / Vinted advertisement link..."/>
+                        <button name="action_add_listing" type="object"
+                                string="Add" class="btn btn-primary" icon="fa-plus-circle"/>
+                    </group>
+                    <group colspan="2">
+                        <field name="listing_ids" nolabel="1" colspan="2">
+                            <list editable="bottom" create="false">
                                 <field name="platform"/>
-                                <field name="url" widget="url" placeholder="Paste advertisement link..."/>
-                                <field name="status"/>
-                                <field name="price"/>
-                                <field name="currency_id" groups="base.group_multi_currency"/>
+                                <field name="url" widget="url"/>
                                 <field name="date_listed"/>
                             </list>
                         </field>
+                    </group>
+                    <group colspan="2">
                         <group>
                             <field name="listed_on_ebay"/>
                             <field name="listed_on_wallapop"/>

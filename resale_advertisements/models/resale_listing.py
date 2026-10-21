@@ -8,58 +8,39 @@ PLATFORM_SELECTION = [
     ('vinted', 'Vinted'),
 ]
 
-STATUS_SELECTION = [
-    ('draft', 'Draft'),
-    ('listed', 'Listed'),
-    ('sold', 'Sold'),
-    ('removed', 'Removed'),
-]
+PLATFORM_HOSTS = {
+    'ebay': 'ebay',
+    'wallapop': 'wallapop',
+    'vinted': 'vinted',
+}
 
 
 class ResaleListing(models.Model):
-    """One advertisement on one sales platform, linked to many products."""
+    """One advertisement link on one sales platform, shared by many products."""
     _name = 'resale.listing'
     _table = 'resale_listing'
     _description = 'Resale Platform Advertisement'
-    _order = 'platform, name, id'
+    _order = 'platform, url, id'
 
     _url_unique = models.UniqueIndex(
         "USING btree (platform, lower(btrim(url)))",
-        'An advertisement with this URL already exists on this platform.',
+        'An advertisement with this URL already exists.',
     )
 
-    name = fields.Char(
-        string='Ad Title',
-        help='Optional title of the advertisement on the platform.',
-    )
     platform = fields.Selection(
         PLATFORM_SELECTION,
         string='Platform',
-        required=True,
+        help='Detected automatically from the link; can be corrected manually.',
     )
     url = fields.Char(
         string='Advertisement URL',
         required=True,
         help='Direct link to the advertisement on the platform.',
     )
-    status = fields.Selection(
-        STATUS_SELECTION,
-        string='Status',
-        required=True,
-        default='listed',
+    date_listed = fields.Date(
+        string='Listed On',
+        default=fields.Date.context_today,
     )
-    currency_id = fields.Many2one(
-        'res.currency',
-        string='Currency',
-        required=True,
-        default=lambda self: self.env.company.currency_id,
-        ondelete='restrict',
-    )
-    price = fields.Monetary(
-        string='Ad Price',
-        currency_field='currency_id',
-    )
-    date_listed = fields.Date(string='Listed On')
     product_template_ids = fields.Many2many(
         'product.template',
         'product_template_resale_listing_rel',
@@ -78,24 +59,22 @@ class ResaleListing(models.Model):
         for record in self:
             record.product_count = len(record.product_template_ids)
 
-    @api.depends('name', 'url', 'platform')
+    @api.depends('url', 'platform')
     def _compute_display_name(self):
         platforms = dict(PLATFORM_SELECTION)
         for record in self:
-            label = record.name or record.url or ''
             prefix = platforms.get(record.platform, '')
+            label = record.url or ''
             record.display_name = ' - '.join(part for part in (prefix, label) if part)
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Normalize links and reuse the existing record for duplicate URLs."""
+        """Detect platform from the link, stamp the date, and reuse known URLs."""
         resolved = []
         fresh_vals = []
         for vals in vals_list:
             self._normalize_values(vals)
-            existing = False
-            if vals.get('platform') and vals.get('url'):
-                existing = self._find_existing(vals['platform'], vals['url'])
+            existing = self._find_existing(vals.get('url')) if vals.get('url') else False
             resolved.append(existing)
             if not existing:
                 fresh_vals.append(vals)
@@ -115,10 +94,19 @@ class ResaleListing(models.Model):
     def _normalize_values(vals):
         if isinstance(vals.get('url'), str):
             vals['url'] = vals['url'].strip() or False
+        if not vals.get('platform') and isinstance(vals.get('url'), str):
+            vals['platform'] = ResaleListing._infer_platform(vals['url'])
 
-    def _find_existing(self, platform, url):
+    @staticmethod
+    def _infer_platform(url):
+        lowered = url.lower()
+        for platform, needle in PLATFORM_HOSTS.items():
+            if needle in lowered:
+                return platform
+        return False
+
+    def _find_existing(self, url):
         return self.search([
-            ('platform', '=', platform),
             ('url', '=ilike', url),
         ], limit=1)
 
