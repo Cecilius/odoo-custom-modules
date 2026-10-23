@@ -1,15 +1,14 @@
 {
     'name': 'Resale Attributes',
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.4.1',
     'summary': 'Map configurable non-variant attributes to product template dropdowns',
     'category': 'Inventory/Resale',
     'author': 'Resale Project',
     'license': 'LGPL-3',
-    'depends': ['account', 'product', 'sale', 'resale_base', 'resale_product'],
+    'depends': ['product', 'resale_base', 'resale_product'],
     'data': [
         'security/ir.model.access.csv',
         'data/brand_attribute.xml',
-        'views/product_attribute_views.xml',
         'views/product_template_views.xml',
         'views/condition_text_views.xml',
         'views/res_config_settings_views.xml',

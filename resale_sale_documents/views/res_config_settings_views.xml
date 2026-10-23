@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_documents" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.resale.documents</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="resale_attributes.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='resale_attributes_setting_container']" position="inside">
+                <setting id="second_hand_text" string="Second Hand Item"
+                         help="Text shown first in the attributes line on sale orders and invoices when the condition counts as a second-hand item. Leave empty to hide it; translate it per language on the company form.">
+                    <field name="second_hand_text" placeholder="Second hand item"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

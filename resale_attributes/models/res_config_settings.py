@@ -45,9 +45,6 @@ class ResConfigSettings(models.TransientModel):
         default_model='product.template',
         domain="[('attribute_id', '=', warranty_attribute_id)]",
     )
-    second_hand_text = fields.Char(
-        related='company_id.second_hand_text', readonly=False,
-    )
 
     @api.onchange('condition_attribute_id')
     def _onchange_condition_attribute_id(self):

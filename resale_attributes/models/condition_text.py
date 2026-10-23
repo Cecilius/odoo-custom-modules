@@ -24,12 +24,6 @@ class ResaleConditionText(models.Model):
     operator_text = fields.Text(string='Operator Text', translate=True)
     listing_text = fields.Text(string='Listing Text', translate=True)
     followup_text = fields.Text(string='Invoice Text', translate=True)
-    is_second_hand = fields.Boolean(
-        string='Second Hand Item',
-        default=True,
-        help='Products sold in this condition are marked as second-hand '
-             'items on sale orders and invoices. Untick for new items.',
-    )
     active = fields.Boolean(default=True)
 
     _condition_value_unique = models.Constraint(

@@ -1,4 +1,4 @@
-"""Show template attributes through Odoo's native sale and invoice descriptions."""
+"""Show template attributes through Odoo's native sale line description."""
 
 from odoo import models
 

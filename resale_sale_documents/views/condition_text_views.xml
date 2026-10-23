@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_resale_condition_text_list_second_hand" model="ir.ui.view">
+        <field name="name">resale.condition.text.list.second.hand</field>
+        <field name="model">resale.condition.text</field>
+        <field name="inherit_id" ref="resale_attributes.view_resale_condition_text_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='followup_text']" position="after">
+                <field name="is_second_hand" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_resale_condition_text_form_second_hand" model="ir.ui.view">
+        <field name="name">resale.condition.text.form.second.hand</field>
+        <field name="model">resale.condition.text</field>
+        <field name="inherit_id" ref="resale_attributes.view_resale_condition_text_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='condition_value_id']" position="after">
+                <field name="is_second_hand"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
