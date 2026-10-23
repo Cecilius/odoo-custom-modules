@@ -26,6 +26,10 @@
                         <button name="%(resale_attributes.action_resale_condition_text)d" type="action"
                                 string="Manage Condition Texts" class="btn-link" target="new"/>
                     </setting>
+                    <setting id="second_hand_text" string="Second Hand Item"
+                             help="Text shown first in the attributes line on sale orders and invoices when the condition counts as a second-hand item. Leave empty to hide it; translate it per language on the company form.">
+                        <field name="second_hand_text" placeholder="Second hand item"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

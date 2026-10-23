@@ -11,6 +11,7 @@
                 <field name="operator_text" optional="show"/>
                 <field name="listing_text" optional="show"/>
                 <field name="followup_text" optional="show"/>
+                <field name="is_second_hand" optional="show"/>
                 <field name="active" optional="show"/>
             </list>
         </field>
@@ -26,6 +27,7 @@
                         <field name="condition_attribute_id" invisible="1"/>
                         <field name="condition_value_id"
                                domain="[('attribute_id', '=', condition_attribute_id)]"/>
+                        <field name="is_second_hand"/>
                         <field name="active"/>
                     </group>
                     <group>
