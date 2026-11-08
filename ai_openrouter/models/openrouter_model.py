@@ -104,9 +104,13 @@ class OpenRouterModel(models.Model):
         ]
 
         # Read existing rows once instead of querying once per upstream model.
+        # Include inactive rows: the DB unique index applies to all rows, so an
+        # archived model must be reactivated/updated rather than recreated.
         existing_by_id = {
             record.model_id: record
-            for record in catalog.search([('model_id', 'in', supported_ids)])
+            for record in catalog.with_context(active_test=False).search([
+                ('model_id', 'in', supported_ids),
+            ])
         }
 
         for model in supported_models:

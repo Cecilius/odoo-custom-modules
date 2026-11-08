@@ -294,3 +294,30 @@ class TestOpenRouter(TransactionCase):
         ])
         self.assertEqual(len(models), 1)
         self.assertTrue(models.active)
+
+    @patch.object(LLMApiService, '_request')
+    def test_model_sync_reactivates_inactive_model(self, request):
+        self.env['ai.openrouter.model'].create({
+            'model_id': 'openai/gpt-6-luna-pro',
+            'name': 'Old GPT-6 Luna Pro',
+            'active': False,
+        })
+        request.return_value = {
+            'data': [{
+                'id': 'openai/gpt-6-luna-pro',
+                'name': 'GPT-6 Luna Pro',
+                'architecture': {'input_modalities': ['text'], 'output_modalities': ['text']},
+                'supported_parameters': ['tools'],
+            }],
+            'links': {'next': None},
+        }
+
+        count = self.env['ai.openrouter.model'].action_sync_models()
+
+        self.assertEqual(count, 1)
+        model = self.env['ai.openrouter.model'].with_context(active_test=False).search([
+            ('model_id', '=', 'openai/gpt-6-luna-pro'),
+        ])
+        self.assertEqual(len(model), 1)
+        self.assertTrue(model.active)
+        self.assertEqual(model.name, 'GPT-6 Luna Pro')
