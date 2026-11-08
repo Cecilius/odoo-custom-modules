@@ -272,3 +272,25 @@ class TestOpenRouter(TransactionCase):
 
         with self.assertRaises(UserError):
             service.request_llm('provider/model', [], ['Hello'])
+
+    @patch.object(LLMApiService, '_request')
+    def test_model_sync_deduplicates_catalog_entries(self, request):
+        duplicate_model = {
+            'id': 'openai/gpt-6-luna-pro',
+            'name': 'GPT-6 Luna Pro',
+            'architecture': {'input_modalities': ['text'], 'output_modalities': ['text']},
+            'supported_parameters': ['tools'],
+        }
+        request.return_value = {
+            'data': [duplicate_model, dict(duplicate_model, name='GPT-6 Luna Pro (duplicate)')],
+            'links': {'next': None},
+        }
+
+        count = self.env['ai.openrouter.model'].action_sync_models()
+
+        self.assertEqual(count, 1)
+        models = self.env['ai.openrouter.model'].search([
+            ('model_id', '=', 'openai/gpt-6-luna-pro'),
+        ])
+        self.assertEqual(len(models), 1)
+        self.assertTrue(models.active)

@@ -111,7 +111,7 @@ class OpenRouterModel(models.Model):
 
         for model in supported_models:
             model_id = model.get('id')
-            if not model_id:
+            if not model_id or model_id in seen_ids:
                 continue
             seen_ids.add(model_id)
             values = {
@@ -137,7 +137,7 @@ class OpenRouterModel(models.Model):
             if existing:
                 existing.write(values)
             else:
-                catalog.create(dict(values, model_id=model_id))
+                existing_by_id[model_id] = catalog.create(dict(values, model_id=model_id))
 
         # An empty upstream response is treated as a failed/incomplete sync.
         # Never deactivate the entire local catalog on that basis.
