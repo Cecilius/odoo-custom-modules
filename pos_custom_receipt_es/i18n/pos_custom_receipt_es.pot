@@ -1,0 +1,56 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pos_custom_receipt_es
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pos_custom_receipt_es
+#: model:ir.model.fields,field_description:pos_custom_receipt_es.field_ir_http__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#: model:ir.model,name:pos_custom_receipt_es.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#: model:ir.model.fields,field_description:pos_custom_receipt_es.field_ir_http__id
+msgid "ID"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "NIF:"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "Simplified invoice"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "Thank you for your visit!"
+msgstr ""
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid ""
+"This simplified invoice does not replace the full invoice when required."
+msgstr ""

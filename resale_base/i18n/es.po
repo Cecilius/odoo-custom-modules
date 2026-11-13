@@ -1,0 +1,47 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: resale_base
+#: model:res.groups,name:resale_base.group_resale_manager
+msgid "Administrator"
+msgstr "Administrador"
+
+#. module: resale_base
+#: model:res.groups,comment:resale_base.group_resale_manager
+msgid ""
+"Configure resale platforms, condition texts and test outcomes, and delete "
+"resale records."
+msgstr ""
+"Configurar plataformas de reventa, textos de estado y resultados de pruebas,"
+" y eliminar registros de reventa."
+
+#. module: resale_base
+#: model:res.groups,comment:resale_base.group_resale_user
+msgid "Create and edit resale products, tests and advertisements."
+msgstr "Crear y editar productos de reventa, pruebas y anuncios."
+
+#. module: resale_base
+#: model:res.groups.privilege,name:resale_base.res_groups_privilege_resale
+#: model_terms:ir.ui.view,arch_db:resale_base.res_config_settings_view_form
+msgid "Resale"
+msgstr "Reventa"
+
+#. module: resale_base
+#: model:res.groups,name:resale_base.group_resale_user
+msgid "User"
+msgstr "Usuario"

@@ -1,0 +1,661 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_ai_product
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid ""
+"A resale product already exists for this identifier. Confirm it is the right"
+" one, then create a linked product (product.template) for it."
+msgstr ""
+"Ya existe un producto de reventa con este identificador. Confirme que es el "
+"correcto y cree un producto vinculado (product.template)."
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid ""
+"A resale product already exists for this identifier. Confirm it is the right"
+" one, then open it."
+msgstr ""
+"Ya existe un producto de reventa con este identificador. Confirme que es el "
+"correcto y ábralo."
+
+#. module: resale_ai_product
+#: model:ir.actions.act_window,name:resale_ai_product.action_resale_product_wizard
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.product_template_form_ai_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.product_template_kanban_ai_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.product_template_list_ai_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_form_ai_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_list_ai_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "AI Product Research"
+msgstr "Investigación de producto con IA"
+
+#. module: resale_ai_product
+#: model:ir.model,name:resale_ai_product.model_resale_product_wizard
+msgid "AI Resale Product Research"
+msgstr "Investigación de producto de reventa con IA"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__comparison_ids
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__comparison
+msgid "AI comparison"
+msgstr "Comparación de IA"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "AI product"
+msgstr "Producto (IA)"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_description
+msgid "AI product description"
+msgstr "Descripción del producto (IA)"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__ai_value
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "AI proposal"
+msgstr "Propuesta de IA"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__ai_question
+msgid "AI question"
+msgstr "Pregunta de la IA"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "AI request timeout"
+msgstr "Tiempo de espera de la solicitud de IA"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__resale_ai_request_timeout
+msgid "AI request timeout (seconds)"
+msgstr "Tiempo de espera de la solicitud de IA (segundos)"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__ai_response
+msgid "AI response"
+msgstr "Respuesta de la IA"
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__researched
+msgid "AI result"
+msgstr "Resultado de la IA"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__asin
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__conflict_field__asin
+msgid "ASIN"
+msgstr "ASIN"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "ASIN must contain exactly 10 letters or digits."
+msgstr "El ASIN debe contener exactamente 10 letras o dígitos."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"Allowed categories (code: name): %(categories)s\n"
+"Allowed brands: %(brands)s\n"
+"Installed language codes: %(languages)s\n"
+"EAN: %(ean)s\n"
+"UPC: %(upc)s\n"
+"ASIN: %(asin)s\n"
+"Description: %(description)s\n"
+"Additional answer: %(answer)s"
+msgstr ""
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__additional_question
+msgid "Answer to AI question"
+msgstr "Respuesta a la pregunta de la IA"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Apply AI proposal to selected product"
+msgstr "Aplicar la propuesta de IA al producto seleccionado"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__comparison_target_product_id
+msgid "Apply proposal to"
+msgstr "Aplicar propuesta a"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__resale_ai_backup_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "Backup research agent"
+msgstr "Agente de investigación de respaldo"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"Both research agents failed. Primary %(primary_agent)s (%(primary_model)s): "
+"%(primary)s. Backup %(backup_agent)s (%(backup_model)s): %(backup)s."
+msgstr ""
+"Fallaron ambos agentes de investigación. Principal %(primary_agent)s "
+"(%(primary_model)s): %(primary)s. Respaldo %(backup_agent)s "
+"(%(backup_model)s): %(backup)s."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__brand_attribute_id
+msgid "Brand Attribute"
+msgstr "Atributo de marca"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: resale_ai_product
+#: model:ir.model,name:resale_ai_product.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Configure a product research agent in Settings first."
+msgstr "Configure primero un agente de investigación de productos en Ajustes."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__conflict_existing_value
+msgid "Conflict Existing Value"
+msgstr "Valor existente en conflicto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__conflict_field
+msgid "Conflict Field"
+msgstr "Campo en conflicto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__conflict_product_id
+msgid "Conflict Product"
+msgstr "Producto en conflicto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__conflict_supplied_value
+msgid "Conflict Supplied Value"
+msgstr "Valor introducido en conflicto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__conflict_type
+msgid "Conflict Type"
+msgstr "Tipo de conflicto"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Create product"
+msgstr "Crear producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__create_uid
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__create_uid
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__create_date
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__create_date
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__resale_ai_default_brand_value_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "Default brand"
+msgstr "Marca por defecto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__resale_ai_default_category_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "Default product category"
+msgstr "Categoría de producto por defecto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__description_translation_preview
+msgid "Descriptions in installed languages"
+msgstr "Descripciones en los idiomas instalados"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__display_name
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__display_name
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Do not save"
+msgstr "No guardar"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__ean
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__conflict_field__ean
+msgid "EAN"
+msgstr "EAN"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "EAN must be a valid 8, 13, or 14 digit barcode."
+msgstr "El EAN debe ser un código de barras válido de 8, 13 o 14 dígitos."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__product_id
+msgid "Existing product"
+msgstr "Producto existente"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Existing product comparison"
+msgstr "Comparación con producto existente"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Existing product found"
+msgstr "Se encontró un producto existente"
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__conflict_type__mismatch
+msgid "Existing value differs"
+msgstr "El valor existente es distinto"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Existing value: %s"
+msgstr "Valor existente: %s"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__field_label
+msgid "Field"
+msgstr "Campo"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__id
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__id
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__id
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__id
+msgid "ID"
+msgstr "ID"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__identifier
+msgid "Identifier"
+msgstr "Identificador"
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__conflict
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Identifier conflict"
+msgstr "Conflicto de identificador"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__match_line_ids
+msgid "Identifier matches"
+msgstr "Coincidencias de identificador"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Identify product"
+msgstr "Identificar producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__matched
+msgid "Internal match"
+msgstr "Coincidencia interna"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Keep existing value"
+msgstr "Mantener el valor existente"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__write_uid
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__write_uid
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__write_date
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__write_date
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_launch_year
+msgid "Launch year"
+msgstr "Año de lanzamiento"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__from_template
+msgid "Launched from product template"
+msgstr "Iniciado desde la plantilla de producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__match_existing_product_id
+msgid "Match Existing Product"
+msgstr "Coincidir con producto existente"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__match_conflict_message
+msgid "Matching conflict"
+msgstr "Conflicto de coincidencia"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,help:resale_ai_product.field_res_config_settings__resale_ai_request_timeout
+msgid ""
+"Minimum timeout used for each AI research request. The minimum allowed value"
+" is 30 seconds."
+msgstr ""
+"Tiempo de espera mínimo para cada solicitud de investigación con IA. El "
+"valor mínimo permitido es de 30 segundos."
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__question
+msgid "More details required"
+msgstr "Se necesitan más detalles"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__translation_preview
+msgid "Names in installed languages"
+msgstr "Nombres en los idiomas instalados"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "No existing product was matched."
+msgstr "No se encontró ningún producto existente."
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Open resale product"
+msgstr "Abrir producto de reventa"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Please provide more details."
+msgstr "Proporcione más detalles."
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Product A"
+msgstr "Producto A"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__product_a_value
+msgid "Product A value"
+msgstr "Valor del producto A"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Product B"
+msgstr "Producto B"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__product_b_value
+msgid "Product B value"
+msgstr "Valor del producto B"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Product C"
+msgstr "Producto C"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__product_c_value
+msgid "Product C value"
+msgstr "Valor del producto C"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_brand_value_id
+msgid "Product brand"
+msgstr "Marca del producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_category_id
+msgid "Product category"
+msgstr "Categoría del producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__description
+msgid "Product identification details"
+msgstr "Datos de identificación del producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_name
+msgid "Product name"
+msgstr "Nombre del producto"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_res_config_settings__resale_ai_research_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.res_config_settings_view_form
+msgid "Product research agent"
+msgstr "Agente de investigación de productos"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__comparison_product_ids
+msgid "Products in comparison"
+msgstr "Productos en la comparación"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Provide at least one identifier or a product description."
+msgstr "Indique al menos un identificador o una descripción del producto."
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__draft
+msgid "Ready"
+msgstr "Listo"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_retail_price
+msgid "Reference price"
+msgstr "Precio de referencia"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Replace with supplied value"
+msgstr "Sustituir por el valor introducido"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Resale Product"
+msgstr "Producto de reventa"
+
+#. module: resale_ai_product
+#: model:ir.model,name:resale_ai_product.model_resale_product_wizard_comparison
+msgid "Resale Product AI Comparison"
+msgstr "Comparación de IA de producto de reventa"
+
+#. module: resale_ai_product
+#: model:ir.model,name:resale_ai_product.model_resale_product_wizard_match
+msgid "Resale Product Identifier Match"
+msgstr "Coincidencia de identificador de producto de reventa"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Research"
+msgstr "Investigar"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Research a product and review the result before creating it."
+msgstr "Investigue un producto y revise el resultado antes de crearlo."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Research agent %(agent)s (%(model)s) failed: %(error)s"
+msgstr "Falló el agente de investigación %(agent)s (%(model)s): %(error)s"
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__state__error
+msgid "Research failed"
+msgstr "Falló la investigación"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__research_notice
+msgid "Research status"
+msgstr "Estado de la investigación"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_asin
+msgid "Result ASIN"
+msgstr "ASIN resultante"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_ean
+msgid "Result EAN"
+msgstr "EAN resultante"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__result_upc
+msgid "Result UPC"
+msgstr "UPC resultante"
+
+#. module: resale_ai_product
+#: model_terms:ir.ui.view,arch_db:resale_ai_product.resale_product_wizard_form
+msgid "Save supplied value"
+msgstr "Guardar el valor introducido"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "Select an existing product before applying the AI proposal."
+msgstr "Seleccione un producto existente antes de aplicar la propuesta de IA."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,help:resale_ai_product.field_resale_product_wizard__from_template
+msgid ""
+"Set when the wizard is opened from a product.template, so a linked "
+"product.template is also created."
+msgstr ""
+"Se establece cuando el asistente se abre desde una plantilla de producto, "
+"para crear también una plantilla de producto vinculada."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__state
+msgid "State"
+msgstr "Estado"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "The AI agent did not return a product name."
+msgstr "El agente de IA no devolvió un nombre de producto."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "The AI agent returned an invalid structured response."
+msgstr "El agente de IA devolvió una respuesta estructurada no válida."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"The AI proposal contains an identifier already present in the database. "
+"Review the read-only comparison and edit the AI proposal before creating or "
+"applying it."
+msgstr ""
+"La propuesta de IA contiene un identificador que ya existe en la base de "
+"datos. Revise la comparación de solo lectura y edite la propuesta antes de "
+"crearla o aplicarla."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"The edited identifiers are still used by existing products. Review the "
+"comparison and remove or change the conflicting values."
+msgstr ""
+"Los identificadores editados siguen usándose en productos existentes. Revise"
+" la comparación y elimine o cambie los valores en conflicto."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "The existing product has no %s assigned."
+msgstr "El producto existente no tiene %s asignado."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"The primary research agent was unavailable. The backup research agent "
+"response is shown below."
+msgstr ""
+"El agente de investigación principal no estaba disponible. Se muestra a "
+"continuación la respuesta del agente de respaldo."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"The supplied %(identifier)s does not match the existing product. Choose how "
+"to handle it."
+msgstr ""
+"El %(identifier)s introducido no coincide con el producto existente. Elija "
+"cómo gestionarlo."
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid ""
+"The supplied identifiers do not consistently identify one existing product. "
+"Review the matches below."
+msgstr ""
+"Los identificadores introducidos no identifican de forma coherente un único "
+"producto existente. Revise las coincidencias a continuación."
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard__upc
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__conflict_field__upc
+msgid "UPC"
+msgstr "UPC"
+
+#. module: resale_ai_product
+#. odoo-python
+#: code:addons/resale_ai_product/models/resale_product_wizard.py:0
+msgid "UPC must be a valid 12 digit UPC-A barcode."
+msgstr "El UPC debe ser un código de barras UPC-A válido de 12 dígitos."
+
+#. module: resale_ai_product
+#: model:ir.model.fields.selection,name:resale_ai_product.selection__resale_product_wizard__conflict_type__missing
+msgid "Value is missing"
+msgstr "Falta el valor"
+
+#. module: resale_ai_product
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_comparison__wizard_id
+#: model:ir.model.fields,field_description:resale_ai_product.field_resale_product_wizard_match__wizard_id
+msgid "Wizard"
+msgstr "Asistente"

@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-11 14:24+0000\n"
-"PO-Revision-Date: 2026-05-11 16:33+0200\n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,7 +15,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.9\n"
+
+#. module: pos_custom_receipt_es
+#: model:ir.model.fields,field_description:pos_custom_receipt_es.field_ir_http__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: pos_custom_receipt_es
+#: model:ir.model,name:pos_custom_receipt_es.model_ir_http
+msgid "HTTP Routing"
+msgstr "Enrutamiento HTTP"
+
+#. module: pos_custom_receipt_es
+#: model:ir.model.fields,field_description:pos_custom_receipt_es.field_ir_http__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pos_custom_receipt_es
+#. odoo-javascript
+#: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
+msgid "NIF:"
+msgstr "NIF:"
 
 #. module: pos_custom_receipt_es
 #. odoo-javascript
@@ -32,5 +52,8 @@ msgstr "¡Gracias por su visita!"
 #. module: pos_custom_receipt_es
 #. odoo-javascript
 #: code:addons/pos_custom_receipt_es/static/src/xml/pos_custom_receipt.xml:0
-msgid "This simplified invoice does not replace the full invoice when required."
-msgstr "Esta factura simplificada no sustituye a la factura completa cuando sea necesario."
+msgid ""
+"This simplified invoice does not replace the full invoice when required."
+msgstr ""
+"Esta factura simplificada no sustituye a la factura completa cuando sea "
+"necesario."

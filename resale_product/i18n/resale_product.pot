@@ -1,0 +1,490 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_product
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_asin
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_asin
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__asin
+msgid "ASIN"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.constraint,message:resale_product.constraint_resale_product_asin_unique
+msgid "ASIN must be unique when provided."
+msgstr ""
+
+#. module: resale_product
+#. odoo-python
+#: code:addons/resale_product/models/resale_product.py:0
+msgid "ASIN must contain exactly 10 letters or digits."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__brand_value_id
+msgid "Brand"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_product_product__resale_product_brand_value_id
+#: model:ir.model.fields,help:resale_product.field_product_template__resale_product_brand_value_id
+#: model:ir.model.fields,help:resale_product.field_resale_product__brand_value_id
+msgid "Brand value from the Brand product attribute."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_ce_compliance
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_ce_compliance
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__ce_compliance
+msgid "CE Compliance"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+msgid "Classification"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Create Product"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Describe the product..."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_template__display_name
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Documentation"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_ean
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_ean
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__ean
+msgid "EAN Code"
+msgstr ""
+
+#. module: resale_product
+#. odoo-python
+#: code:addons/resale_product/models/resale_product.py:0
+msgid "EAN Code must be a valid 8, 13, or 14 digit barcode."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.constraint,message:resale_product.constraint_resale_product_ean_unique
+msgid "EAN Code must be unique when provided."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_eu_responsible_person_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_eu_responsible_person_id
+msgid "EU Resp. Person"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__eu_responsible_contact_copy
+#: model:ir.model.fields,field_description:resale_product.field_product_template__eu_responsible_contact_copy
+msgid "EU Resp. Person:"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__eu_responsible_person_id
+msgid "EU Responsible Person"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_product_product__eu_responsible_contact_copy
+#: model:ir.model.fields,help:resale_product.field_product_template__eu_responsible_contact_copy
+msgid "EU Responsible Person contact details (single line) for copy/paste."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+msgid "GPSR information"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_template__id
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__id
+msgid "ID"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Identifiers"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_launch_year
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_launch_year
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__launch_year
+msgid "Launch year"
+msgstr ""
+
+#. module: resale_product
+#. odoo-python
+#: code:addons/resale_product/models/resale_product.py:0
+msgid "Launch year must contain exactly four digits."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_manufacturer_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_manufacturer_id
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__manufacturer_id
+msgid "Manufacturer"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_product_product__manufacturer_contact_copy
+#: model:ir.model.fields,help:resale_product.field_product_template__manufacturer_contact_copy
+msgid "Manufacturer contact details (single line) for copy/paste."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__manufacturer_contact_copy
+#: model:ir.model.fields,field_description:resale_product.field_product_template__manufacturer_contact_copy
+msgid "Manufacturer:"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__name
+msgid "Name"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__reference_retail_price_updated
+msgid "Price Updated"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_description
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_description
+msgid "Prod. Description"
+msgstr ""
+
+#. module: resale_product
+#. odoo-python
+#: code:addons/resale_product/models/resale_product.py:0
+#: model:ir.model,name:resale_product.model_product_template
+msgid "Product"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_brand_value_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_brand_value_id
+msgid "Product Brand"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__category_id
+msgid "Product Category"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_currency_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_currency_id
+msgid "Product Currency"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__description
+msgid "Product Description"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+msgid "Product Information"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__product_template_ids
+msgid "Product templates representing this shared resale product."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__product_template_ids
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Products"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Record CE compliance information..."
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Record safety information..."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_reference_price
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_reference_price
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__reference_retail_price
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Reference Price"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+msgid "Reference Retail Price"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_category_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_category_id
+msgid "Resale Category"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model,name:resale_product.model_resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_id
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_id
+#: model_terms:ir.ui.view,arch_db:resale_product.product_template_form_resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Resale Product"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.actions.act_window,name:resale_product.action_resale_product
+#: model:ir.ui.menu,name:resale_product.menu_resale_product
+#: model:ir.ui.menu,name:resale_product.menu_resale_product_root
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_list
+msgid "Resale Products"
+msgstr ""
+
+#. module: resale_product
+#: model_terms:ir.ui.view,arch_db:resale_product.resale_product_view_form
+msgid "Responsible Parties"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_safety_record
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_safety_record
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__safety_record
+msgid "Safety Record"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_product_product__resale_product_upc
+#: model:ir.model.fields,field_description:resale_product.field_product_template__resale_product_upc
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__upc
+msgid "UPC Code"
+msgstr ""
+
+#. module: resale_product
+#. odoo-python
+#: code:addons/resale_product/models/resale_product.py:0
+msgid "UPC Code must be a valid 12 digit UPC-A barcode."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.constraint,message:resale_product.constraint_resale_product_upc_unique
+msgid "UPC Code must be unique when provided."
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,field_description:resale_product.field_resale_product__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: resale_product
+#: model:ir.model.fields,help:resale_product.field_resale_product__website_message_ids
+msgid "Website communication history"
+msgstr ""

@@ -1,0 +1,190 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_category_sequencer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "%(count)s sequence(s) changed."
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "%(count)s sequence(s) would change."
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,help:resale_category_sequencer.field_product_category__category_code
+msgid "2-digit category code (00-99) used for generating internal references."
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.actions.server,name:resale_category_sequencer.action_rfb_sequences_apply
+msgid "Align RFB Sequences (Apply)"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.actions.server,name:resale_category_sequencer.action_rfb_sequences_dry_run
+msgid "Align RFB Sequences (Dry Run)"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.view_product_rfb_overwrite_wizard
+msgid ""
+"Are you sure you want to overwrite it with a new category sequence number?"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_category__category_code
+msgid "Category Code (2-Digit)"
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "Category Code must be exactly 2 numeric digits (00-99)."
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model,name:resale_category_sequencer.model_product_rfb_overwrite_wizard
+msgid "Confirm Internal Reference Overwrite"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__existing_code
+msgid "Current Internal Reference"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_category__display_name
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__display_name
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_template__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.product_template_form_view_inherit_rfb_btn
+msgid "Generate"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_product__has_category_code
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_template__has_category_code
+msgid "Has Category Code"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_category__id
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__id
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_template__id
+msgid "ID"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.constraint,message:resale_category_sequencer.constraint_product_template_default_code_unique
+msgid "Internal Reference must be unique when provided."
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.view_product_rfb_overwrite_wizard
+msgid "No, Cancel"
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "Only system administrators can run RFB sequence alignment."
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_template.py:0
+msgid "Overwrite Internal Reference?"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.view_product_rfb_overwrite_wizard
+msgid "Overwrite Warning"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model,name:resale_category_sequencer.model_product_template
+#: model:ir.model.fields,field_description:resale_category_sequencer.field_product_rfb_overwrite_wizard__product_id
+msgid "Product"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model,name:resale_category_sequencer.model_product_category
+msgid "Product Category"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.product_template_form_view_inherit_rfb_btn
+msgid "RFB Sequence"
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "RFB Sequence Dry Run"
+msgstr ""
+
+#. module: resale_category_sequencer
+#. odoo-python
+#: code:addons/resale_category_sequencer/models/product_category.py:0
+msgid "RFB Sequences Aligned"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model:ir.model.constraint,message:resale_category_sequencer.constraint_product_category_category_code_unique
+msgid "The Category Code must be unique across all categories!"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.view_product_rfb_overwrite_wizard
+msgid "Warning: An internal reference already exists for this product:"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.view_product_rfb_overwrite_wizard
+msgid "Yes, Overwrite"
+msgstr ""
+
+#. module: resale_category_sequencer
+#: model_terms:ir.ui.view,arch_db:resale_category_sequencer.product_category_form_view_inherit_rfb
+msgid "e.g. 01"
+msgstr ""

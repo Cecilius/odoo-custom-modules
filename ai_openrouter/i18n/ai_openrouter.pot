@@ -1,0 +1,277 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ai_openrouter
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/res_config_settings.py:0
+msgid ""
+"%s compatible OpenRouter models synchronized. Review the allowed-model list "
+"before using them."
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__active
+msgid "Active"
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/openrouter_model.py:0
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.openrouter_model_view_list
+msgid "Allowed OpenRouter Models"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__allowed
+msgid "Allowed for AI agents"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Application title (optional)"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__completion_cost_per_million
+msgid "Completion cost / 1M tokens"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model,name:ai_openrouter.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__context_length
+msgid "Context Length"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__description
+msgid "Description"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__display_name
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__openrouter_key_enabled
+msgid "Enable custom OpenRouter API key"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "HTTP referer (optional)"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__id
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__id
+msgid "ID"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__input_modalities
+msgid "Input Modalities"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Key"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__last_seen
+msgid "Last Seen"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Manage allowed models"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__model_id
+msgid "Model"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "My Odoo AI"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__name
+msgid "Name"
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/patches/llm_api_service.py:0
+msgid "No API key set for provider '%s'"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,help:ai_openrouter.field_ai_openrouter_model__allowed
+msgid "Only allowed models are available in the AI agent model selector."
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__openrouter_key
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "OpenRouter API key"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__openrouter_http_referer
+msgid "OpenRouter HTTP referer"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model,name:ai_openrouter.model_ai_openrouter_model
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.openrouter_model_view_form
+msgid "OpenRouter Model"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.actions.act_window,name:ai_openrouter.openrouter_model_action
+#: model:ir.ui.menu,name:ai_openrouter.openrouter_model_menu
+msgid "OpenRouter Models"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_res_config_settings__openrouter_title
+msgid "OpenRouter application title"
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/patches/llm_api_service.py:0
+msgid "OpenRouter does not support this file type in the current adapter: %s"
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/openrouter_model.py:0
+msgid "OpenRouter returned a repeated model catalog page."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/patches/llm_api_service.py:0
+msgid "OpenRouter returned an invalid chat completion message."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/patches/llm_api_service.py:0
+msgid "OpenRouter returned an invalid chat completion response."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/openrouter_model.py:0
+msgid "OpenRouter returned an invalid model catalog page."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/openrouter_model.py:0
+msgid "OpenRouter returned an invalid model catalog response."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/models/openrouter_model.py:0
+msgid ""
+"OpenRouter returned no compatible models; the existing catalog was left "
+"unchanged."
+msgstr ""
+
+#. module: ai_openrouter
+#. odoo-python
+#: code:addons/ai_openrouter/patches/llm_api_service.py:0
+msgid "OpenRouter returned no usable chat completion choice."
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__output_modalities
+msgid "Output Modalities"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__prompt_cost_per_million
+msgid "Prompt cost / 1M tokens"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Provide an OpenRouter API key to use OpenRouter models"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__request_cost
+msgid "Request cost"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__supported_parameters
+msgid "Supported Parameters"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Synchronize available models"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "Use your OpenRouter account"
+msgstr ""
+
+#. module: ai_openrouter
+#: model:ir.model.fields,field_description:ai_openrouter.field_ai_openrouter_model__web_search_cost
+msgid "Web search cost"
+msgstr ""
+
+#. module: ai_openrouter
+#: model_terms:ir.ui.view,arch_db:ai_openrouter.res_config_settings_view_form
+msgid "https://example.com"
+msgstr ""

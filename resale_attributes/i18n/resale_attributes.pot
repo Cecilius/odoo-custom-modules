@@ -1,0 +1,266 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_attributes
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__active
+msgid "Active"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Attributes"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__box_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__box_value_id
+#: model:product.attribute,name:resale_attributes.product_attribute_box
+msgid "Box"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__box_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__box_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__box_attribute_id
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Box Attribute"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__brand_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__brand_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_product__brand_value_id
+#: model:product.attribute,name:resale_attributes.product_attribute_brand
+msgid "Brand"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__brand_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__brand_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__brand_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_product__brand_attribute_id
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Brand Attribute"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,help:resale_attributes.field_resale_product__brand_value_id
+msgid "Brand value from the Brand product attribute."
+msgstr ""
+
+#. module: resale_attributes
+#. odoo-python
+#: code:addons/resale_attributes/models/res_config_settings.py:0
+msgid ""
+"Changing from %(old)s to %(new)s will archive %(count)s existing condition "
+"text mapping(s). They will not be deleted."
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__condition_value_id
+#: model:product.attribute,name:resale_attributes.product_attribute_condition
+msgid "Condition"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__condition_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__condition_attribute_id
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Condition Attribute"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.view_resale_condition_text_form
+msgid "Condition Text"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model,name:resale_attributes.model_resale_condition_text
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_text_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_text_id
+msgid "Condition Text Mapping"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.actions.act_window,name:resale_attributes.action_resale_condition_text
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Condition Texts"
+msgstr ""
+
+#. module: resale_attributes
+#. odoo-python
+#: code:addons/resale_attributes/models/res_config_settings.py:0
+msgid "Condition attribute changed"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model,name:resale_attributes.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__default_warranty_value_id
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Default Warranty"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__display_name
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__display_name
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_product__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.constraint,message:resale_attributes.constraint_resale_condition_text_condition_value_unique
+msgid "Each condition value can have only one text mapping."
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__id
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__id
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_product__id
+msgid "ID"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.view_resale_condition_text_form
+msgid "Internal guidance for operators..."
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_followup_text
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_followup_text
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__followup_text
+msgid "Invoice Text"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.view_resale_condition_text_form
+msgid "Invoice guidance..."
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_listing_text
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_listing_text
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__listing_text
+msgid "Listing Text"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid ""
+"Maintain reusable operator, listing, and follow-up text for each Condition "
+"value."
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Manage Condition Texts"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__condition_operator_text
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__condition_operator_text
+#: model:ir.model.fields,field_description:resale_attributes.field_resale_condition_text__operator_text
+msgid "Operator Text"
+msgstr ""
+
+#. module: resale_attributes
+#: model:product.attribute.value,name:resale_attributes.product_attribute_value_brand_other
+msgid "Other"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model,name:resale_attributes.model_product_template
+msgid "Product"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.product_template_form_brand_map
+msgid "Product Attributes"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model,name:resale_attributes.model_resale_product
+msgid "Resale Product"
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.view_resale_condition_text_form
+msgid "Reusable customer-facing text..."
+msgstr ""
+
+#. module: resale_attributes
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid ""
+"Set a default warranty value for new products created from resale products."
+msgstr ""
+
+#. module: resale_attributes
+#. odoo-python
+#: code:addons/resale_attributes/models/condition_text.py:0
+msgid "The selected value must belong to the configured Condition attribute."
+msgstr ""
+
+#. module: resale_attributes
+#: model:product.attribute.value,name:resale_attributes.product_attribute_value_box_unknown
+#: model:product.attribute.value,name:resale_attributes.product_attribute_value_condition_unknown
+#: model:product.attribute.value,name:resale_attributes.product_attribute_value_warranty_unknown
+msgid "Unknown"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__warranty_value_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__warranty_value_id
+#: model:product.attribute,name:resale_attributes.product_attribute_warranty
+msgid "Warranty"
+msgstr ""
+
+#. module: resale_attributes
+#: model:ir.model.fields,field_description:resale_attributes.field_product_product__warranty_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_product_template__warranty_attribute_id
+#: model:ir.model.fields,field_description:resale_attributes.field_res_config_settings__warranty_attribute_id
+#: model_terms:ir.ui.view,arch_db:resale_attributes.res_config_settings_view_form
+msgid "Warranty Attribute"
+msgstr ""

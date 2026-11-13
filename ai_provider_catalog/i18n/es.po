@@ -1,0 +1,77 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ai_provider_catalog
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: ai_provider_catalog
+#: model:ir.model,name:ai_provider_catalog.model_ai_agent
+msgid "AI Agent"
+msgstr "Agente de IA"
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,help:ai_provider_catalog.field_ai_agent__web_search
+msgid ""
+"Allow the selected provider to add web search results to the initial model "
+"request. This may incur extra provider costs."
+msgstr ""
+"Permite que el proveedor seleccionado añada resultados de búsqueda web a la "
+"solicitud inicial al modelo. Puede generar costes adicionales del proveedor."
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,field_description:ai_provider_catalog.field_ai_agent__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,field_description:ai_provider_catalog.field_ai_agent__web_search
+msgid "Enable web search"
+msgstr "Activar búsqueda web"
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,field_description:ai_provider_catalog.field_ai_agent__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,field_description:ai_provider_catalog.field_ai_agent__llm_model
+msgid "LLM Model"
+msgstr "Modelo LLM"
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,help:ai_provider_catalog.field_ai_agent__web_search_max_results
+msgid ""
+"Maximum number of web results for providers that support this limit. The "
+"limit is capped at 5."
+msgstr ""
+"Número máximo de resultados web para los proveedores que admiten este "
+"límite. El máximo es 5."
+
+#. module: ai_provider_catalog
+#: model:ir.model.fields,field_description:ai_provider_catalog.field_ai_agent__web_search_max_results
+msgid "Maximum web results"
+msgstr "Máximo de resultados web"
+
+#. module: ai_provider_catalog
+#. odoo-python
+#: code:addons/ai_provider_catalog/models/ai_agent.py:0
+msgid "The maximum number of web results must be between 1 and 5."
+msgstr "El número máximo de resultados web debe estar entre 1 y 5."
+
+#. module: ai_provider_catalog
+#. odoo-python
+#: code:addons/ai_provider_catalog/models/ai_agent.py:0
+msgid "The selected AI model is no longer available."
+msgstr "El modelo de IA seleccionado ya no está disponible."

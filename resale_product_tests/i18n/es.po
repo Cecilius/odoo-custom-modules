@@ -1,0 +1,177 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_product_tests
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.res_config_settings_view_form
+msgid ""
+"Add, rename, reorder, archive, or remove available product test results."
+msgstr ""
+"Añada, renombre, reordene, archive o elimine los resultados de prueba "
+"disponibles."
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.product_template_form_product_tests
+msgid "Condition / Box"
+msgstr "Estado / Caja"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__create_uid
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__create_date
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.resale_product_test_view_form
+msgid "Describe the test or any issues found..."
+msgstr "Describa la prueba o los problemas encontrados..."
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_product__display_name
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_template__display_name
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__display_name
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: resale_product_tests
+#: model:ir.model.constraint,message:resale_product_tests.constraint_resale_product_test_result_result_name_unique
+msgid "Each product test result must have a unique name."
+msgstr "Cada resultado de prueba de producto debe tener un nombre único."
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_product__id
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_template__id
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__id
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__id
+msgid "ID"
+msgstr "ID"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_product__resale_last_test_result_id
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_template__resale_last_test_result_id
+msgid "Last Test Result"
+msgstr "Último resultado de prueba"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__write_uid
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__write_date
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.res_config_settings_view_form
+msgid "Manage Test Results"
+msgstr "Gestionar resultados de prueba"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__notes
+msgid "Notes"
+msgstr "Notas"
+
+#. module: resale_product_tests
+#: model:ir.model,name:resale_product_tests.model_product_template
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__product_template_id
+msgid "Product"
+msgstr "Producto"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.product_template_form_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.resale_product_test_view_form
+msgid "Product Test"
+msgstr "Prueba de producto"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.res_config_settings_view_form
+msgid "Product Test Results"
+msgstr "Resultados de prueba de producto"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_product__resale_product_test_ids
+#: model:ir.model.fields,field_description:resale_product_tests.field_product_template__resale_product_test_ids
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.product_template_form_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.resale_product_test_view_list
+msgid "Product Tests"
+msgstr "Pruebas de producto"
+
+#. module: resale_product_tests
+#: model:ir.model,name:resale_product_tests.model_product_product
+msgid "Product Variant"
+msgstr "Variante de producto"
+
+#. module: resale_product_tests
+#: model:ir.model,name:resale_product_tests.model_resale_product_test
+msgid "Resale Product Test"
+msgstr "Prueba de producto de reventa"
+
+#. module: resale_product_tests
+#: model:ir.model,name:resale_product_tests.model_resale_product_test_result
+msgid "Resale Product Test Result"
+msgstr "Resultado de prueba de producto de reventa"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__result_id
+msgid "Result"
+msgstr "Resultado"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test_result__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__test_date
+msgid "Test Date"
+msgstr "Fecha de la prueba"
+
+#. module: resale_product_tests
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.resale_product_test_result_view_form
+msgid "Test Result"
+msgstr "Resultado de la prueba"
+
+#. module: resale_product_tests
+#: model:ir.actions.act_window,name:resale_product_tests.action_resale_product_test_result
+#: model_terms:ir.ui.view,arch_db:resale_product_tests.resale_product_test_result_view_list
+msgid "Test Results"
+msgstr "Resultados de prueba"
+
+#. module: resale_product_tests
+#: model:ir.model.fields,field_description:resale_product_tests.field_resale_product_test__tested_by_id
+msgid "Tested By"
+msgstr "Probado por"

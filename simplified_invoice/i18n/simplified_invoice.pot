@@ -1,0 +1,273 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* simplified_invoice
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"%(invoice)s exceeds the Spanish simplified invoice limit, but it is marked "
+"as simplified."
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"%(invoice)s: full invoices for Spanish customers require a VAT/NIF before "
+"posting."
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"%(invoice)s: you cannot create simplified invoices for company-type (B2B) "
+"customers."
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"%(invoice)s: you cannot create simplified invoices for customers outside "
+"Spain."
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields.selection,name:simplified_invoice.selection__sale_order__invoice_review_state__approved
+msgid "Approved"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.view_simplified_invoice_post_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_base_document_layout
+msgid "Company Document Layout"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_base_document_layout__company_registry
+msgid "Company ID"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid "Confirm Invoice Posting"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_account_move__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_base_document_layout__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_ir_actions_report__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_company__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_sale_order__display_name
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.view_simplified_invoice_post_wizard_form
+msgid "Full"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_company__full_sales_journal_id
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_config_settings__full_sales_journal_id
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.res_config_settings_view_form_simplified_invoice_workflow
+msgid "Full Sales Journal"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_account_move__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_base_document_layout__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_ir_actions_report__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_company__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_config_settings__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_sale_order__id
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_sale_order__invoice_review_state
+msgid "Invoice Review State"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.view_simplified_invoice_post_wizard_form
+msgid "Invoice journal and type mismatch"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.res_config_settings_view_form_simplified_invoice_workflow
+msgid "Localization limit source"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__message
+msgid "Message"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_simplified_invoice_post_wizard__move_id
+msgid "Move"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.inherit_web_external_layout_standard_company_registry
+msgid "NIF:"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields.selection,name:simplified_invoice.selection__sale_order__invoice_review_state__pending
+msgid "Pending review"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.view_simplified_invoice_post_wizard_form
+msgid "Simplified"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model,name:simplified_invoice.model_simplified_invoice_post_wizard
+msgid "Simplified Invoice Post Wizard"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.res_config_settings_view_form_simplified_invoice_workflow
+msgid "Simplified Invoice Workflow"
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_company__simplified_sales_journal_id
+#: model:ir.model.fields,field_description:simplified_invoice.field_res_config_settings__simplified_sales_journal_id
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.res_config_settings_view_form_simplified_invoice_workflow
+msgid "Simplified Sales Journal"
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.report_invoice_document_simplified
+msgid "Simplified invoice"
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/ir_actions_report.py:0
+msgid "Simplified invoices cannot be issued as proforma invoices."
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,help:simplified_invoice.field_base_document_layout__company_registry
+msgid ""
+"The registry number of the company. Use it if it is different from the Tax "
+"ID. It must be unique across all partners of a same country"
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"This invoice is classified as full by the Spanish localization, but it is "
+"not using the configured full sales journal."
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/account_move.py:0
+msgid ""
+"This invoice is classified as simplified by the Spanish localization, but it"
+" is not using the configured simplified sales journal."
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,help:simplified_invoice.field_res_company__full_sales_journal_id
+#: model:ir.model.fields,help:simplified_invoice.field_res_config_settings__full_sales_journal_id
+msgid "Used as the default sales journal for non-simplified invoices."
+msgstr ""
+
+#. module: simplified_invoice
+#: model:ir.model.fields,help:simplified_invoice.field_res_company__simplified_sales_journal_id
+#: model:ir.model.fields,help:simplified_invoice.field_res_config_settings__simplified_sales_journal_id
+msgid ""
+"Used when a Spanish invoice is detected as simplified by "
+"l10n_es_is_simplified."
+msgstr ""
+
+#. module: simplified_invoice
+#: model_terms:ir.ui.view,arch_db:simplified_invoice.res_config_settings_view_form_simplified_invoice_workflow
+msgid ""
+"Uses company.l10n_es_simplified_invoice_limit from the Spanish localization "
+"instead of a hard-coded limit."
+msgstr ""
+
+#. module: simplified_invoice
+#. odoo-python
+#: code:addons/simplified_invoice/models/invoice_wizard.py:0
+msgid ""
+"You can only change the journal and simplified flag while the invoice is "
+"still in draft."
+msgstr ""

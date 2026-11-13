@@ -1,0 +1,1012 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_advertisements
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "A concise listing description for resale channels."
+msgstr "Descripción concisa del anuncio para los canales de reventa."
+
+#. module: resale_advertisements
+#: model:ir.model.constraint,message:resale_advertisements.constraint_resale_platform_name_unique
+msgid "A platform with this name already exists."
+msgstr "Ya existe una plataforma con este nombre."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "A translation into %s already exists. Continuing will overwrite it."
+msgstr "Ya existe una traducción a %s. Si continúa, se sobrescribirá."
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_resale_advertisement_generator
+msgid "AI Description Generator"
+msgstr "Generador de descripciones con IA"
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_resale_advertisement_translator
+msgid "AI Description Translator"
+msgstr "Traductor de descripciones con IA"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "AI Proposals"
+msgstr "Propuestas de IA"
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_resale_advertisement_short_generator
+msgid "AI Short Listing Generator"
+msgstr "Generador de anuncios cortos con IA"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_translation_agent_id
+msgid ""
+"AI agent used to translate listings into other installed languages. Falls "
+"back to the listing research agent when not set."
+msgstr ""
+"Agente de IA usado para traducir los anuncios a los demás idiomas "
+"instalados. Si no se configura, se usa el agente de investigación de "
+"anuncios."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Add"
+msgstr "Añadir"
+
+#. module: resale_advertisements
+#: model_terms:ir.actions.act_window,help:resale_advertisements.resale_platform_action
+msgid "Add a new sales platform"
+msgstr "Añadir una nueva plataforma de venta"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Advertisement"
+msgstr "Anuncio"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__url
+msgid "Advertisement URL"
+msgstr "URL del anuncio"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Advertisements"
+msgstr "Anuncios"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_product_product__listing_ids
+#: model:ir.model.fields,help:resale_advertisements.field_product_template__listing_ids
+msgid "Advertisements on external platforms that include this product."
+msgstr "Anuncios en plataformas externas que incluyen este producto."
+
+#. module: resale_advertisements
+#: model:ir.model.constraint,message:resale_advertisements.constraint_resale_listing_url_unique
+msgid "An advertisement with this URL already exists."
+msgstr "Ya existe un anuncio con esta URL."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Apply Translation"
+msgstr "Aplicar traducción"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_platform_view_search
+msgid "Archived"
+msgstr "Archivado"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_backup_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Backup listing research agent"
+msgstr "Agente de investigación de anuncios de respaldo"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_short_backup_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Backup short listing agent"
+msgstr "Agente de anuncios cortos de respaldo"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+msgid "Both research agents failed. Primary: %(primary)s. Backup: %(backup)s."
+msgstr ""
+"Fallaron ambos agentes de investigación. Principal: %(primary)s. Respaldo: "
+"%(backup)s."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid ""
+"Both short listing agents failed. Primary: %(primary)s. Backup: %(backup)s."
+msgstr ""
+"Fallaron ambos agentes de anuncios cortos. Principal: %(primary)s. Respaldo:"
+" %(backup)s."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid ""
+"Both translation agents failed. Primary: %(primary)s. Backup: %(backup)s."
+msgstr ""
+"Fallaron ambos agentes de traducción. Principal: %(primary)s. Respaldo: "
+"%(backup)s."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_product_product__short_listing_copy
+#: model:ir.model.fields,help:resale_advertisements.field_product_template__short_listing_copy
+msgid ""
+"Combined short listing, condition listing text and internal reference for "
+"copy/paste."
+msgstr ""
+"Anuncio corto, texto de estado para el anuncio y referencia interna "
+"combinados para copiar y pegar."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_product_product__short_listing
+#: model:ir.model.fields,help:resale_advertisements.field_product_template__short_listing
+msgid "Concise listing description for resale channels (single language)."
+msgstr ""
+"Descripción concisa del anuncio para los canales de reventa (un solo "
+"idioma)."
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+msgid "Configure a listing research agent in Settings first."
+msgstr "Configure primero un agente de investigación de anuncios en Ajustes."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "Configure a listing translation/research agent in Settings first."
+msgstr ""
+"Configure primero un agente de traducción o investigación de anuncios en "
+"Ajustes."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "Configure a short listing agent in Settings first."
+msgstr "Configure primero un agente de anuncios cortos en Ajustes."
+
+#. module: resale_advertisements
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_generator__state__confirm_overwrite
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_translator__state__confirm_overwrite
+msgid "Confirm Overwrite"
+msgstr "Confirmar sobrescritura"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Confirmation required"
+msgstr "Se requiere confirmación"
+
+#. module: resale_advertisements
+#: model_terms:ir.actions.act_window,help:resale_advertisements.resale_listing_action
+msgid "Create the first platform advertisement"
+msgstr "Cree el primer anuncio en una plataforma"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__create_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__create_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__create_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__create_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__create_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__create_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__create_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__create_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_short_default_lang_id
+msgid ""
+"Default language used when generating the (non-translatable) short listing."
+msgstr "Idioma por defecto usado al generar el anuncio corto (no traducible)."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Description"
+msgstr "Descripción"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Description and short listing"
+msgstr "Descripción y anuncio corto"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Description max characters"
+msgstr "Máximo de caracteres de la descripción"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_resale_listing__platform_id
+msgid "Detected automatically from the link; can be corrected manually."
+msgstr ""
+"Se detecta automáticamente a partir del enlace; puede corregirse "
+"manualmente."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_resale_listing__url
+msgid "Direct link to the advertisement on the platform."
+msgstr "Enlace directo al anuncio en la plataforma."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__display_name
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: resale_advertisements
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_translator__state__done
+msgid "Done"
+msgstr "Hecho"
+
+#. module: resale_advertisements
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_generator__state__error
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_short_generator__state__error
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_translator__state__error
+msgid "Error"
+msgstr "Error"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Generate 3 Proposals"
+msgstr "Generar 3 propuestas"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/product_template.py:0
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+msgid "Generate Description"
+msgstr "Generar descripción"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Generate Description (AI)"
+msgstr "Generar descripción (IA)"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/product_template.py:0
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Generate Short Listing"
+msgstr "Generar anuncio corto"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Generate Short Listing (AI)"
+msgstr "Generar anuncio corto (IA)"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_search_view_resale_listings
+msgid "Has Advertisement"
+msgstr "Tiene anuncio"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__id
+msgid "ID"
+msgstr "ID"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__research_info
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+msgid "Information sent to AI"
+msgstr "Información enviada a la IA"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__target_lang_id
+msgid "Language"
+msgstr "Idioma"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__write_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__write_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__write_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__write_uid
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__write_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__write_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__write_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__write_date
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__date_listed
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_search
+msgid "Listed On"
+msgstr "Publicado en"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_product__listing_platform_ids
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__listing_platform_ids
+msgid "Listed on"
+msgstr "Publicado en"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Listing"
+msgstr "Anuncio"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_research_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Listing research agent"
+msgstr "Agente de investigación de anuncios"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_translation_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Listing translation agent"
+msgstr "Agente de traducción de anuncios"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_max_characters
+msgid "Long listing max characters"
+msgstr "Máximo de caracteres del anuncio largo"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__source_info
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Long listing used as source"
+msgstr "Anuncio largo usado como origen"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__max_characters
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__max_characters
+msgid "Max characters"
+msgstr "Máximo de caracteres"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+msgid ""
+"Max characters: %(max_chars)s\n"
+"Product information:\n"
+"%(context)s"
+msgstr ""
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid ""
+"Max characters: %(max_chars)s\n"
+"Target language: %(lang)s\n"
+"Long listing:\n"
+"%(source)s"
+msgstr ""
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_max_characters
+msgid ""
+"Maximum number of characters for an AI generated long listing proposal."
+msgstr ""
+"Número máximo de caracteres de una propuesta de anuncio largo generada por "
+"IA."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_short_max_characters
+msgid ""
+"Maximum number of characters for an AI generated short listing proposal."
+msgstr ""
+"Número máximo de caracteres de una propuesta de anuncio corto generada por "
+"IA."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_search_view_resale_listings
+msgid "No Advertisement"
+msgstr "Sin anuncio"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_search
+msgid "No Platform"
+msgstr "Sin plataforma"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_search
+msgid "No Products"
+msgstr "Sin productos"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid ""
+"No other language is installed. Install and activate another language before"
+" translating the listing."
+msgstr ""
+"No hay ningún otro idioma instalado. Instale y active otro idioma antes de "
+"traducir el anuncio."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "No product selected for translation."
+msgstr "No se ha seleccionado ningún producto para traducir."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "No translated text to apply."
+msgstr "No hay texto traducido que aplicar."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__product_count
+msgid "Number of Products"
+msgstr "Número de productos"
+
+#. module: resale_advertisements
+#: model_terms:ir.actions.act_window,help:resale_advertisements.resale_listing_action
+msgid ""
+"One advertisement link can cover multiple products (combined listings)."
+msgstr ""
+"Un enlace de anuncio puede cubrir varios productos (anuncios combinados)."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Open Products"
+msgstr "Abrir productos"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+msgid "Overwrite and Generate"
+msgstr "Sobrescribir y generar"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Overwrite and Translate"
+msgstr "Sobrescribir y traducir"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_product__new_listing_url
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__new_listing_url
+msgid "Paste Ad Link"
+msgstr "Pegar enlace del anuncio"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Paste advertisement link..."
+msgstr "Pegue el enlace del anuncio..."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/product_template.py:0
+msgid "Paste an advertisement link first."
+msgstr "Pegue primero un enlace de anuncio."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_product_product__new_listing_url
+#: model:ir.model.fields,help:resale_advertisements.field_product_template__new_listing_url
+msgid "Paste an eBay, Wallapop or Vinted advertisement link and click Add."
+msgstr "Pegue un enlace de anuncio de eBay, Wallapop o Vinted y pulse Añadir."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Paste eBay / Wallapop / Vinted advertisement link..."
+msgstr "Pegue el enlace del anuncio de eBay / Wallapop / Vinted..."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__platform_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_search_view_resale_listings
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_search
+msgid "Platform"
+msgstr "Plataforma"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Platform Advertisement"
+msgstr "Anuncio en plataforma"
+
+#. module: resale_advertisements
+#: model:ir.actions.act_window,name:resale_advertisements.resale_listing_action
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_product__listing_ids
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__listing_ids
+#: model:ir.ui.menu,name:resale_advertisements.menu_resale_listing
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_list
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_search
+msgid "Platform Advertisements"
+msgstr "Anuncios en plataformas"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Platform advertisements"
+msgstr "Anuncios en plataformas"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_search_view_resale_listings
+msgid "Platforms"
+msgstr "Plataformas"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_product_product__listing_platform_ids
+#: model:ir.model.fields,help:resale_advertisements.field_product_template__listing_platform_ids
+msgid "Platforms where this product currently has an advertisement."
+msgstr "Plataformas en las que este producto tiene actualmente un anuncio."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_research_agent_id
+msgid "Primary AI agent used to research and write listing proposals."
+msgstr ""
+"Agente de IA principal usado para investigar y redactar propuestas de "
+"anuncio."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_short_agent_id
+msgid ""
+"Primary AI agent used to shorten the long listing into a short listing."
+msgstr ""
+"Agente de IA principal usado para resumir el anuncio largo en un anuncio "
+"corto."
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_product_template
+msgid "Product"
+msgstr "Producto"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__product_template_id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__product_template_id
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__product_template_id
+msgid "Product Template"
+msgstr "Plantilla de producto"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_resale_listing__product_template_ids
+msgid ""
+"Product templates covered by this advertisement (combined ads share one "
+"link)."
+msgstr ""
+"Plantillas de producto incluidas en este anuncio (los anuncios combinados "
+"comparten un enlace)."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/resale_listing.py:0
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_listing__product_template_ids
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_listing_view_form
+msgid "Products"
+msgstr "Productos"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__proposal_1
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__proposal_1
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Proposal 1"
+msgstr "Propuesta 1"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__proposal_2
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__proposal_2
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Proposal 2"
+msgstr "Propuesta 2"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__proposal_3
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__proposal_3
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Proposal 3"
+msgstr "Propuesta 3"
+
+#. module: resale_advertisements
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_generator__state__proposals
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_short_generator__state__proposals
+msgid "Proposals"
+msgstr "Propuestas"
+
+#. module: resale_advertisements
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_generator__state__draft
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_short_generator__state__draft
+#: model:ir.model.fields.selection,name:resale_advertisements.selection__resale_advertisement_translator__state__draft
+msgid "Ready"
+msgstr "Listo"
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_resale_listing
+msgid "Resale Platform Advertisement"
+msgstr "Anuncio de reventa en plataforma"
+
+#. module: resale_advertisements
+#: model:ir.model,name:resale_advertisements.model_resale_platform
+msgid "Resale Sales Platform"
+msgstr "Plataforma de venta de reventa"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_platform_view_form
+msgid "Sales Platform"
+msgstr "Plataforma de venta"
+
+#. module: resale_advertisements
+#: model:ir.actions.act_window,name:resale_advertisements.resale_platform_action
+#: model:ir.ui.menu,name:resale_advertisements.menu_resale_platform
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_platform_view_list
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_platform_view_search
+msgid "Sales Platforms"
+msgstr "Plataformas de venta"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_backup_agent_id
+msgid "Secondary AI agent used when the primary agent is unavailable."
+msgstr "Agente de IA secundario usado cuando el principal no está disponible."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_res_config_settings__resale_advertisement_short_backup_agent_id
+msgid ""
+"Secondary AI agent used when the primary short listing agent is unavailable."
+msgstr ""
+"Agente de IA secundario usado cuando el agente principal de anuncios cortos "
+"no está disponible."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "Select a target language."
+msgstr "Seleccione un idioma de destino."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_product__short_listing
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__short_listing
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Short Listing"
+msgstr "Anuncio corto"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_product__short_listing_copy
+#: model:ir.model.fields,field_description:resale_advertisements.field_product_template__short_listing_copy
+msgid "Short Listing (copy)"
+msgstr "Anuncio corto (copiar)"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid ""
+"Short listing + condition listing text + internal reference (copy/paste)."
+msgstr ""
+"Anuncio corto + texto de estado + referencia interna (copiar y pegar)."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_short_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Short listing agent"
+msgstr "Agente de anuncios cortos"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_short_default_lang_id
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Short listing default language"
+msgstr "Idioma por defecto del anuncio corto"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_res_config_settings__resale_advertisement_short_max_characters
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.res_config_settings_view_form
+msgid "Short listing max characters"
+msgstr "Máximo de caracteres del anuncio corto"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__source_lang
+msgid "Source language"
+msgstr "Idioma de origen"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__source_text
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Source listing (plain text)"
+msgstr "Anuncio de origen (texto sin formato)"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__state
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__state
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__state
+msgid "State"
+msgstr "Estado"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_generator__error_message
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_short_generator__error_message
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__error_message
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Status"
+msgstr "Estado"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,help:resale_advertisements.field_resale_platform__host_keyword
+msgid "Substring used to detect the platform from a pasted link, e.g. \"ebay\"."
+msgstr ""
+"Fragmento usado para detectar la plataforma a partir de un enlace pegado, p."
+" ej. \"ebay\"."
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__target_lang_id
+msgid "Target language"
+msgstr "Idioma de destino"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid ""
+"Target language: %(lang)s\n"
+"Number of blocks: %(count)s\n"
+"\n"
+"%(blocks)s"
+msgstr ""
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "The AI agent did not return any proposal."
+msgstr "El agente de IA no devolvió ninguna propuesta."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "The AI agent returned an invalid structured response."
+msgstr "El agente de IA devolvió una respuesta estructurada no válida."
+
+#. module: resale_advertisements
+#: model_terms:ir.actions.act_window,help:resale_advertisements.resale_platform_action
+msgid ""
+"The URL keyword is used to detect the platform when pasting an advertisement"
+" link."
+msgstr ""
+"La palabra clave de URL se usa para detectar la plataforma al pegar un "
+"enlace de anuncio."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid ""
+"The description is empty. Write or generate a description in the current "
+"language before translating it."
+msgstr ""
+"La descripción está vacía. Escriba o genere una descripción en el idioma "
+"actual antes de traducirla."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+msgid "The listing research agent failed: %s"
+msgstr "Falló el agente de investigación de anuncios: %s"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "The primary agent was unavailable; the backup agent response is shown."
+msgstr ""
+"El agente principal no estaba disponible; se muestra la respuesta del agente"
+" de respaldo."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid ""
+"The product has no description to shorten. Generate the description first."
+msgstr ""
+"El producto no tiene descripción que resumir. Genere primero la descripción."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "The selected proposal is empty."
+msgstr "La propuesta seleccionada está vacía."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_short_generator.py:0
+msgid "The short listing agent failed: %s"
+msgstr "Falló el agente de anuncios cortos: %s"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid ""
+"The source description changed after translation was generated. Please "
+"translate it again."
+msgstr ""
+"La descripción de origen cambió después de generar la traducción. Vuelva a "
+"traducirla."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "The source description is empty."
+msgstr "La descripción de origen está vacía."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "The translated text is corrupted."
+msgstr "El texto traducido está dañado."
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_translator_wizard.py:0
+msgid "The translation agent failed: %s"
+msgstr "Falló el agente de traducción: %s"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/advertisement_generator_wizard.py:0
+msgid ""
+"This product already has a description. Continuing will generate new "
+"proposals and the one you choose will overwrite the current description."
+msgstr ""
+"Este producto ya tiene una descripción. Si continúa, se generarán nuevas "
+"propuestas y la que elija sobrescribirá la descripción actual."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Translate"
+msgstr "Traducir"
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/product_template.py:0
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Translate Description"
+msgstr "Traducir descripción"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid "Translate Description (AI)"
+msgstr "Traducir descripción (IA)"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__translated_text
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_translator_form
+msgid "Translated listing"
+msgstr "Anuncio traducido"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_advertisement_translator__translated_terms
+msgid "Translated terms (JSON)"
+msgstr "Términos traducidos (JSON)"
+
+#. module: resale_advertisements
+#: model:ir.model.fields,field_description:resale_advertisements.field_resale_platform__host_keyword
+msgid "URL Keyword"
+msgstr "Palabra clave de URL"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Use Proposal 1"
+msgstr "Usar propuesta 1"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Use Proposal 2"
+msgstr "Usar propuesta 2"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_generator_form
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_advertisement_short_generator_form
+msgid "Use Proposal 3"
+msgstr "Usar propuesta 3"
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid ""
+"Use the configured AI agent to translate the description into another "
+"installed language."
+msgstr ""
+"Usar el agente de IA configurado para traducir la descripción a otro idioma "
+"instalado."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid ""
+"Use the configured AI agents to shorten the description into short listing "
+"proposals."
+msgstr ""
+"Usar los agentes de IA configurados para resumir la descripción en "
+"propuestas de anuncio corto."
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.product_template_form_listings
+msgid ""
+"Use the configured AI research agents to generate description proposals."
+msgstr ""
+"Usar los agentes de investigación de IA configurados para generar propuestas"
+" de descripción."
+
+#. module: resale_advertisements
+#: model:resale.platform,name:resale_advertisements.resale_platform_vinted
+msgid "Vinted"
+msgstr ""
+
+#. module: resale_advertisements
+#: model:resale.platform,name:resale_advertisements.resale_platform_wallapop
+msgid "Wallapop"
+msgstr ""
+
+#. module: resale_advertisements
+#: model_terms:ir.ui.view,arch_db:resale_advertisements.resale_platform_view_form
+msgid "e.g. eBay"
+msgstr "p. ej. eBay"
+
+#. module: resale_advertisements
+#: model:resale.platform,name:resale_advertisements.resale_platform_ebay
+msgid "eBay"
+msgstr ""
+
+#. module: resale_advertisements
+#. odoo-python
+#: code:addons/resale_advertisements/models/resale_listing.py:0
+msgid "id"
+msgstr "id"

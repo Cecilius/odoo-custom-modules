@@ -1,0 +1,485 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* resale_ai_manufacturer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e-20260830\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 16:43+0000\n"
+"PO-Revision-Date: 2026-11-13 16:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model,name:resale_ai_manufacturer.model_resale_ai_manufacturer_wizard
+msgid "AI GPSR Manufacturer & Compliance Finder"
+msgstr "Buscador de fabricante y cumplimiento GPSR con IA"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.res_config_settings_view_form
+msgid "AI Manufacturer"
+msgstr "Fabricante (IA)"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.res_config_settings_view_form
+msgid "AI request timeout"
+msgstr "Tiempo de espera de la solicitud de IA"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Apply to Product"
+msgstr "Aplicar al producto"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_backup_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.res_config_settings_view_form
+msgid "Backup GPSR research agent"
+msgstr "Agente de investigación GPSR de respaldo"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Based on existing records, %(anchor)s is already associated with %(contact)s"
+" in %(count)s product(s). Consider reusing the existing contact instead of "
+"the proposal."
+msgstr ""
+"Según los registros existentes, %(anchor)s ya está asociado a %(contact)s en"
+" %(count)s producto(s). Considere reutilizar el contacto existente en lugar "
+"de la propuesta."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Both GPSR research agents failed. Primary: %(primary)s. Backup: %(backup)s."
+msgstr ""
+"Fallaron ambos agentes de investigación GPSR. Principal: %(primary)s. "
+"Respaldo: %(backup)s."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__ce_compliance
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "CE Compliance"
+msgstr "Conformidad CE"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model,name:resale_ai_manufacturer.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid "Configure a GPSR research agent in Settings first."
+msgstr "Configure primero un agente de investigación GPSR en Ajustes."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__eu_responsible_action__create
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__manufacturer_action__create
+msgid "Create as new contact"
+msgstr "Crear como contacto nuevo"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_product_template__display_name
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__display_name
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_product__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__state__done
+msgid "Done"
+msgstr "Hecho"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_city
+msgid "EU Responsible City"
+msgstr "Ciudad del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_country_id
+msgid "EU Responsible Country"
+msgstr "País del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_email
+msgid "EU Responsible Email"
+msgstr "Correo del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_name
+msgid "EU Responsible Name"
+msgstr "Nombre del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "EU Responsible Person"
+msgstr "Persona responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_phone
+msgid "EU Responsible Phone"
+msgstr "Teléfono del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__eu_responsible_note
+msgid "EU Responsible Recommendation"
+msgstr "Recomendación del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_street
+msgid "EU Responsible Street"
+msgstr "Calle del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_website
+msgid "EU Responsible Website"
+msgstr "Sitio web del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__r_zip
+msgid "EU Responsible ZIP"
+msgstr "Código postal del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__eu_responsible_action
+msgid "EU Responsible action"
+msgstr "Acción del responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__state__error
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Error"
+msgstr "Error"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/product_template.py:0
+#: code:addons/resale_ai_manufacturer/models/resale_product.py:0
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Find GPSR Compliance Info"
+msgstr "Buscar información de cumplimiento GPSR"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.product_template_form_gpsr_button
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_product_view_form_inherit_gpsr
+msgid "Find GPSR Info (AI)"
+msgstr "Buscar información GPSR (IA)"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Found %(count)s similar existing contact(s). Recommended: %(name)s. Review "
+"the suggestion or choose to create a new contact instead."
+msgstr ""
+"Se encontraron %(count)s contacto(s) similares. Recomendado: %(name)s. "
+"Revise la sugerencia o elija crear un contacto nuevo."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_research_agent_id
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.res_config_settings_view_form
+msgid "GPSR research agent"
+msgstr "Agente de investigación GPSR"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_request_timeout
+msgid "GPSR research timeout (seconds)"
+msgstr "Tiempo de espera de la investigación GPSR (segundos)"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Generate GPSR Info"
+msgstr "Generar información GPSR"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_product_template__id
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_res_config_settings__id
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__id
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_product__id
+msgid "ID"
+msgstr "ID"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_city
+msgid "Manufacturer City"
+msgstr "Ciudad del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_country_id
+msgid "Manufacturer Country"
+msgstr "País del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_email
+msgid "Manufacturer Email"
+msgstr "Correo del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_name
+msgid "Manufacturer Name"
+msgstr "Nombre del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_phone
+msgid "Manufacturer Phone"
+msgstr "Teléfono del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__manufacturer_note
+msgid "Manufacturer Recommendation"
+msgstr "Recomendación del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_street
+msgid "Manufacturer Street"
+msgstr "Calle del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_website
+msgid "Manufacturer Website"
+msgstr "Sitio web del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__m_zip
+msgid "Manufacturer ZIP"
+msgstr "Código postal del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__manufacturer_action
+msgid "Manufacturer action"
+msgstr "Acción del fabricante"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Manufacturer and EU Responsible Person appear to be the same company (common"
+" for EU companies). They will be linked to a single contact."
+msgstr ""
+"El fabricante y la persona responsable en la UE parecen ser la misma empresa"
+" (habitual en empresas de la UE). Se vincularán a un único contacto."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Manufacturer and EU Responsible Person share a website or email. Double-"
+"check they are not the same company before applying."
+msgstr ""
+"El fabricante y la persona responsable en la UE comparten sitio web o "
+"correo. Compruebe que no son la misma empresa antes de aplicar."
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Manufacturer contact"
+msgstr "Contacto del fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,help:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_request_timeout
+msgid ""
+"Minimum timeout used for each GPSR research request. The minimum allowed "
+"value is 30 seconds."
+msgstr ""
+"Tiempo de espera mínimo para cada solicitud de investigación GPSR. El valor "
+"mínimo permitido es de 30 segundos."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"No similar existing contact found. A new contact will be created unless you "
+"skip."
+msgstr ""
+"No se encontró ningún contacto similar. Se creará un contacto nuevo salvo "
+"que lo omita."
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Notice"
+msgstr "Aviso"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,help:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_research_agent_id
+msgid ""
+"Primary AI agent used to research manufacturer and GPSR compliance "
+"information."
+msgstr ""
+"Agente de IA principal usado para investigar el fabricante y la información "
+"de cumplimiento GPSR."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model,name:resale_ai_manufacturer.model_product_template
+msgid "Product"
+msgstr "Producto"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__product_display
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Product information sent to AI"
+msgstr "Información del producto enviada a la IA"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"Product information:\n"
+"%(context)s"
+msgstr ""
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__state__draft
+msgid "Ready"
+msgstr "Listo"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model,name:resale_ai_manufacturer.model_resale_product
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__resale_product_id
+msgid "Resale Product"
+msgstr "Producto de reventa"
+
+#. module: resale_ai_manufacturer
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.product_template_form_gpsr_button
+msgid ""
+"Research the Manufacturer and EU Responsible Person for this product's "
+"assigned Resale Product."
+msgstr ""
+"Investigar el fabricante y la persona responsable en la UE del producto de "
+"reventa asignado a este producto."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__state__result
+msgid "Result"
+msgstr "Resultado"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__safety_record
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Safety Record"
+msgstr "Información de seguridad"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__same_company_note
+#: model_terms:ir.ui.view,arch_db:resale_ai_manufacturer.resale_ai_manufacturer_wizard_view_form
+msgid "Same company check"
+msgstr "Comprobación de misma empresa"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,help:resale_ai_manufacturer.field_res_config_settings__resale_ai_manufacturer_backup_agent_id
+msgid "Secondary AI agent used when the primary agent is unavailable."
+msgstr "Agente de IA secundario usado cuando el principal no está disponible."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__eu_responsible_candidate_ids
+msgid "Similar EU Responsible contacts"
+msgstr "Contactos similares de responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__manufacturer_candidate_ids
+msgid "Similar manufacturer contacts"
+msgstr "Contactos similares de fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__eu_responsible_action__skip
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__manufacturer_action__skip
+msgid "Skip"
+msgstr "Omitir"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__state
+msgid "State"
+msgstr "Estado"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__error_message
+msgid "Status"
+msgstr "Estado"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid "The AI agent returned an invalid structured response."
+msgstr "El agente de IA devolvió una respuesta estructurada no válida."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid "The GPSR research agent failed: %s"
+msgstr "Falló el agente de investigación GPSR: %s"
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid "The primary agent was unavailable; the backup agent response is shown."
+msgstr ""
+"El agente principal no estaba disponible; se muestra la respuesta del agente"
+" de respaldo."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/resale_ai_manufacturer_wizard.py:0
+msgid ""
+"This product already has %(role)s set to %(contact)s. It is proposed for "
+"reuse."
+msgstr ""
+"Este producto ya tiene %(role)s asignado a %(contact)s. Se propone "
+"reutilizarlo."
+
+#. module: resale_ai_manufacturer
+#. odoo-python
+#: code:addons/resale_ai_manufacturer/models/product_template.py:0
+msgid ""
+"This product is not linked to a Resale Product. Please assign a Resale "
+"Product first before running the GPSR research."
+msgstr ""
+"Este producto no está vinculado a un producto de reventa. Asigne primero un "
+"producto de reventa antes de ejecutar la investigación GPSR."
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__eu_responsible_use_partner_id
+msgid "Use existing EU Responsible contact"
+msgstr "Usar el contacto existente de responsable en la UE"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields,field_description:resale_ai_manufacturer.field_resale_ai_manufacturer_wizard__manufacturer_use_partner_id
+msgid "Use existing manufacturer contact"
+msgstr "Usar el contacto existente de fabricante"
+
+#. module: resale_ai_manufacturer
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__eu_responsible_action__use_existing
+#: model:ir.model.fields.selection,name:resale_ai_manufacturer.selection__resale_ai_manufacturer_wizard__manufacturer_action__use_existing
+msgid "Use suggested existing contact"
+msgstr "Usar el contacto existente sugerido"
