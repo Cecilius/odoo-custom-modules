@@ -2,7 +2,7 @@
 
 import re
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -119,7 +119,7 @@ class ProductCompliance(models.Model):
     def action_create_product(self):
         """Create a product template linked to this resale-product record."""
         self.ensure_one()
-        name_translations, _ = self.get_field_translations('name')
+        name_translations, __ = self.get_field_translations('name')
         values = {
             'name': self.with_context(lang='en_US').name,
             'resale_product_id': self.id,
@@ -146,7 +146,7 @@ class ProductCompliance(models.Model):
                 })
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Product',
+            'name': _('Product'),
             'res_model': 'product.template',
             'res_id': product.id,
             'view_mode': 'form',
@@ -182,7 +182,7 @@ class ProductCompliance(models.Model):
                 or not self._has_valid_check_digit(record.ean)
             ):
                 raise ValidationError(
-                    'EAN Code must be a valid 8, 13, or 14 digit barcode.'
+                    _('EAN Code must be a valid 8, 13, or 14 digit barcode.')
                 )
 
     @api.constrains('upc')
@@ -194,7 +194,7 @@ class ProductCompliance(models.Model):
                 or not self._has_valid_check_digit(record.upc)
             ):
                 raise ValidationError(
-                    'UPC Code must be a valid 12 digit UPC-A barcode.'
+                    _('UPC Code must be a valid 12 digit UPC-A barcode.')
                 )
 
     @api.constrains('asin')
@@ -202,11 +202,11 @@ class ProductCompliance(models.Model):
         for record in self:
             if record.asin and not re.fullmatch(r'[A-Z0-9]{10}', record.asin):
                 raise ValidationError(
-                    'ASIN must contain exactly 10 letters or digits.'
+                    _('ASIN must contain exactly 10 letters or digits.')
                 )
 
     @api.constrains('launch_year')
     def _check_launch_year(self):
         for record in self:
             if record.launch_year and not re.fullmatch(r'\d{4}', record.launch_year):
-                raise ValidationError('Launch year must contain exactly four digits.')
+                raise ValidationError(_('Launch year must contain exactly four digits.'))

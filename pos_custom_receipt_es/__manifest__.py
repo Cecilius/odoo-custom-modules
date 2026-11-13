@@ -1,7 +1,6 @@
-# pos_custom_receipt_es/__manifest__.py
 {
     "name": "POS Custom Receipt ES",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "summary": "Custom POS receipt layout (Spanish style) via QWeb extension",
     "author": "Reparero",
     "website": "https://reparero.es",

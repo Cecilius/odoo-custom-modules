@@ -77,6 +77,9 @@ class TestResaleListing(TransactionCase):
     def test_platform_search_on_products(self):
         self._add_listing(self.product_a, 'https://ebay.example/itm/2', self.ebay)
         self._add_listing(self.product_b, 'https://vinted.example/i/3', self.vinted)
+        # Odoo 19 does not recompute pending stored many2many values before a
+        # search on them; in production the request commit does it.
+        self.env.flush_all()
         ebay_products = self.env['product.template'].search([
             ('listing_platform_ids', 'in', self.ebay.ids),
         ])

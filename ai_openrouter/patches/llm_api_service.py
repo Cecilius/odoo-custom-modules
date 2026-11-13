@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from odoo import _
@@ -6,6 +7,8 @@ from odoo.exceptions import UserError
 
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.ai_provider_catalog.hooks import register_llm_request_handler
+
+_logger = logging.getLogger(__name__)
 
 
 _original_init = getattr(LLMApiService.__init__, '_ai_openrouter_original', LLMApiService.__init__)

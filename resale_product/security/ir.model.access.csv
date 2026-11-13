@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_resale_product_user,resale.product user,model_resale_product,base.group_user,1,1,1,1
+access_resale_product_user,resale.product user,model_resale_product,resale_base.group_resale_user,1,1,1,0
+access_resale_product_manager,resale.product manager,model_resale_product,resale_base.group_resale_manager,1,1,1,1

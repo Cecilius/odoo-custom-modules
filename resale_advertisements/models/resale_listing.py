@@ -1,6 +1,6 @@
 """Platform advertisement links shared across resale product templates."""
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class ResaleListing(models.Model):
@@ -40,7 +40,7 @@ class ResaleListing(models.Model):
         help='Product templates covered by this advertisement (combined ads share one link).',
     )
     product_count = fields.Integer(
-        string='Products',
+        string='Number of Products',
         compute='_compute_product_count',
     )
 
@@ -114,7 +114,7 @@ class ResaleListing(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Products',
+            'name': _('Products'),
             'res_model': 'product.template',
             'view_mode': 'kanban,list,form',
             'domain': [('id', 'in', self.product_template_ids.ids)],

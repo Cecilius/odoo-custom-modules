@@ -1,9 +1,10 @@
 {
     'name': 'Resale Advertisements',
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.5.1',
     'summary': 'Product descriptions and short listings with AI generation for resale products',
     'category': 'Inventory/Resale',
-    'author': 'Resale Project',
+    'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['resale_base', 'resale_product', 'resale_product_tests', 'resale_attributes', 'resale_ai_base', 'ai_provider_catalog', 'product', 'website_sale'],
     'data': [

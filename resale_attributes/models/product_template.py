@@ -106,15 +106,19 @@ class ProductTemplate(models.Model):
         for template in self:
             setattr(template, f'{key}_attribute_id', attribute)
 
+    @api.depends('attribute_line_ids.attribute_id', 'attribute_line_ids.value_ids')
     def _compute_brand_value_id(self):
         self._compute_mapped_value('brand')
 
+    @api.depends('attribute_line_ids.attribute_id', 'attribute_line_ids.value_ids')
     def _compute_condition_value_id(self):
         self._compute_mapped_value('condition')
 
+    @api.depends('attribute_line_ids.attribute_id', 'attribute_line_ids.value_ids')
     def _compute_box_value_id(self):
         self._compute_mapped_value('box')
 
+    @api.depends('attribute_line_ids.attribute_id', 'attribute_line_ids.value_ids')
     def _compute_warranty_value_id(self):
         self._compute_mapped_value('warranty')
 

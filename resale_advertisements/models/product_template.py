@@ -8,7 +8,6 @@ class ProductTemplate(models.Model):
 
     short_listing = fields.Html(
         string='Short Listing',
-        sanitize_attributes=False,
         help='Concise listing description for resale channels (single language).',
     )
     short_listing_copy = fields.Text(

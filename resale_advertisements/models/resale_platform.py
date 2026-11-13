@@ -10,8 +10,9 @@ class ResalePlatform(models.Model):
     _description = 'Resale Sales Platform'
     _order = 'sequence, name, id'
 
+    # ``name`` is translatable (stored as JSONB): compare the source (en_US) value.
     _name_unique = models.UniqueIndex(
-        "USING btree (lower(btrim(name)))",
+        "USING btree (lower(btrim(name->>'en_US')))",
         'A platform with this name already exists.',
     )
 

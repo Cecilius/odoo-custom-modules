@@ -1,9 +1,10 @@
 {
     'name': 'AI Provider Catalog',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'summary': 'Shared dynamic model selection for Odoo AI providers',
     'category': 'Hidden',
     'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['ai_app'],
     'data': ['views/ai_agent_views.xml'],

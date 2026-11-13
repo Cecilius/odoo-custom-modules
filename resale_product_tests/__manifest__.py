@@ -1,9 +1,10 @@
 {
     'name': 'Resale Product Tests',
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.1.2',
     'summary': 'Record product testing results and notes',
     'category': 'Inventory/Resale',
-    'author': 'Resale Project',
+    'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['product', 'resale_base', 'resale_attributes'],
     'data': [

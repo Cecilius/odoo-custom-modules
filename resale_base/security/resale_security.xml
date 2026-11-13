@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_groups_privilege_resale" model="res.groups.privilege">
+        <field name="name">Resale</field>
+        <field name="sequence">40</field>
+        <field name="category_id" ref="base.module_category_supply_chain"/>
+    </record>
+
+    <!-- Every internal user keeps day-to-day access to resale data. -->
+    <record id="group_resale_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_resale"/>
+        <field name="comment">Create and edit resale products, tests and advertisements.</field>
+    </record>
+
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('group_resale_user'))]"/>
+    </record>
+
+    <!-- Configuration (platforms, condition texts, test outcomes) and deletions. -->
+    <record id="group_resale_manager" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_resale"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_resale_user'))]"/>
+        <field name="user_ids" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+        <field name="comment">Configure resale platforms, condition texts and test outcomes, and delete resale records.</field>
+    </record>
+
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('group_resale_manager'))]"/>
+    </record>
+</odoo>

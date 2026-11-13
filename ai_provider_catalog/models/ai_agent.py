@@ -6,6 +6,23 @@ from odoo.addons.ai.utils.llm_providers import PROVIDERS
 class AIAgent(models.Model):
     _inherit = 'ai.agent'
 
+    llm_model = fields.Selection(
+        selection=lambda self: self._get_llm_model_selection(),
+        string='LLM Model',
+        default='gpt-4o',
+        required=True,
+    )
+    web_search = fields.Boolean(
+        string='Enable web search',
+        help='Allow the selected provider to add web search results to the initial model request. This may incur extra provider costs.',
+    )
+    web_search_max_results = fields.Integer(
+        string='Maximum web results',
+        default=3,
+        required=True,
+        help='Maximum number of web results for providers that support this limit. The limit is capped at 5.',
+    )
+
     @api.model
     def _get_llm_model_selection(self):
         """Combine Odoo's built-ins with approved dynamic provider models."""
@@ -84,23 +101,6 @@ class AIAgent(models.Model):
             )
         return super()._generate_response(*args, **kwargs)
 
-    llm_model = fields.Selection(
-        selection=_get_llm_model_selection,
-        string='LLM Model',
-        default='gpt-4o',
-        required=True,
-    )
-    web_search = fields.Boolean(
-        string='Enable web search',
-        help='Allow the selected provider to add web search results to the initial model request. This may incur extra provider costs.',
-    )
-    web_search_max_results = fields.Integer(
-        string='Maximum web results',
-        default=3,
-        required=True,
-        help='Maximum number of web results for providers that support this limit. The limit is capped at 5.',
-    )
-
     @api.onchange('llm_model')
     def _onchange_llm_model_reset_web_search(self):
         self.web_search = False
@@ -108,4 +108,4 @@ class AIAgent(models.Model):
     @api.constrains('web_search_max_results')
     def _check_web_search_max_results(self):
         if any(agent.web_search_max_results < 1 or agent.web_search_max_results > 5 for agent in self):
-            raise ValidationError('The maximum number of web results must be between 1 and 5.')
+            raise ValidationError(_('The maximum number of web results must be between 1 and 5.'))

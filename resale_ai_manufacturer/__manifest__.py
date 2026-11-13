@@ -1,9 +1,10 @@
 {
     'name': 'Resale AI Manufacturer',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'summary': 'AI-assisted GPSR compliance: manufacturer, EU responsible person, CE and safety records',
     'category': 'Inventory/Resale',
-    'author': 'Resale Project',
+    'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['resale_base', 'resale_product', 'resale_ai_base', 'ai_provider_catalog'],
     'data': [

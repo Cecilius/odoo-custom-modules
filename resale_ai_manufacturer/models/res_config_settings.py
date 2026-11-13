@@ -18,7 +18,7 @@ class ResConfigSettings(models.TransientModel):
         help='Secondary AI agent used when the primary agent is unavailable.',
     )
     resale_ai_manufacturer_request_timeout = fields.Integer(
-        string='AI request timeout (seconds)',
+        string='GPSR research timeout (seconds)',
         config_parameter='resale_ai_manufacturer.request_timeout',
         default=90,
         help='Minimum timeout used for each GPSR research request. The minimum allowed value is 30 seconds.',

@@ -2,8 +2,8 @@
 """Category-code validation and RFB sequence management."""
 import re
 
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, ValidationError
 
 
 _RFB_REFERENCE = re.compile(r'^RFB-(?P<category>\d{2})-(?P<number>\d+)$')
@@ -71,8 +71,9 @@ class ProductCategory(models.Model):
         :return: one result dictionary per coded category.
         """
         highest = {}
-        products = self.env['product.template'].search([
-            ('default_code', 'ilike', 'RFB-%'),
+        # Archived products keep their reference, so they must count as well.
+        products = self.env['product.template'].with_context(active_test=False).search([
+            ('default_code', '=ilike', 'RFB-%'),
         ])
         for product in products:
             match = _RFB_REFERENCE.match(
@@ -118,3 +119,32 @@ class ProductCategory(models.Model):
                 'changed': changed,
             })
         return results
+
+    def _action_adjust_rfb_sequences(self, dry_run):
+        """Run the alignment from the contextual server actions (administrators only)."""
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessError(_('Only system administrators can run RFB sequence alignment.'))
+        rows = self._adjust_rfb_sequences(dry_run=dry_run)
+        changed = sum(1 for row in rows if row['changed'])
+        if dry_run:
+            title = _('RFB Sequence Dry Run')
+            message = _('%(count)s sequence(s) would change.', count=changed)
+        else:
+            title = _('RFB Sequences Aligned')
+            message = _('%(count)s sequence(s) changed.', count=changed)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': title,
+                'message': message,
+                'type': 'info' if dry_run else 'success',
+                'sticky': False,
+            },
+        }
+
+    def action_adjust_rfb_sequences_dry_run(self):
+        return self._action_adjust_rfb_sequences(dry_run=True)
+
+    def action_adjust_rfb_sequences_apply(self):
+        return self._action_adjust_rfb_sequences(dry_run=False)

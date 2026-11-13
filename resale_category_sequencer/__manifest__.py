@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Product RFB Sequence by Category',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Inventory/Inventory',
     'summary': 'Generates RFB-XX-YYYYYY internal reference via button action.',
     'author': 'Reparero',

@@ -182,7 +182,7 @@ class TestGoogleModel(TransactionCase):
             'get_weather': (
                 'Get the weather',
                 False,
-                lambda arguments: 'sunny',
+                lambda arguments: ('sunny', None),
                 {'type': 'object', 'properties': {}},
             ),
         }

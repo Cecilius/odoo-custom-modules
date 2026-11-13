@@ -1,6 +1,6 @@
 """Condition attribute mappings used in operator and listing text."""
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -31,6 +31,29 @@ class ResaleConditionText(models.Model):
         'Each condition value can have only one text mapping.',
     )
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        mappings = super().create(vals_list)
+        mappings._recompute_product_condition_texts(mappings.condition_value_id)
+        return mappings
+
+    def write(self, vals):
+        values_before = self.condition_value_id
+        result = super().write(vals)
+        if {'condition_value_id', 'active'} & set(vals):
+            self._recompute_product_condition_texts(values_before | self.condition_value_id)
+        return result
+
+    def _recompute_product_condition_texts(self, condition_values):
+        """Refresh the stored mapping on products using any of ``condition_values``."""
+        if not condition_values:
+            return
+        templates = self.env['product.template'].with_context(active_test=False).search([
+            ('attribute_line_ids.value_ids', 'in', condition_values.ids),
+        ])
+        if templates:
+            self.env.add_to_compute(templates._fields['condition_text_id'], templates)
+
     @api.depends()
     def _compute_condition_attribute_id(self):
         """Resolve the configured Condition attribute, with an XML-ID fallback."""
@@ -59,5 +82,5 @@ class ResaleConditionText(models.Model):
                 and mapping.condition_value_id.attribute_id != mapping.condition_attribute_id
             ):
                 raise ValidationError(
-                    'The selected value must belong to the configured Condition attribute.'
+                    _('The selected value must belong to the configured Condition attribute.')
                 )

@@ -1,9 +1,10 @@
 {
     'name': 'AI OpenRouter Provider',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'summary': 'Use OpenRouter models in the Odoo AI application',
     'category': 'Hidden',
     'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['ai_provider_catalog'],
     'data': [

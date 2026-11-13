@@ -1,6 +1,6 @@
 """Settings for selecting the product attributes used by resale workflows."""
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -62,12 +62,13 @@ class ResConfigSettings(models.TransientModel):
         old_attribute = self.env['product.attribute'].browse(old_id)
         return {
             'warning': {
-                'title': 'Condition attribute changed',
-                'message': (
-                    f'Changing from {old_attribute.display_name} to '
-                    f'{self.condition_attribute_id.display_name} will archive '
-                    f'{mapping_count} existing condition text mapping(s). '
-                    'They will not be deleted.'
+                'title': _('Condition attribute changed'),
+                'message': _(
+                    'Changing from %(old)s to %(new)s will archive %(count)s existing '
+                    'condition text mapping(s). They will not be deleted.',
+                    old=old_attribute.display_name,
+                    new=self.condition_attribute_id.display_name,
+                    count=mapping_count,
                 ),
             }
         }

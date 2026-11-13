@@ -25,7 +25,7 @@
 
         <!-- 4) Insert NIF -->
         <xpath expr="//div[@class='w-50 text-break text-start' and contains(@style, 'font-size: 75%')]" position="inside">
-            <div class="company-company-registry" t-out="'NIF: ' + company.company_registry"/>
+            <div t-if="company.company_registry" class="company-company-registry">NIF: <t t-out="company.company_registry"/></div>
         </xpath>
 
         <!-- 5) Append something at the very end of the receipt -->
@@ -45,7 +45,7 @@
 
         <!-- 7) Replace VAT with IVA in a tax subtotal -->
         <xpath expr="//span[@t-esc='tax_group.group_name']" position="replace">
-            <span t-esc="tax_group.group_name &amp;&amp; tax_group.group_name.includes('VAT') ? tax_group.group_name.replace('VAT', 'IVA') : tax_group.group_name"/>
+            <span t-out="tax_group.group_name &amp;&amp; tax_group.group_name.includes('VAT') ? tax_group.group_name.replace('VAT', 'IVA') : tax_group.group_name"/>
         </xpath>
 
     </t>
@@ -56,7 +56,7 @@
        t-inherit-mode="extension">
 
         <!-- 1) Insert label inside the top centered header block -->
-        <xpath expr="//div[hasclass('text-center')][@style and contains(@style, 'font-size: 75%')]/*[1]" position="before">
+        <xpath expr="//span[hasclass('pos-receipt-vat')]" position="before">
             <div class="simplified-invoice" style="font-size: 150%; font-weight: bold; text-align: center;">Simplified invoice</div>
         </xpath>
 

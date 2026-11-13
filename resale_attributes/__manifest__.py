@@ -1,9 +1,10 @@
 {
     'name': 'Resale Attributes',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.5.0',
     'summary': 'Map configurable non-variant attributes to product template dropdowns',
     'category': 'Inventory/Resale',
-    'author': 'Resale Project',
+    'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['product', 'resale_base', 'resale_product'],
     'data': [

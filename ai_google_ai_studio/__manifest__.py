@@ -1,9 +1,10 @@
 {
     'name': 'AI Google AI Studio Provider',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'summary': 'Dynamic Google Gemini AI Studio models for Odoo AI',
     'category': 'Hidden',
     'author': 'Reparero',
+    'website': 'https://reparero.es',
     'license': 'LGPL-3',
     'depends': ['ai_provider_catalog'],
     'data': [

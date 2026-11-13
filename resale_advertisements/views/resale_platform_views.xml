@@ -70,5 +70,6 @@
               name="Sales Platforms"
               parent="resale_product.menu_resale_product_root"
               action="resale_platform_action"
+              groups="resale_base.group_resale_manager"
               sequence="30"/>
 </odoo>
